@@ -19,6 +19,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('app.url') && config('app.url') !== 'http://localhost') {
+            \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+            if (str_starts_with(config('app.url'), 'https://')) {
+                \Illuminate\Support\Facades\URL::forceScheme('https');
+            }
+        }
+
         view()->composer('*', function ($view) {
             $tickerSymbols = ['^GSPC', '^DJI', '^IXIC', 'GC=F', 'CL=F', 'BTC-USD', 'EURUSD=X'];
             $yahooService = app(\App\Services\YahooFinanceService::class);

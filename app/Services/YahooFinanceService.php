@@ -44,62 +44,69 @@ class YahooFinanceService
             return [];
         }
 
+        // Cache based on the exact list of symbols requested
         $symbolsStr = implode(',', $symbols);
         $cacheKey = "yahoo_spark_" . md5($symbolsStr);
 
-        return Cache::remember($cacheKey, 15, function () use ($symbolsStr) {
+        return Cache::remember($cacheKey, 15, function () use ($symbols) {
+            // Yahoo Spark API has a strict limit of 20 symbols per request.
+            // We batch them in chunks of 15 to be safe.
+            $chunks = array_chunk($symbols, 15);
+            $results = [];
+
             try {
-                $response = Http::withHeaders(['User-Agent' => $this->userAgent])
-                    ->timeout(10)
-                    ->get("https://query1.finance.yahoo.com/v7/finance/spark", [
-                        'symbols' => $symbolsStr
-                    ]);
+                foreach ($chunks as $chunk) {
+                    $chunkStr = implode(',', $chunk);
+                    $response = Http::withHeaders(['User-Agent' => $this->userAgent])
+                        ->timeout(10)
+                        ->get("https://query1.finance.yahoo.com/v7/finance/spark", [
+                            'symbols' => $chunkStr
+                        ]);
 
-                if ($response->successful()) {
-                    $data = $response->json();
-                    $results = [];
+                    if ($response->successful()) {
+                        $data = $response->json();
+                        if (isset($data['spark']['result'])) {
+                            foreach ($data['spark']['result'] as $item) {
+                                $symbol = $item['symbol'];
+                                if (isset($item['response'][0])) {
+                                    $res = $item['response'][0];
+                                    $meta = $res['meta'] ?? [];
+                                    $indicators = $res['indicators']['quote'][0]['close'] ?? [];
+                                    
+                                    // Clean nulls from sparkline close values
+                                    $sparkline = array_values(array_filter($indicators, fn($v) => !is_null($v)));
 
-                    if (isset($data['spark']['result'])) {
-                        foreach ($data['spark']['result'] as $item) {
-                            $symbol = $item['symbol'];
-                            if (isset($item['response'][0])) {
-                                $res = $item['response'][0];
-                                $meta = $res['meta'] ?? [];
-                                $indicators = $res['indicators']['quote'][0]['close'] ?? [];
-                                
-                                // Clean nulls from sparkline close values
-                                $sparkline = array_values(array_filter($indicators, fn($v) => !is_null($v)));
+                                    $price = $meta['regularMarketPrice'] ?? null;
+                                    $prevClose = $meta['chartPreviousClose'] ?? null;
+                                    
+                                    $change = null;
+                                    $changePercent = null;
+                                    if ($price && $prevClose) {
+                                        $change = $price - $prevClose;
+                                        $changePercent = ($change / $prevClose) * 100;
+                                    }
 
-                                $price = $meta['regularMarketPrice'] ?? null;
-                                $prevClose = $meta['chartPreviousClose'] ?? null;
-                                
-                                $change = null;
-                                $changePercent = null;
-                                if ($price && $prevClose) {
-                                    $change = $price - $prevClose;
-                                    $changePercent = ($change / $prevClose) * 100;
+                                    $results[$symbol] = [
+                                        'symbol' => $symbol,
+                                        'price' => $price,
+                                        'change' => $change,
+                                        'changePercent' => $changePercent,
+                                        'currency' => $meta['currency'] ?? 'USD',
+                                        'exchange' => $meta['exchangeName'] ?? '',
+                                        'instrumentType' => $meta['instrumentType'] ?? '',
+                                        'longName' => $meta['longName'] ?? $meta['shortName'] ?? $symbol,
+                                        'shortName' => $meta['shortName'] ?? $symbol,
+                                        'sparkline' => $sparkline,
+                                        'dayHigh' => $meta['regularMarketDayHigh'] ?? null,
+                                        'dayLow' => $meta['regularMarketDayLow'] ?? null,
+                                        'volume' => $meta['regularMarketVolume'] ?? null,
+                                    ];
                                 }
-
-                                $results[$symbol] = [
-                                    'symbol' => $symbol,
-                                    'price' => $price,
-                                    'change' => $change,
-                                    'changePercent' => $changePercent,
-                                    'currency' => $meta['currency'] ?? 'USD',
-                                    'exchange' => $meta['exchangeName'] ?? '',
-                                    'instrumentType' => $meta['instrumentType'] ?? '',
-                                    'longName' => $meta['longName'] ?? $meta['shortName'] ?? $symbol,
-                                    'shortName' => $meta['shortName'] ?? $symbol,
-                                    'sparkline' => $sparkline,
-                                    'dayHigh' => $meta['regularMarketDayHigh'] ?? null,
-                                    'dayLow' => $meta['regularMarketDayLow'] ?? null,
-                                    'volume' => $meta['regularMarketVolume'] ?? null,
-                                ];
                             }
                         }
                     }
-                    return $results;
                 }
+                return $results;
             } catch (\Exception $e) {
                 Log::error("Yahoo Finance Spark error: " . $e->getMessage());
             }

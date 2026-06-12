@@ -131,8 +131,79 @@
             </div>
         </div>
 
-        <!-- Key stats sidebar -->
-        <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-6">
+        <!-- Trading Panel / Sidebar -->
+        <div class="space-y-6">
+            
+            @auth
+            <!-- Panel de Trading -->
+            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4" x-data="{ tradeType: 'market', qty: 1, currentPrice: {{ $assetData['price'] ?? 0 }} }">
+                <h2 class="text-base font-extrabold text-white flex items-center gap-2 border-b border-slate-900 pb-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L17.5 12M21 7.5H7.5" />
+                    </svg>
+                    Operar en Mercado (Alpaca)
+                </h2>
+
+                <!-- Flash session messages / errors -->
+                @if(session('success'))
+                    <div class="p-3 text-xs bg-green-500/10 border border-green-500/20 text-green-400 rounded-xl">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if($errors->any())
+                    <div class="p-3 text-xs bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl space-y-1">
+                        @foreach($errors->all() as $err)
+                            <div>{{ $err }}</div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <form action="{{ route('trade.execute') }}" method="POST" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="symbol" value="{{ $assetData['symbol'] }}">
+
+                    <!-- Order Type -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tipo de Orden</label>
+                        <select name="type" x-model="tradeType" class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <option value="market">A Mercado (Market)</option>
+                            <option value="limit">Límite (Limit)</option>
+                        </select>
+                    </div>
+
+                    <!-- Quantity -->
+                    <div class="space-y-1.5">
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cantidad (Acciones)</label>
+                        <input type="number" name="qty" x-model.number="qty" min="0.0001" step="any" required class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <!-- Limit Price (Only visible if type === limit) -->
+                    <div class="space-y-1.5" x-show="tradeType === 'limit'" x-transition>
+                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Precio Límite ($)</label>
+                        <input type="number" name="limit_price" step="0.01" :required="tradeType === 'limit'" class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                    </div>
+
+                    <!-- Cost Estimate -->
+                    <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-900 flex justify-between items-center text-xs">
+                        <span class="text-slate-500 font-semibold">Costo Estimado</span>
+                        <span class="font-extrabold text-slate-200" x-text="'$' + (qty * currentPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                    </div>
+
+                    <!-- Action buttons -->
+                    <div class="grid grid-cols-2 gap-3 pt-2">
+                        <button type="submit" name="side" value="buy" class="py-2.5 rounded-xl text-xs font-extrabold bg-green-600 hover:bg-green-500 text-white shadow-lg shadow-green-600/10 transition cursor-pointer text-center">
+                            COMPRAR
+                        </button>
+                        <button type="submit" name="side" value="sell" class="py-2.5 rounded-xl text-xs font-extrabold bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/10 transition cursor-pointer text-center">
+                            VENDER
+                        </button>
+                    </div>
+                </form>
+            </div>
+            @endauth
+
+            <!-- Key stats sidebar -->
+            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-6">
             <h2 class="text-base font-extrabold text-white flex items-center gap-2 border-b border-slate-900 pb-3">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
@@ -171,6 +242,7 @@
             <div class="border-t border-slate-900 pt-4 text-xs text-slate-500 leading-relaxed">
                 Datos actualizados para {{ $assetData['longName'] }}. Los máximos y mínimos reflejan la banda de negociación intradía y anual de la bolsa de valores origen.
             </div>
+        </div>
         </div>
 
     </div>

@@ -126,6 +126,12 @@
             <!-- Auth Actions -->
             <div class="flex items-center gap-3 shrink-0">
                 @auth
+                    <a href="{{ route('portfolio') }}" class="text-xs font-bold text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-900/40 transition duration-150 flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
+                        </svg>
+                        Mi Portafolio
+                    </a>
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition duration-200">
                             <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white uppercase">

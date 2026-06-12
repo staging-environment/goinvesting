@@ -129,6 +129,39 @@
         <!-- Right Column: Watchlist & News -->
         <div class="space-y-8">
             
+            @if(Auth::check() && !empty($alpacaAccount))
+            <!-- Portfolio Summary Card -->
+            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4 bg-gradient-to-tr from-slate-900 to-indigo-950/30">
+                <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
+                    </svg>
+                    Resumen de Cartera
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">Patrimonio Neto</span>
+                        <span class="text-lg font-extrabold text-white">${{ number_format($alpacaAccount['portfolio_value'] ?? 0, 2) }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-slate-500 font-bold uppercase">Poder de Compra</span>
+                        <span class="text-lg font-extrabold text-indigo-400">${{ number_format($alpacaAccount['buying_power'] ?? 0, 2) }}</span>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800/80 pt-3 flex justify-between items-center text-xs">
+                    <span class="text-slate-500 font-semibold">{{ str_contains($alpacaAccount['currency'] ?? 'USD', 'USD') && config('services.alpaca.is_paper') ? 'Cuenta Simulación (Paper)' : 'Cuenta Real' }}</span>
+                    <a href="{{ route('portfolio') }}" class="font-bold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-0.5">
+                        Ver todo
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3 h-3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <!-- Watchlist Panel -->
             <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">

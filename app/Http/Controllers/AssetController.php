@@ -41,12 +41,18 @@ class AssetController extends Controller
             'watchlist' => []
         ];
 
-        // If authenticated, load user watchlist quotes
+        // If authenticated, load user watchlist quotes and Alpaca summary
+        $data['alpacaAccount'] = null;
         if (Auth::check()) {
             $watchlistSymbols = Auth::user()->watchlists()->pluck('symbol')->toArray();
             if (!empty($watchlistSymbols)) {
                 $watchlistQuotes = $this->yahooService->getSparkQuotes($watchlistSymbols);
                 $data['watchlist'] = $this->filterQuotes($watchlistSymbols, $watchlistQuotes);
+            }
+
+            $alpacaService = app(\App\Services\AlpacaService::class);
+            if ($alpacaService->isConfigured()) {
+                $data['alpacaAccount'] = $alpacaService->getAccountInfo();
             }
         }
 

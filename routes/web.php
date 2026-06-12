@@ -12,9 +12,15 @@ Route::get('/api/asset/{symbol}/chart', [AssetController::class, 'getChart'])->n
 Route::get('/api/search', [AssetController::class, 'search'])->name('assets.search');
 Route::get('/api/quotes', [AssetController::class, 'getQuotes'])->name('assets.quotes');
 
+use App\Http\Controllers\TradingController;
+
 Route::middleware('auth')->group(function () {
     Route::post('/watchlist', [WatchlistController::class, 'store'])->name('watchlist.store');
     Route::delete('/watchlist/{symbol}', [WatchlistController::class, 'destroy'])->name('watchlist.destroy');
+    
+    // Trading Routes
+    Route::get('/portfolio', [TradingController::class, 'portfolio'])->name('portfolio');
+    Route::post('/api/trade', [TradingController::class, 'executeOrder'])->name('trade.execute');
 });
 
 Route::get('/dashboard', function () {

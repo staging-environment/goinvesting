@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        view()->composer('*', function ($view) {
+            $tickerSymbols = ['^GSPC', '^DJI', '^IXIC', 'GC=F', 'CL=F', 'BTC-USD', 'EURUSD=X'];
+            $yahooService = app(\App\Services\YahooFinanceService::class);
+            $tickerQuotes = $yahooService->getSparkQuotes($tickerSymbols);
+            $view->with('tickerQuotes', $tickerQuotes);
+        });
     }
 }

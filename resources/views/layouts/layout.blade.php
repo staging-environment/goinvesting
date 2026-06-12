@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>@yield('title', 'GoInvesting | Plataforma Financiera en Tiempo Real')</title>
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="@yield('meta_description', 'Sigue los mercados financieros globales con cotizaciones en tiempo real, gráficos interactivos de acciones, divisas, criptomonedas y materias primas.')">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind / Scripts -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- TradingView Lightweight Charts CDN -->
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+    <!-- Custom Premium Styles -->
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
+            background-color: #070913;
+            color: #f8fafc;
+            overflow-x: hidden;
+        }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .glass-panel-hover:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+            background: rgba(15, 23, 42, 0.6);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .text-glow-green {
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.2);
+        }
+
+        .text-glow-red {
+            text-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070913;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Live Ticker -->
+    @if(!empty($tickerQuotes))
+    <div class="w-full bg-[#030712] border-b border-slate-900 py-2.5 overflow-hidden text-xs">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6">
+            <div class="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
+                @foreach($tickerQuotes as $symbol => $quote)
+                    @php
+                        $isPositive = ($quote['changePercent'] ?? 0) >= 0;
+                        $colorClass = $isPositive ? 'text-green-400' : 'text-red-400';
+                        $symbolClean = str_replace(['=X', '^'], '', $symbol);
+                    @endphp
+                    <a href="{{ route('assets.show', $symbol) }}" class="inline-flex items-center gap-2 hover:opacity-80 transition duration-150 border-r border-slate-800 pr-6 last:border-none">
+                        <span class="font-bold text-slate-300">{{ $symbolClean }}</span>
+                        <span class="font-medium text-slate-100">${{ number_format($quote['price'] ?? 0, 2) }}</span>
+                        <span class="flex items-center gap-0.5 font-semibold {{ $colorClass }}">
+                            <span>{{ $isPositive ? '▲' : '▼' }}</span>
+                            <span>{{ number_format(abs($quote['changePercent'] ?? 0), 2) }}%</span>
+                        </span>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    @endif
+
+    <!-- Main Navigation Header -->
+    <header class="sticky top-0 z-40 w-full bg-[#070913]/85 backdrop-blur-md border-b border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-4">
+            
+            <!-- Logo -->
+            <a href="{{ route('home') }}" class="flex items-center gap-2.5 select-none shrink-0 group">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-550/20 group-hover:scale-105 transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
+                    </svg>
+                </div>
+                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">Go<span class="text-indigo-400 font-bold">Investing</span></span>
+            </a>
+
+            <!-- Autocomplete Search Bar -->
+            <div class="relative flex-1 max-w-md mx-4 hidden md:block">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                        </svg>
+                    </span>
+                    <input type="text" id="global-search" placeholder="Buscar acciones, índices, criptomonedas..." class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/55 transition duration-200" autocomplete="off">
+                </div>
+                <!-- Search Floating Dropdown -->
+                <div id="search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl hidden max-h-80 overflow-y-auto z-50"></div>
+            </div>
+
+            <!-- Auth Actions -->
+            <div class="flex items-center gap-3 shrink-0">
+                @auth
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition duration-200">
+                            <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white uppercase">
+                                {{ substr(Auth::user()->name, 0, 1) }}
+                            </div>
+                            <span class="text-sm font-semibold text-slate-200 hidden sm:inline">{{ Auth::user()->name }}</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                            </svg>
+                        </button>
+                        <!-- Dropdown -->
+                        <div x-show="open" class="absolute right-0 mt-2 w-48 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl py-1 z-50" x-transition>
+                            <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-900/60 hover:text-white transition">Mi Perfil</a>
+                            <hr class="border-slate-800 my-1">
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left block px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition">Cerrar Sesión</button>
+                            </form>
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ route('login') }}" class="text-sm font-bold text-slate-300 hover:text-white px-3 py-1.5 transition">Iniciar Sesión</a>
+                    <a href="{{ route('register') }}" class="text-sm font-bold bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-xl shadow-lg shadow-indigo-600/15 transition duration-200">Registrarse</a>
+                @endauth
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Search Bar -->
+    <div class="w-full bg-[#070913] border-b border-slate-900 py-3 px-4 md:hidden">
+        <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                </svg>
+            </span>
+            <input type="text" id="mobile-search" placeholder="Buscar activos..." class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 pl-9 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition duration-200" autocomplete="off">
+            <div id="mobile-search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl hidden max-h-60 overflow-y-auto z-50"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-6 py-6 lg:py-8">
+        @yield('content')
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-[#030712] border-t border-slate-900 py-8 text-center text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <span class="font-extrabold text-sm text-slate-400">GoInvesting</span>
+                <span>&copy; {{ date('Y') }} Todos los derechos reservados.</span>
+            </div>
+            <div class="flex items-center gap-4 text-slate-400">
+                <span class="text-slate-600">Datos proporcionados por la API gratuita de Yahoo Finance.</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Search Autocomplete Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setupSearch('global-search', 'search-results');
+            setupSearch('mobile-search', 'mobile-search-results');
+        });
+
+        function setupSearch(inputId, resultsId) {
+            const input = document.getElementById(inputId);
+            const results = document.getElementById(resultsId);
+            let debounceTimer;
+
+            if (!input || !results) return;
+
+            input.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                const query = input.value.trim();
+
+                if (query.length < 2) {
+                    results.innerHTML = '';
+                    results.classList.add('hidden');
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            results.innerHTML = '';
+                            if (data.length === 0) {
+                                results.innerHTML = '<div class="p-3 text-sm text-slate-500 text-center">No se encontraron resultados</div>';
+                                results.classList.remove('hidden');
+                                return;
+                            }
+
+                            data.forEach(item => {
+                                const div = document.createElement('a');
+                                div.href = `/asset/${item.symbol}`;
+                                div.className = 'flex items-center justify-between p-3 hover:bg-slate-800/50 transition border-b border-slate-800/40 last:border-none cursor-pointer';
+                                
+                                const typeBadge = `<span class="text-[10px] px-2 py-0.5 rounded-md bg-slate-900 text-slate-400 border border-slate-800 uppercase font-semibold">${item.quoteType || 'Equity'}</span>`;
+                                
+                                div.innerHTML = `
+                                    <div class="flex flex-col">
+                                        <span class="text-sm font-bold text-slate-200">${item.symbol}</span>
+                                        <span class="text-xs text-slate-400">${item.shortname || item.longname || ''}</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs text-slate-500 font-semibold">${item.exchange}</span>
+                                        ${typeBadge}
+                                    </div>
+                                `;
+                                results.appendChild(div);
+                            });
+
+                            results.classList.remove('hidden');
+                        })
+                        .catch(err => console.error(err));
+                }, 300);
+            });
+
+            // Close results on click outside
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !results.contains(e.target)) {
+                    results.classList.add('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

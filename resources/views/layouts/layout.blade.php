@@ -81,12 +81,12 @@
                         $colorClass = $isPositive ? 'text-green-400' : 'text-red-400';
                         $symbolClean = str_replace(['=X', '^'], '', $symbol);
                     @endphp
-                    <a href="{{ route('assets.show', $symbol) }}" class="inline-flex items-center gap-2 hover:opacity-80 transition duration-150 border-r border-slate-800 pr-6 last:border-none">
+                    <a href="{{ route('assets.show', $symbol) }}" data-symbol-ticker="{{ $symbol }}" class="inline-flex items-center gap-2 hover:opacity-80 transition duration-150 border-r border-slate-800 pr-6 last:border-none">
                         <span class="font-bold text-slate-300">{{ $symbolClean }}</span>
-                        <span class="font-medium text-slate-100">${{ number_format($quote['price'] ?? 0, 2) }}</span>
-                        <span class="flex items-center gap-0.5 font-semibold {{ $colorClass }}">
-                            <span>{{ $isPositive ? '▲' : '▼' }}</span>
-                            <span>{{ number_format(abs($quote['changePercent'] ?? 0), 2) }}%</span>
+                        <span class="font-medium text-slate-100" data-field="price">${{ number_format($quote['price'] ?? 0, 2) }}</span>
+                        <span class="flex items-center gap-0.5 font-semibold {{ $colorClass }}" data-field="change-badge">
+                            <span data-field="direction">{{ $isPositive ? '▲' : '▼' }}</span>
+                            <span data-field="changePercent">{{ number_format(abs($quote['changePercent'] ?? 0), 2) }}%</span>
                         </span>
                     </a>
                 @endforeach

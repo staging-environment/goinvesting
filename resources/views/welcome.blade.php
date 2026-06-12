@@ -76,22 +76,22 @@
                                             $sparkColor = $isPositive ? '#4ade80' : '#f87171';
                                             $symbolClean = str_replace(['=X', '^'], '', $quote['symbol']);
                                         @endphp
-                                        <tr class="hover:bg-slate-950/40 transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $quote['symbol']) }}'">
+                                        <tr data-symbol-row="{{ $quote['symbol'] }}" class="hover:bg-slate-950/40 transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $quote['symbol']) }}'">
                                             <td class="py-4.5 px-5">
                                                 <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $symbolClean }}</span>
                                             </td>
                                             <td class="py-4.5 px-5">
                                                 <span class="text-xs text-slate-400 truncate block max-w-[150px]">{{ $quote['shortName'] }}</span>
                                             </td>
-                                            <td class="py-4.5 px-5 text-right font-bold text-slate-100 text-sm">
+                                            <td class="py-4.5 px-5 text-right font-bold text-slate-100 text-sm" data-field="price">
                                                 ${{ number_format($quote['price'] ?? 0, 2) }}
                                             </td>
-                                            <td class="py-4.5 px-5 text-right font-semibold {{ $colorClass }} text-sm">
+                                            <td class="py-4.5 px-5 text-right font-semibold {{ $colorClass }} text-sm" data-field="change">
                                                 {{ $isPositive ? '+' : '' }}{{ number_format($quote['change'] ?? 0, 2) }}
                                             </td>
                                             <td class="py-4.5 px-5 text-right">
-                                                <span class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold {{ $colorClass }} {{ $bgColorClass }}">
-                                                    {{ $isPositive ? '+' : '' }}{{ number_format($quote['changePercent'] ?? 0, 2) }}%
+                                                <span data-field="changePercent-badge" class="inline-block px-2.5 py-1 rounded-lg text-xs font-bold {{ $colorClass }} {{ $bgColorClass }}">
+                                                    <span data-field="changePercent">{{ $isPositive ? '+' : '' }}{{ number_format($quote['changePercent'] ?? 0, 2) }}%</span>
                                                 </span>
                                             </td>
                                             <td class="py-3 px-5 text-center">
@@ -154,14 +154,17 @@
                                     $colorClass = $isPositive ? 'text-green-400' : 'text-red-400';
                                     $symbolClean = str_replace(['=X', '^'], '', $quote['symbol']);
                                 @endphp
-                                <div class="flex items-center justify-between py-3 hover:bg-slate-900/30 px-2 rounded-xl transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $quote['symbol']) }}'">
+                                <div data-symbol-watchlist="{{ $quote['symbol'] }}" class="flex items-center justify-between py-3 hover:bg-slate-900/30 px-2 rounded-xl transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $quote['symbol']) }}'">
                                     <div class="flex flex-col">
                                         <span class="font-extrabold text-sm text-slate-200 group-hover:text-indigo-400 transition">{{ $symbolClean }}</span>
                                         <span class="text-[10px] text-slate-500 truncate max-w-[120px]">{{ $quote['shortName'] }}</span>
                                     </div>
                                     <div class="text-right flex flex-col">
-                                        <span class="text-sm font-bold text-slate-100">${{ number_format($quote['price'] ?? 0, 2) }}</span>
-                                        <span class="text-xs font-semibold {{ $colorClass }}">{{ $isPositive ? '▲' : '▼' }} {{ number_format($quote['changePercent'] ?? 0, 2) }}%</span>
+                                        <span class="text-sm font-bold text-slate-100" data-field="price">${{ number_format($quote['price'] ?? 0, 2) }}</span>
+                                        <span class="text-xs font-semibold {{ $colorClass }}" data-field="changePercent-badge">
+                                            <span data-field="direction">{{ $isPositive ? '▲' : '▼' }}</span>
+                                            <span data-field="changePercent">{{ number_format($quote['changePercent'] ?? 0, 2) }}%</span>
+                                        </span>
                                     </div>
                                 </div>
                             @endforeach
@@ -227,4 +230,165 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Run refresh every 10 seconds
+        setInterval(refreshMarketData, 10000);
+    });
+
+    function refreshMarketData() {
+        fetch('/api/quotes')
+            .then(res => res.json())
+            .then(data => {
+                // Flatten all quotes into a single map
+                const allQuotes = {};
+                
+                Object.keys(data).forEach(category => {
+                    if (Array.isArray(data[category])) {
+                        data[category].forEach(quote => {
+                            allQuotes[quote.symbol] = quote;
+                        });
+                    }
+                });
+
+                // Update DOM elements
+                updateTickers(allQuotes);
+                updateTableRows(allQuotes);
+                updateWatchlists(allQuotes);
+            })
+            .catch(err => console.error("Error refreshing market data:", err));
+    }
+
+    function updateTickers(quotes) {
+        document.querySelectorAll('[data-symbol-ticker]').forEach(ticker => {
+            const symbol = ticker.getAttribute('data-symbol-ticker');
+            const quote = quotes[symbol];
+            if (!quote) return;
+
+            const priceEl = ticker.querySelector('[data-field="price"]');
+            const badgeEl = ticker.querySelector('[data-field="change-badge"]');
+            const dirEl = ticker.querySelector('[data-field="direction"]');
+            const pctEl = ticker.querySelector('[data-field="changePercent"]');
+
+            if (priceEl && quote.price !== null) {
+                const oldPrice = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ''));
+                const newPrice = parseFloat(quote.price);
+                priceEl.textContent = `$${newPrice.toFixed(2)}`;
+                
+                // Price flash animation
+                if (newPrice > oldPrice) {
+                    flashElement(priceEl, 'text-green-400');
+                } else if (newPrice < oldPrice) {
+                    flashElement(priceEl, 'text-red-400');
+                }
+            }
+
+            if (badgeEl && quote.changePercent !== null) {
+                const isPositive = quote.changePercent >= 0;
+                
+                // Update direction symbol
+                if (dirEl) dirEl.textContent = isPositive ? '▲' : '▼';
+                
+                // Update percentage change
+                if (pctEl) pctEl.textContent = `${Math.abs(quote.changePercent).toFixed(2)}%`;
+
+                // Update text color classes
+                badgeEl.className = `flex items-center gap-0.5 font-semibold ${isPositive ? 'text-green-400' : 'text-red-400'}`;
+            }
+        });
+    }
+
+    function updateTableRows(quotes) {
+        document.querySelectorAll('[data-symbol-row]').forEach(row => {
+            const symbol = row.getAttribute('data-symbol-row');
+            const quote = quotes[symbol];
+            if (!quote) return;
+
+            const priceEl = row.querySelector('[data-field="price"]');
+            const changeEl = row.querySelector('[data-field="change"]');
+            const badgeEl = row.querySelector('[data-field="changePercent-badge"]');
+            const pctEl = row.querySelector('[data-field="changePercent"]');
+
+            if (priceEl && quote.price !== null) {
+                const oldPrice = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ''));
+                const newPrice = parseFloat(quote.price);
+                priceEl.textContent = `$${newPrice.toFixed(2)}`;
+
+                // Price flash animation on whole row and cell
+                if (newPrice > oldPrice) {
+                    flashElement(priceEl, 'text-green-400');
+                    flashRow(row, 'bg-green-500/10');
+                } else if (newPrice < oldPrice) {
+                    flashElement(priceEl, 'text-red-400');
+                    flashRow(row, 'bg-red-500/10');
+                }
+            }
+
+            const isPositive = (quote.changePercent ?? 0) >= 0;
+            const sign = isPositive ? '+' : '';
+
+            if (changeEl && quote.change !== null) {
+                changeEl.textContent = `${sign}${quote.change.toFixed(2)}`;
+                changeEl.className = `py-4.5 px-5 text-right font-semibold text-sm ${isPositive ? 'text-green-400' : 'text-red-400'}`;
+            }
+
+            if (badgeEl && pctEl && quote.changePercent !== null) {
+                pctEl.textContent = `${sign}${quote.changePercent.toFixed(2)}%`;
+                badgeEl.className = `inline-block px-2.5 py-1 rounded-lg text-xs font-bold ${isPositive ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'}`;
+            }
+        });
+    }
+
+    function updateWatchlists(quotes) {
+        document.querySelectorAll('[data-symbol-watchlist]').forEach(item => {
+            const symbol = item.getAttribute('data-symbol-watchlist');
+            const quote = quotes[symbol];
+            if (!quote) return;
+
+            const priceEl = item.querySelector('[data-field="price"]');
+            const badgeEl = item.querySelector('[data-field="changePercent-badge"]');
+            const dirEl = item.querySelector('[data-field="direction"]');
+            const pctEl = item.querySelector('[data-field="changePercent"]');
+
+            if (priceEl && quote.price !== null) {
+                const oldPrice = parseFloat(priceEl.textContent.replace(/[^\d.-]/g, ''));
+                const newPrice = parseFloat(quote.price);
+                priceEl.textContent = `$${newPrice.toFixed(2)}`;
+
+                if (newPrice > oldPrice) {
+                    flashElement(priceEl, 'text-green-400');
+                    flashRow(item, 'bg-green-500/10');
+                } else if (newPrice < oldPrice) {
+                    flashElement(priceEl, 'text-red-400');
+                    flashRow(item, 'bg-red-500/10');
+                }
+            }
+
+            if (badgeEl && quote.changePercent !== null) {
+                const isPositive = quote.changePercent >= 0;
+                
+                if (dirEl) dirEl.textContent = isPositive ? '▲' : '▼';
+                if (pctEl) pctEl.textContent = `${Math.abs(quote.changePercent).toFixed(2)}%`;
+
+                badgeEl.className = `text-xs font-semibold ${isPositive ? 'text-green-400' : 'text-red-400'}`;
+            }
+        });
+    }
+
+    function flashElement(el, flashClass) {
+        const originalClass = el.className;
+        el.classList.add(flashClass);
+        setTimeout(() => {
+            el.className = originalClass;
+        }, 1000);
+    }
+
+    function flashRow(row, flashClass) {
+        row.classList.add(flashClass);
+        setTimeout(() => {
+            row.classList.remove(flashClass);
+        }, 1000);
+    }
+</script>
 @endsection

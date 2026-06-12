@@ -10,6 +10,7 @@ Route::get('/', [AssetController::class, 'index'])->name('home');
 Route::get('/asset/{symbol}', [AssetController::class, 'show'])->name('assets.show');
 Route::get('/api/asset/{symbol}/chart', [AssetController::class, 'getChart'])->name('assets.chart');
 Route::get('/api/search', [AssetController::class, 'search'])->name('assets.search');
+Route::get('/api/quotes', [AssetController::class, 'getQuotes'])->name('assets.quotes');
 
 Route::middleware('auth')->group(function () {
     Route::post('/watchlist', [WatchlistController::class, 'store'])->name('watchlist.store');

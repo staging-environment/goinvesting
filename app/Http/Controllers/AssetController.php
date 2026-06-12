@@ -128,6 +128,40 @@ class AssetController extends Controller
     }
 
     /**
+     * JSON endpoint to fetch quotes for all categories and watchlist.
+     */
+    public function getQuotes()
+    {
+        $indices = ['^GSPC', '^DJI', '^IXIC', '^FTSE', '^GDAXI', '^N225', '^IBEX'];
+        $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META'];
+        $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X'];
+        $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD'];
+        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F'];
+
+        $allDefaultSymbols = array_merge($indices, $stocks, $forex, $crypto, $commodities);
+        $sparkQuotes = $this->yahooService->getSparkQuotes($allDefaultSymbols);
+
+        $data = [
+            'indices' => $this->filterQuotes($indices, $sparkQuotes),
+            'stocks' => $this->filterQuotes($stocks, $sparkQuotes),
+            'forex' => $this->filterQuotes($forex, $sparkQuotes),
+            'crypto' => $this->filterQuotes($crypto, $sparkQuotes),
+            'commodities' => $this->filterQuotes($commodities, $sparkQuotes),
+            'watchlist' => []
+        ];
+
+        if (Auth::check()) {
+            $watchlistSymbols = Auth::user()->watchlists()->pluck('symbol')->toArray();
+            if (!empty($watchlistSymbols)) {
+                $watchlistQuotes = $this->yahooService->getSparkQuotes($watchlistSymbols);
+                $data['watchlist'] = $this->filterQuotes($watchlistSymbols, $watchlistQuotes);
+            }
+        }
+
+        return response()->json($data);
+    }
+
+    /**
      * Helper to order/filter quotes according to input list.
      */
     private function filterQuotes(array $symbols, array $quotes): array

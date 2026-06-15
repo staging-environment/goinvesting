@@ -91,4 +91,28 @@ class TradingController extends Controller
             return redirect()->back()->withErrors(['error' => $result['message']]);
         }
     }
+
+    /**
+     * Executes the Trading Bot manually from the UI.
+     */
+    public function runBot(Request $request)
+    {
+        $dryRun = $request->has('dry_run');
+        
+        $output = '';
+        try {
+            // Run Artisan command programmatically
+            \Illuminate\Support\Facades\Artisan::call('app:trading-bot', [
+                '--dry-run' => $dryRun
+            ]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+        } catch (\Exception $e) {
+            $output = "Excepción al ejecutar el bot: " . $e->getMessage();
+        }
+
+        return redirect()->back()->with([
+            'success' => 'Ejecución del Bot completada.',
+            'bot_output' => $output
+        ]);
+    }
 }

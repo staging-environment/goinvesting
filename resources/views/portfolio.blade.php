@@ -85,6 +85,46 @@
             </div>
         </div>
 
+        <!-- Automated Trading Bot Panel -->
+        <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-6 bg-gradient-to-br from-indigo-950/20 via-slate-900 to-slate-900/50 border border-indigo-500/10">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                        <span class="relative flex h-3 w-3">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        </span>
+                        Bot de Trading Automático
+                    </h2>
+                    <p class="text-xs text-slate-400">
+                        Estrategia: <strong class="text-indigo-400 font-bold">Momentum / Caída Diaria</strong> (Compra caída diaria &le; -1.5%, TP: +2.0%, SL: -3.0%). Límite inversión: <strong class="text-slate-300 font-bold">$5,400 (5,000 &euro;)</strong>.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
+                        @csrf
+                        <input type="hidden" name="dry_run" value="1">
+                        <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition">
+                            Simular Ejecución (Dry Run)
+                        </button>
+                    </form>
+                    <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition">
+                            Ejecutar Bot Ahora
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            @if(session('bot_output'))
+                <div class="space-y-2">
+                    <span class="text-xs font-bold text-slate-400 block">Resultado de la última ejecución:</span>
+                    <pre class="bg-black/60 border border-slate-900 rounded-xl p-4 text-[11px] font-mono text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">{{ session('bot_output') }}</pre>
+                </div>
+            @endif
+        </div>
+
         <!-- Open Positions Table -->
         <div class="space-y-4">
             <h2 class="text-lg font-extrabold text-white flex items-center gap-2">

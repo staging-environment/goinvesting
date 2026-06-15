@@ -7,19 +7,27 @@ use Illuminate\Support\Facades\Log;
 
 class AlpacaService
 {
-    protected string $keyId;
-    protected string $secretKey;
-    protected string $baseUrl;
+    protected ?string $accountId;
+    protected bool $isBroker = false;
 
     public function __construct()
     {
         $this->keyId = config('services.alpaca.key_id') ?? '';
         $this->secretKey = config('services.alpaca.secret_key') ?? '';
+        $this->accountId = config('services.alpaca.account_id');
         
         $isPaper = config('services.alpaca.is_paper', true);
-        $this->baseUrl = $isPaper 
-            ? 'https://paper-api.alpaca.markets' 
-            : 'https://api.alpaca.markets';
+        
+        if ($this->accountId) {
+            $this->isBroker = true;
+            $this->baseUrl = $isPaper 
+                ? "https://broker-api.sandbox.alpaca.markets/v1/trading/accounts/{$this->accountId}" 
+                : "https://broker-api.alpaca.markets/v1/trading/accounts/{$this->accountId}";
+        } else {
+            $this->baseUrl = $isPaper 
+                ? 'https://paper-api.alpaca.markets' 
+                : 'https://api.alpaca.markets';
+        }
     }
 
     /**
@@ -50,10 +58,11 @@ class AlpacaService
     {
         if (!$this->isConfigured()) return null;
 
+        $endpoint = $this->isBroker ? "/account" : "/v2/account";
         try {
             $response = Http::withHeaders($this->getHeaders())
                 ->timeout(10)
-                ->get("{$this->baseUrl}/v2/account");
+                ->get("{$this->baseUrl}{$endpoint}");
 
             if ($response->successful()) {
                 return $response->json();
@@ -73,10 +82,11 @@ class AlpacaService
     {
         if (!$this->isConfigured()) return [];
 
+        $endpoint = $this->isBroker ? "/positions" : "/v2/positions";
         try {
             $response = Http::withHeaders($this->getHeaders())
                 ->timeout(10)
-                ->get("{$this->baseUrl}/v2/positions");
+                ->get("{$this->baseUrl}{$endpoint}");
 
             if ($response->successful()) {
                 return $response->json();
@@ -97,10 +107,11 @@ class AlpacaService
         if (!$this->isConfigured()) return null;
 
         $symbol = strtoupper($symbol);
+        $endpoint = $this->isBroker ? "/positions/{$symbol}" : "/v2/positions/{$symbol}";
         try {
             $response = Http::withHeaders($this->getHeaders())
                 ->timeout(10)
-                ->get("{$this->baseUrl}/v2/positions/{$symbol}");
+                ->get("{$this->baseUrl}{$endpoint}");
 
             if ($response->successful()) {
                 return $response->json();
@@ -124,22 +135,25 @@ class AlpacaService
         $side = strtolower($side);
         $type = strtolower($type);
 
+        $isCrypto = str_contains($symbol, 'BTC') || str_contains($symbol, 'ETH') || str_contains($symbol, '/');
+
         $body = [
             'symbol' => $symbol,
             'qty' => (string)$qty,
             'side' => $side,
             'type' => $type,
-            'time_in_force' => 'day'
+            'time_in_force' => $isCrypto ? 'gtc' : 'day'
         ];
 
         if ($type === 'limit' && $limitPrice) {
             $body['limit_price'] = (string)$limitPrice;
         }
 
+        $endpoint = $this->isBroker ? "/orders" : "/v2/orders";
         try {
             $response = Http::withHeaders($this->getHeaders())
                 ->timeout(10)
-                ->post("{$this->baseUrl}/v2/orders", $body);
+                ->post("{$this->baseUrl}{$endpoint}", $body);
 
             if ($response->successful()) {
                 return [

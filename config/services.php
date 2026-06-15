@@ -39,6 +39,7 @@ return [
         'key_id' => env('ALPACA_KEY_ID'),
         'secret_key' => env('ALPACA_SECRET_KEY'),
         'is_paper' => env('ALPACA_IS_PAPER', true),
+        'account_id' => env('ALPACA_ACCOUNT_ID'),
     ],
 
 ];

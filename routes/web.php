@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     // Trading Routes
     Route::get('/portfolio', [TradingController::class, 'portfolio'])->name('portfolio');
     Route::post('/api/trade', [TradingController::class, 'executeOrder'])->name('trade.execute');
+    Route::post('/portfolio/run-bot', [TradingController::class, 'runBot'])->name('portfolio.run-bot');
 });
 
 Route::get('/dashboard', function () {

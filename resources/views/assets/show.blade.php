@@ -255,14 +255,13 @@
             range: '1d',
             chartType: 'area', // or candlestick
             loading: true,
-            chart: null,
-            mainSeries: null,
 
             init() {
                 // Initialize TradingView Chart on mount
                 const chartElement = document.getElementById('chart-container');
+                if (!chartElement) return;
                 
-                this.chart = LightweightCharts.createChart(chartElement, {
+                const chart = LightweightCharts.createChart(chartElement, {
                     layout: {
                         background: { color: 'transparent' },
                         textColor: '#94a3b8',
@@ -281,12 +280,15 @@
                     handleScroll: true,
                     handleScale: true,
                 });
+                
+                // Store on DOM element to completely bypass Alpine reactivity proxies
+                chartElement.__chart = chart;
 
                 // Handle window resizing
                 const resizeObserver = new ResizeObserver(entries => {
                     if (entries.length === 0 || !entries[0].contentRect) return;
                     const { width, height } = entries[0].contentRect;
-                    this.chart.resize(width, height);
+                    chart.resize(width, height);
                 });
                 resizeObserver.observe(chartElement);
 
@@ -307,15 +309,20 @@
             loadData() {
                 this.loading = true;
                 
+                const chartElement = document.getElementById('chart-container');
+                const chart = chartElement?.__chart;
+                if (!chart) return;
+
                 // Remove existing series
-                if (this.mainSeries) {
-                    this.chart.removeSeries(this.mainSeries);
-                    this.mainSeries = null;
+                if (chartElement.__series) {
+                    chart.removeSeries(chartElement.__series);
+                    chartElement.__series = null;
                 }
 
                 // Add correct series type
+                let series;
                 if (this.chartType === 'area') {
-                    this.mainSeries = this.chart.addAreaSeries({
+                    series = chart.addAreaSeries({
                         lineColor: '#6366f1',
                         topColor: 'rgba(99, 102, 241, 0.45)',
                         bottomColor: 'rgba(99, 102, 241, 0.02)',
@@ -323,7 +330,7 @@
                         priceFormat: { type: 'price', precision: 2, minMove: 0.01 }
                     });
                 } else {
-                    this.mainSeries = this.chart.addCandlestickSeries({
+                    series = chart.addCandlestickSeries({
                         upColor: '#22c55e',
                         downColor: '#ef4444',
                         borderDownColor: '#ef4444',
@@ -333,6 +340,7 @@
                         priceFormat: { type: 'price', precision: 2, minMove: 0.01 }
                     });
                 }
+                chartElement.__series = series;
 
                 fetch(`/api/asset/${this.symbol}/chart?range=${this.range}`)
                     .then(res => res.json())
@@ -355,8 +363,8 @@
                         // Sort chronologically
                         formattedData.sort((a, b) => a.time - b.time);
 
-                        this.mainSeries.setData(formattedData);
-                        this.chart.timeScale().fitContent();
+                        series.setData(formattedData);
+                        chart.timeScale().fitContent();
                     })
                     .catch(err => {
                         console.error(err);

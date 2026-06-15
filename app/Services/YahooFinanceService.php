@@ -121,6 +121,10 @@ class YahooFinanceService
                 $lgoData = $this->fetchGasoilFromInvesting();
                 if ($lgoData) {
                     $results['LGO=F'] = $lgoData;
+                    // Copy Brent (BZ=F) sparkline as a proxy for Gasoil London ICE
+                    if (isset($results['BZ=F']['sparkline'])) {
+                        $results['LGO=F']['sparkline'] = $results['BZ=F']['sparkline'];
+                    }
                 } else {
                     // Fallback to Brent (BZ=F) if Investing.com is down
                     $brentSymbol = in_array('BZ=F', $symbols) ? 'BZ=F' : null;

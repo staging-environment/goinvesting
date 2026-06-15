@@ -42,4 +42,10 @@ return [
         'account_id' => env('ALPACA_ACCOUNT_ID'),
     ],
 
+    'lemon' => [
+        'key' => env('LEMON_API_KEY'),
+        'account_id' => env('LEMON_ACCOUNT_ID'),
+        'is_paper' => env('LEMON_IS_PAPER', true),
+    ],
+
 ];

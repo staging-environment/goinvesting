@@ -5,7 +5,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class AlpacaService
+class AlpacaService implements TradingProviderInterface
 {
     protected ?string $accountId;
     protected bool $isBroker = false;
@@ -54,7 +54,7 @@ class AlpacaService
     /**
      * Fetch account details.
      */
-    public function getAccountInfo()
+    public function getAccountInfo(): ?array
     {
         if (!$this->isConfigured()) return null;
 
@@ -65,7 +65,12 @@ class AlpacaService
                 ->get("{$this->baseUrl}{$endpoint}");
 
             if ($response->successful()) {
-                return $response->json();
+                $data = $response->json();
+                return [
+                    'cash' => (float)($data['cash'] ?? 0.0),
+                    'portfolio_value' => (float)($data['portfolio_value'] ?? 0.0),
+                    'account_number' => $data['account_number'] ?? '',
+                ];
             } else {
                 Log::error("Alpaca Account Error: " . $response->body());
             }
@@ -78,7 +83,7 @@ class AlpacaService
     /**
      * Fetch all open positions.
      */
-    public function getPositions()
+    public function getPositions(): array
     {
         if (!$this->isConfigured()) return [];
 
@@ -102,7 +107,7 @@ class AlpacaService
     /**
      * Fetch open position for a single asset.
      */
-    public function getPosition(string $symbol)
+    public function getPosition(string $symbol): ?array
     {
         if (!$this->isConfigured()) return null;
 
@@ -125,7 +130,7 @@ class AlpacaService
     /**
      * Place an order (buy/sell).
      */
-    public function placeOrder(string $symbol, float $qty, string $side, string $type = 'market', float $limitPrice = null)
+    public function placeOrder(string $symbol, float $qty, string $side, string $type = 'market', ?float $limitPrice = null): array
     {
         if (!$this->isConfigured()) {
             return ['success' => false, 'message' => 'Alpaca API not configured.'];

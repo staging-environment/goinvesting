@@ -2,35 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AlpacaService;
+use App\Services\TradingProviderInterface;
 use App\Services\YahooFinanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class TradingController extends Controller
 {
-    protected AlpacaService $alpacaService;
+    protected TradingProviderInterface $tradingService;
     protected YahooFinanceService $yahooService;
 
-    public function __construct(AlpacaService $alpacaService, YahooFinanceService $yahooService)
+    public function __construct(TradingProviderInterface $tradingService, YahooFinanceService $yahooService)
     {
-        $this->alpacaService = $alpacaService;
+        $this->tradingService = $tradingService;
         $this->yahooService = $yahooService;
     }
 
     /**
-     * Renders the user's Alpaca portfolio with open positions and balances.
+     * Renders the user's portfolio with open positions and balances.
      */
     public function portfolio()
     {
-        if (!$this->alpacaService->isConfigured()) {
+        if (!$this->tradingService->isConfigured()) {
             return view('portfolio', [
-                'error' => 'La API de Alpaca no está configurada. Por favor, añade tus credenciales en el archivo .env.'
+                'error' => 'El proveedor de trading actual no está configurado. Por favor, añade tus credenciales en el archivo .env.'
             ]);
         }
 
-        $account = $this->alpacaService->getAccountInfo();
-        $rawPositions = $this->alpacaService->getPositions();
+        $account = $this->tradingService->getAccountInfo();
+        $rawPositions = $this->tradingService->getPositions();
 
         $positions = [];
         if ($account && !empty($rawPositions)) {
@@ -44,18 +44,18 @@ class TradingController extends Controller
 
                 $positions[] = [
                     'symbol' => $symbol,
-                    'name' => $quote['shortName'] ?? $symbol,
+                    'name' => $pos['name'] ?? ($quote['shortName'] ?? $symbol),
                     'qty' => (float)$pos['qty'],
                     'avg_entry_price' => (float)$pos['avg_entry_price'],
-                    'current_price' => $quote ? (float)$quote['price'] : (float)$pos['current_price'],
+                    'current_price' => $quote ? (float)$quote['price'] : (float)($pos['current_price'] ?? $pos['avg_entry_price']),
                     'cost_basis' => (float)$pos['cost_basis'],
                     'market_value' => $quote ? ((float)$quote['price'] * (float)$pos['qty']) : (float)$pos['market_value'],
                     'unrealized_pl' => $quote 
                         ? (((float)$quote['price'] * (float)$pos['qty']) - (float)$pos['cost_basis']) 
-                        : (float)$pos['unrealized_pl'],
+                        : (float)($pos['unrealized_pl'] ?? 0.0),
                     'unrealized_plpc' => $quote 
                         ? ((((float)$quote['price'] * (float)$pos['qty']) - (float)$pos['cost_basis']) / (float)$pos['cost_basis']) * 100 
-                        : (float)$pos['unrealized_intraday_plpc'] * 100
+                        : (($pos['cost_basis'] > 0) ? (($pos['market_value'] - $pos['cost_basis']) / $pos['cost_basis']) * 100 : 0.0)
                 ];
             }
         }
@@ -64,7 +64,7 @@ class TradingController extends Controller
     }
 
     /**
-     * Executes a buy or sell order via Alpaca API.
+     * Executes a buy or sell order via active Trading API.
      */
     public function executeOrder(Request $request)
     {
@@ -82,7 +82,7 @@ class TradingController extends Controller
         $type = $request->input('type');
         $limitPrice = $request->has('limit_price') ? (float)$request->input('limit_price') : null;
 
-        $result = $this->alpacaService->placeOrder($symbol, $qty, $side, $type, $limitPrice);
+        $result = $this->tradingService->placeOrder($symbol, $qty, $side, $type, $limitPrice);
 
         if ($result['success']) {
             $msg = "Orden de " . ($side === 'buy' ? 'Compra' : 'Venta') . " enviada correctamente. ID de Orden: " . $result['order']['id'];

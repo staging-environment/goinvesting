@@ -11,7 +11,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->singleton(\App\Services\TradingProviderInterface::class, function ($app) {
+            $provider = env('TRADING_PROVIDER', 'alpaca');
+            if ($provider === 'lemon') {
+                return $app->make(\App\Services\LemonMarketsService::class);
+            }
+            return $app->make(\App\Services\AlpacaService::class);
+        });
     }
 
     /**

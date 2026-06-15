@@ -118,6 +118,8 @@ class LemonMarketsService implements TradingProviderInterface
                 return [
                     'cash' => $cash,
                     'portfolio_value' => $portfolioValue,
+                    'buying_power' => $cash,
+                    'initial_margin' => 0.0,
                     'account_number' => $result['account_id'] ?? $this->accountId,
                     'currency' => $result['currency'] ?? 'EUR',
                 ];

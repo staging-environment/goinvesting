@@ -65,12 +65,7 @@ class AlpacaService implements TradingProviderInterface
                 ->get("{$this->baseUrl}{$endpoint}");
 
             if ($response->successful()) {
-                $data = $response->json();
-                return [
-                    'cash' => (float)($data['cash'] ?? 0.0),
-                    'portfolio_value' => (float)($data['portfolio_value'] ?? 0.0),
-                    'account_number' => $data['account_number'] ?? '',
-                ];
+                return $response->json();
             } else {
                 Log::error("Alpaca Account Error: " . $response->body());
             }

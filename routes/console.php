@@ -8,5 +8,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 use Illuminate\Support\Facades\Schedule;
-Schedule::command('app:trading-bot')->everyFifteenMinutes();
+Schedule::command('app:trading-bot')->everyTenMinutes()->weekdays()->timezone('Europe/Madrid')->between('15:30', '22:00');
 

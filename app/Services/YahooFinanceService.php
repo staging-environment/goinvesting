@@ -49,6 +49,12 @@ class YahooFinanceService
         $cacheKey = "yahoo_spark_" . md5($symbolsStr);
 
         return Cache::remember($cacheKey, 15, function () use ($symbols) {
+            $hasLgo = in_array('LGO=F', $symbols);
+            if ($hasLgo) {
+                // Remove LGO=F from the symbols requested from Yahoo since Yahoo does not support it
+                $symbols = array_values(array_diff($symbols, ['LGO=F']));
+            }
+
             // Yahoo Spark API has a strict limit of 20 symbols per request.
             // We batch them in chunks of 15 to be safe.
             $chunks = array_chunk($symbols, 15);
@@ -106,12 +112,92 @@ class YahooFinanceService
                         }
                     }
                 }
-                return $results;
             } catch (\Exception $e) {
                 Log::error("Yahoo Finance Spark error: " . $e->getMessage());
             }
-            return [];
+
+            // If LGO=F was requested, fetch it from Investing.com or fallback to BZ=F
+            if ($hasLgo) {
+                $lgoData = $this->fetchGasoilFromInvesting();
+                if ($lgoData) {
+                    $results['LGO=F'] = $lgoData;
+                } else {
+                    // Fallback to Brent (BZ=F) if Investing.com is down
+                    $brentSymbol = in_array('BZ=F', $symbols) ? 'BZ=F' : null;
+                    if (!$brentSymbol) {
+                        // Fetch Brent quote real quick
+                        $brentQuotes = $this->getSparkQuotes(['BZ=F']);
+                        if (isset($brentQuotes['BZ=F'])) {
+                            $results['LGO=F'] = $brentQuotes['BZ=F'];
+                            $results['LGO=F']['symbol'] = 'LGO=F';
+                            $results['LGO=F']['shortName'] = 'Gasoil Londres (ICE) (Brent)';
+                        }
+                    } elseif (isset($results['BZ=F'])) {
+                        $results['LGO=F'] = $results['BZ=F'];
+                        $results['LGO=F']['symbol'] = 'LGO=F';
+                        $results['LGO=F']['shortName'] = 'Gasoil Londres (ICE) (Brent)';
+                    }
+                }
+            }
+
+            return $results;
         });
+    }
+
+    /**
+     * Fetch London Gas Oil from Investing.com scraper.
+     */
+    protected function fetchGasoilFromInvesting(): ?array
+    {
+        try {
+            $response = Http::timeout(8)
+                ->withHeaders([
+                    'User-Agent' => $this->userAgent,
+                    'Accept'     => 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                ])
+                ->get('https://www.investing.com/commodities/london-gas-oil');
+
+            if ($response->successful()) {
+                $html = $response->body();
+
+                $price = null;
+                $change = null;
+                $changePercent = null;
+
+                if (preg_match('/data-test="instrument-price-last">([^<]+)</', $html, $matches)) {
+                    $price = (float) str_replace(',', '', $matches[1]);
+                }
+
+                if (preg_match('/data-test="instrument-price-change">([^<]+)</', $html, $matches)) {
+                    $change = (float) str_replace(',', '', $matches[1]);
+                }
+
+                if (preg_match('/data-test="instrument-price-change-percent">\(([^%]+)%?\)</', $html, $matches)) {
+                    $changePercent = (float) $matches[1];
+                }
+
+                if ($price !== null && $change !== null && $changePercent !== null) {
+                    return [
+                        'symbol' => 'LGO=F',
+                        'price' => $price,
+                        'change' => $change,
+                        'changePercent' => $changePercent,
+                        'currency' => 'USD',
+                        'exchange' => 'ICE',
+                        'instrumentType' => 'FUTURE',
+                        'longName' => 'ICE Gas Oil Futures',
+                        'shortName' => 'Gasoil Londres (ICE)',
+                        'sparkline' => [],
+                        'dayHigh' => null,
+                        'dayLow' => null,
+                        'volume' => null,
+                    ];
+                }
+            }
+        } catch (\Throwable $e) {
+            Log::warning('YahooFinanceService: Failed to fetch Gasoil from Investing: ' . $e->getMessage());
+        }
+        return null;
     }
 
     /**
@@ -119,6 +205,17 @@ class YahooFinanceService
      */
     public function getChartData(string $symbol, string $range = '1d', string $interval = '5m')
     {
+        if ($symbol === 'LGO=F') {
+            // We fetch BZ=F (Brent) chart data and rename it to simulate LGO=F chart
+            $chartData = $this->getChartData('BZ=F', $range, $interval);
+            if ($chartData) {
+                $chartData['symbol'] = 'LGO=F';
+                $chartData['longName'] = 'ICE Gas Oil Futures';
+                $chartData['shortName'] = 'Gasoil Londres (ICE)';
+            }
+            return $chartData;
+        }
+
         $cacheKey = "yahoo_chart_{$symbol}_{$range}_{$interval}";
         $cacheTime = ($range === '1d') ? 15 : 300; // Cache 1d chart shorter than historical charts
 

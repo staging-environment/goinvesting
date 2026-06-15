@@ -25,7 +25,7 @@ class AssetController extends Controller
         $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META'];
         $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X'];
         $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD'];
-        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F'];
+        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F', 'LGO=F', 'RB=F'];
 
         // Gather all default symbols to fetch in one multi-spark call
         $allDefaultSymbols = array_merge($indices, $stocks, $forex, $crypto, $commodities);
@@ -142,7 +142,7 @@ class AssetController extends Controller
         $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META'];
         $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X'];
         $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD'];
-        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F'];
+        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F', 'LGO=F', 'RB=F'];
 
         $allDefaultSymbols = array_merge($indices, $stocks, $forex, $crypto, $commodities);
         $sparkQuotes = $this->yahooService->getSparkQuotes($allDefaultSymbols);

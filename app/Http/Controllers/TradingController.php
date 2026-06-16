@@ -196,6 +196,7 @@ class TradingController extends Controller
         $side = $request->input('side');
         $type = $request->input('type');
         $limitPrice = $request->has('limit_price') ? (float)$request->input('limit_price') : null;
+        $activeTab = $request->input('active_tab', $side === 'sell' ? 'positions' : 'overview');
 
         $user = auth()->user();
         
@@ -207,13 +208,13 @@ class TradingController extends Controller
             $estimatedCost = $qty * $currentPrice;
             
             if ($user->hasExceededDailyLimit($estimatedCost)) {
-                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite diario de gasto (\${$user->daily_spend_limit}, gastado hoy: \${$user->getDailySpent()})."]);
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite diario de gasto (\${$user->daily_spend_limit}, gastado hoy: \${$user->getDailySpent()})."])->with('active_tab', $activeTab);
             }
             if ($user->hasExceededWeeklyLimit($estimatedCost)) {
-                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})."]);
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})."])->with('active_tab', $activeTab);
             }
             if ($user->hasExceededMonthlyLimit($estimatedCost)) {
-                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite mensual de gasto (\${$user->monthly_spend_limit}, gastado este mes: \${$user->getMonthlySpent()})."]);
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite mensual de gasto (\${$user->monthly_spend_limit}, gastado este mes: \${$user->getMonthlySpent()})."])->with('active_tab', $activeTab);
             }
         }
 
@@ -231,7 +232,7 @@ class TradingController extends Controller
                     $availableQty = max(0.0, $totalQty - $pendingQty);
 
                     if ($qty > $availableQty) {
-                        return redirect()->back()->withErrors(['error' => "No puedes vender {$qty} unidades de {$symbol}. Ya tienes {$pendingQty} en cola de venta, dejándote solo {$availableQty} disponibles para vender."]);
+                        return redirect()->back()->withErrors(['error' => "No puedes vender {$qty} unidades de {$symbol}. Ya tienes {$pendingQty} en cola de venta, dejándote solo {$availableQty} disponibles para vender."])->with('active_tab', $activeTab);
                     }
 
                     $avgEntry = (float)($positionInfo['avg_entry_price'] ?? 0.0);
@@ -273,9 +274,9 @@ class TradingController extends Controller
                 $msg .= "<br><br>⚠️ <strong>Nota de Mercado Cerrado:</strong> El mercado de valores de EE.UU. está cerrado actualmente (abre de Lunes a Viernes de 15:30 a 22:00 hora de España). Tu orden ha quedado encolada de forma segura y se ejecutará automáticamente cuando abra el mercado. Tus acciones correspondientes han quedado retenidas/bloqueadas temporalmente en el broker para evitar operaciones duplicadas.";
             }
 
-            return redirect()->back()->with('success', $msg);
+            return redirect()->back()->with('success', $msg)->with('active_tab', $activeTab);
         } else {
-            return redirect()->back()->withErrors(['error' => $result['message']]);
+            return redirect()->back()->withErrors(['error' => $result['message']])->with('active_tab', $activeTab);
         }
     }
 
@@ -299,9 +300,12 @@ class TradingController extends Controller
             $output = "Excepción al ejecutar el bot: " . $e->getMessage();
         }
 
+        $activeTab = $request->input('active_tab', 'bot');
+
         return redirect()->back()->with([
             'success' => 'Ejecución del Bot completada.',
-            'bot_output' => $output
+            'bot_output' => $output,
+            'active_tab' => $activeTab
         ]);
     }
 

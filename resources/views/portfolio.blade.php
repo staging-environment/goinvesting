@@ -205,10 +205,14 @@
             $isWinning = $totalUnrealizedPL >= 0;
         @endphp
 
-        <div x-data="{ activeTab: 'overview' }" class="space-y-6">
+        <div x-data="{ 
+            activeTab: '{{ session('active_tab', request()->get('tab')) }}' || sessionStorage.getItem('portfolio_active_tab') || 'overview' 
+        }" 
+        x-init="sessionStorage.setItem('portfolio_active_tab', activeTab)"
+        class="space-y-6">
             <!-- Tabs Horizontal Menu -->
             <div class="flex border-b border-slate-900 overflow-x-auto pb-px scrollbar-none gap-1">
-                <button @click="activeTab = 'overview'" 
+                <button @click="activeTab = 'overview'; sessionStorage.setItem('portfolio_active_tab', 'overview')" 
                         :class="activeTab === 'overview' ? 'border-indigo-500 text-indigo-400 font-extrabold bg-indigo-500/5' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-800 hover:bg-slate-950/20'"
                         class="px-5 py-3 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer rounded-t-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
@@ -216,7 +220,7 @@
                     </svg>
                     Resumen General
                 </button>
-                <button @click="activeTab = 'positions'" 
+                <button @click="activeTab = 'positions'; sessionStorage.setItem('portfolio_active_tab', 'positions')" 
                         :class="activeTab === 'positions' ? 'border-indigo-500 text-indigo-400 font-extrabold bg-indigo-500/5' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-800 hover:bg-slate-950/20'"
                         class="px-5 py-3 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer rounded-t-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
@@ -224,7 +228,7 @@
                     </svg>
                     Mis Acciones
                 </button>
-                <button @click="activeTab = 'bot'" 
+                <button @click="activeTab = 'bot'; sessionStorage.setItem('portfolio_active_tab', 'bot')" 
                         :class="activeTab === 'bot' ? 'border-indigo-500 text-indigo-400 font-extrabold bg-indigo-500/5' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-800 hover:bg-slate-950/20'"
                         class="px-5 py-3 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer rounded-t-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
@@ -232,7 +236,7 @@
                     </svg>
                     Bot de Trading
                 </button>
-                <button @click="activeTab = 'markets'" 
+                <button @click="activeTab = 'markets'; sessionStorage.setItem('portfolio_active_tab', 'markets')" 
                         :class="activeTab === 'markets' ? 'border-indigo-500 text-indigo-400 font-extrabold bg-indigo-500/5' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-800 hover:bg-slate-950/20'"
                         class="px-5 py-3 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer rounded-t-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
@@ -806,6 +810,7 @@
                                                     @else
                                                         <form action="{{ route('trade.execute') }}" method="POST" class="inline" onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de que deseas vender las {{ $pos['available_qty'] ?? $pos['qty'] }} acciones de {{ $pos['symbol'] }} a precio de mercado?');" onclick="event.stopPropagation();">
                                                             @csrf
+                                                            <input type="hidden" name="active_tab" value="positions">
                                                             <input type="hidden" name="symbol" value="{{ $pos['symbol'] }}">
                                                             <input type="hidden" name="qty" value="{{ $pos['available_qty'] ?? $pos['qty'] }}">
                                                             <input type="hidden" name="side" value="sell">
@@ -1102,6 +1107,7 @@
                         <div class="flex items-center gap-3">
                             <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
                                 @csrf
+                                <input type="hidden" name="active_tab" value="bot">
                                 <input type="hidden" name="dry_run" value="1">
                                 <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer">
                                     Simular Ejecución (Dry Run)
@@ -1109,6 +1115,7 @@
                             </form>
                             <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
                                 @csrf
+                                <input type="hidden" name="active_tab" value="bot">
                                 <button type="submit" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer">
                                     Ejecutar Bot Ahora
                                 </button>

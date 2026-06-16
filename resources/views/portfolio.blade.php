@@ -434,7 +434,7 @@
                                     <div class="flex items-center gap-1.5">
                                         <span class="text-slate-500">Símbolo</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -445,10 +445,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full left-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full left-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Código abreviado del activo en la bolsa de valores (ej: AAPL para Apple).
-                                                    <div class="absolute top-full left-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full left-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -459,7 +460,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Cantidad</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -470,10 +471,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full right-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Número total de unidades o acciones de este activo que posees actualmente.
-                                                    <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -483,7 +485,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Precio Medio</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -494,10 +496,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full right-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Precio promedio al que compraste estas acciones en tu cartera.
-                                                    <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -507,7 +510,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Precio Actual</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -518,10 +521,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full right-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Precio de cotización del activo hoy en el mercado en tiempo real.
-                                                    <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -531,7 +535,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Costo Total</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -542,10 +546,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full right-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Total del capital invertido en esta posición (Cantidad × Precio Medio).
-                                                    <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -555,7 +560,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Valor Actual</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -566,10 +571,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full right-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Valorización actual de tu posición al precio de mercado (Cantidad × Precio Actual).
-                                                    <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -579,7 +585,7 @@
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">G/P no realizado</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -590,10 +596,11 @@
                                                  x-transition:leave-start="opacity-100 translate-y-0"
                                                  x-transition:leave-end="opacity-0 translate-y-1"
                                                  style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute bottom-full right-0 mb-2.5 z-50 text-left normal-case">
+                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
                                                     Ganancia o pérdida acumulada sobre el papel. Solo se consolida cuando decides vender el activo.
-                                                    <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                                    <!-- Caret pointing UP -->
+                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
                                             </div>
                                         </div>

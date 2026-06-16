@@ -98,22 +98,29 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="flex flex-col sm:flex-row sm:items-center gap-4">
                 <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Mi Portafolio</h1>
                 @if(isset($account))
                     <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="inline-block">
                         @csrf
-                        <button type="submit" title="Haz clic para alternar entre Cuenta de Simulación y Real" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold transition duration-200 hover:scale-[1.03] active:scale-[0.97] cursor-pointer {{ $isPaper ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20' }}">
-                            <span class="w-2 h-2 rounded-full {{ $isPaper ? 'bg-indigo-400 animate-pulse' : 'bg-emerald-400 animate-pulse' }}"></span>
-                            Modo: {{ $isPaper ? 'Simulación (Paper)' : 'Real (Live)' }}
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3 h-3 ml-0.5 opacity-70">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
-                            </svg>
-                        </button>
+                        <div class="inline-flex p-1 rounded-xl bg-slate-950/80 border border-slate-900/60 shadow-inner">
+                            <button type="submit" 
+                                    @if($isPaper) disabled @endif 
+                                    class="px-4 py-1.5 rounded-lg text-xs font-bold transition duration-200 flex items-center gap-1.5 cursor-pointer disabled:cursor-default {{ $isPaper ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/10' : 'text-slate-400 hover:text-slate-200' }}">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 {{ $isPaper ? 'animate-pulse' : 'opacity-40' }}"></span>
+                                Simulación (Paper)
+                            </button>
+                            <button type="submit" 
+                                    @if(!$isPaper) disabled @endif 
+                                    class="px-4 py-1.5 rounded-lg text-xs font-bold transition duration-200 flex items-center gap-1.5 cursor-pointer disabled:cursor-default {{ !$isPaper ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/10' : 'text-slate-400 hover:text-slate-200' }}">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 {{ !$isPaper ? 'animate-pulse' : 'opacity-40' }}"></span>
+                                Real (Live)
+                            </button>
+                        </div>
                     </form>
                 @endif
             </div>
-            <p class="text-sm text-slate-400 mt-1">Control de fondos y posiciones integradas con tu cuenta de Alpaca Broker</p>
+            <p class="text-sm text-slate-400 mt-2">Control de fondos y posiciones integradas con tu cuenta de Alpaca Broker</p>
         </div>
         <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
             Volver a mercados

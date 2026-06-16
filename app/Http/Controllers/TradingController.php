@@ -113,6 +113,16 @@ class TradingController extends Controller
         }
 
         $rawPositions = $this->tradingService->getPositions();
+        
+        // Translate Alpaca crypto symbols (e.g. BTC/USD) to Yahoo format (BTC-USD)
+        if (!empty($rawPositions)) {
+            $rawPositions = array_map(function($pos) {
+                if (isset($pos['symbol'])) {
+                    $pos['symbol'] = str_replace('/', '-', $pos['symbol']);
+                }
+                return $pos;
+            }, $rawPositions);
+        }
 
         $pendingSells = \App\Models\Trade::where('user_id', $user->id)
             ->where('side', 'sell')

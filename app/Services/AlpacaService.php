@@ -111,6 +111,9 @@ class AlpacaService implements TradingProviderInterface
         if (!$this->isConfigured()) return null;
 
         $symbol = strtoupper($symbol);
+        if (str_ends_with($symbol, '-USD')) {
+            $symbol = str_replace('-USD', '/USD', $symbol);
+        }
         $endpoint = $this->isBroker ? "/positions/{$symbol}" : "/v2/positions/{$symbol}";
         try {
             $response = Http::withHeaders($this->getHeaders())
@@ -136,6 +139,9 @@ class AlpacaService implements TradingProviderInterface
         }
 
         $symbol = strtoupper($symbol);
+        if (str_ends_with($symbol, '-USD')) {
+            $symbol = str_replace('-USD', '/USD', $symbol);
+        }
         $side = strtolower($side);
         $type = strtolower($type);
 

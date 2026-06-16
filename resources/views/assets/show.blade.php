@@ -252,7 +252,7 @@
                                 <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Alternativas operables en Alpaca:</h3>
                                 <div class="space-y-2">
                                     @foreach($alternatives as $alt)
-                                        <a href="{{ route('asset.show', ['symbol' => $alt['symbol']]) }}" 
+                                        <a href="{{ route('assets.show', ['symbol' => $alt['symbol']]) }}" 
                                            class="block p-3 rounded-xl bg-slate-950/40 border border-slate-900/60 hover:border-indigo-500/60 hover:bg-slate-900/60 transition group">
                                             <div class="flex items-center justify-between">
                                                 <div class="space-y-1 pr-2">

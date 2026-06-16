@@ -84,6 +84,26 @@
             </p>
         </div>
     </div>
+ 
+    <!-- Leyenda de Operabilidad -->
+    <div class="p-4.5 rounded-2xl bg-slate-950/40 border border-slate-900/60 flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-xs">
+        <div class="flex items-center gap-2 text-slate-300">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-indigo-400 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 1 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.852l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+            </svg>
+            <span class="font-bold text-slate-200">Disponibilidad Operativa en Bróker (Alpaca):</span>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4 lg:gap-8">
+            <div class="flex items-start gap-2 max-w-sm">
+                <span class="text-[9px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/15 mt-0.5 shrink-0">Operable</span>
+                <span class="text-slate-400 text-[11px] leading-relaxed">Activo disponible para comprar y vender directamente con tus credenciales de Alpaca.</span>
+            </div>
+            <div class="flex items-start gap-2 max-w-sm">
+                <span class="text-[9px] px-2 py-0.5 rounded-md font-bold uppercase tracking-wider bg-slate-500/10 text-slate-400 border border-slate-500/15 mt-0.5 shrink-0">Info</span>
+                <span class="text-slate-400 text-[11px] leading-relaxed">Activo únicamente referencial de mercado. No se puede negociar directamente en el bróker.</span>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Dashboard Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">

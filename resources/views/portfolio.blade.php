@@ -200,6 +200,112 @@
             $isWinning = $totalUnrealizedPL >= 0;
         @endphp
 
+        <!-- Last Run of Bot / Strategy Card -->
+        <div class="glass-panel rounded-2xl p-5.5 bg-gradient-to-r from-[#0d1222]/95 via-[#1e1b4b]/15 to-[#0d1222]/95 border-indigo-500/15 shadow-xl relative overflow-hidden">
+            <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-900 pb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="flex items-center flex-wrap gap-2">
+                            <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Última Actividad del Bot de Trading</h3>
+                            @if($lastExecution)
+                                <span class="text-[9px] px-2 py-0.5 rounded-md font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' }}">
+                                    Estado: {{ $lastExecution->status === 'success' ? 'Exitoso' : 'Error' }}
+                                </span>
+                                @if($lastExecution->is_dry_run)
+                                    <span class="text-[9px] px-2 py-0.5 rounded-md font-extrabold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                        Simulación (Dry Run)
+                                    </span>
+                                @endif
+                            @else
+                                <span class="text-[9px] px-2 py-0.5 rounded-md font-bold uppercase bg-slate-900 text-slate-400 border border-slate-800">
+                                    Nunca Ejecutado
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-xs text-slate-450 mt-0.5">
+                            Estrategia de inversión activa: <strong class="text-indigo-400">Momentum / Caída Diaria</strong> (Compra caídas de mercado y liquida posiciones automáticamente)
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Strategy Config Summary (Pills) -->
+                <div class="flex flex-wrap gap-1.5 text-[10px] font-bold text-slate-350">
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Condición de Compra">
+                        Compra: <strong class="text-indigo-400">&le; {{ Auth::user()->bot_buy_threshold ?? -1.5 }}%</strong>
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Objetivo de Ganancia">
+                        Take Profit: <strong class="text-emerald-400">+{{ Auth::user()->bot_take_profit ?? 2.0 }}%</strong>
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Límite de Pérdida">
+                        Stop Loss: <strong class="text-rose-400">{{ Auth::user()->bot_stop_loss ?? -3.0 }}%</strong>
+                    </span>
+                    <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Tamaño por Operación">
+                        Orden: <strong class="text-slate-200">${{ number_format(Auth::user()->bot_order_size ?? 500, 2) }}</strong>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Execution Result details -->
+            <div class="pt-4 flex flex-col md:flex-row md:items-start justify-between gap-4 text-xs">
+                <div class="space-y-2 max-w-2xl leading-relaxed text-left">
+                    <div class="font-bold text-slate-200">
+                        @if($lastExecution)
+                            Ejecutado hace: <strong class="text-indigo-300">{{ $lastExecution->started_at->diffForHumans() }}</strong>
+                            <span class="text-slate-500 font-medium ml-1">({{ $lastExecution->started_at->format('d M Y, H:i:s') }})</span>
+                        @else
+                            El bot de trading automático aún no se ha ejecutado. Puedes configurarlo y ejecutarlo manualmente abajo.
+                        @endif
+                    </div>
+                    
+                    <p class="text-slate-400 text-[11px]">
+                        @if($lastExecution)
+                            @if($lastExecution->trades->isEmpty())
+                                <span class="text-slate-350">
+                                    ℹ️ <strong>Detalle de Análisis:</strong> El bot inspeccionó tu lista de activos utilizando las reglas activas de tu perfil. <strong class="text-slate-200">No se ejecutó ninguna compra ni venta</strong> en esta ocasión debido a que ningún activo experimentó una caída diaria superior al <strong>{{ Auth::user()->bot_buy_threshold ?? -1.5 }}%</strong> o los límites controlados de presupuesto mensual/semanal ya estaban al límite.
+                                </span>
+                            @else
+                                <span class="text-emerald-400 font-bold">
+                                    🚀 <strong>Detalle de Análisis:</strong> Se cumplieron los criterios de tu perfil y el bot procedió a abrir/cerrar posiciones de manera automática.
+                                </span>
+                            @endif
+                        @else
+                            El bot analizará los activos de tu lista de seguimiento y comprará si su cambio de precio diario baja del <strong>{{ Auth::user()->bot_buy_threshold ?? -1.5 }}%</strong>. Venderá si alcanzan el objetivo de beneficio de <strong>+{{ Auth::user()->bot_take_profit ?? 2.0 }}%</strong> o tocan el límite de pérdidas de <strong>{{ Auth::user()->bot_stop_loss ?? -3.0 }}%</strong>.
+                        @endif
+                    </p>
+                </div>
+                
+                @if($lastExecution && !$lastExecution->trades->isEmpty())
+                    <!-- Mini Trades List -->
+                    <div class="w-full md:w-80 bg-slate-950/50 border border-slate-900 rounded-xl p-3 space-y-2 self-start shrink-0">
+                        <span class="text-[9px] uppercase font-bold text-slate-500 block tracking-wider">Operaciones realizadas:</span>
+                        <div class="space-y-1.5 max-h-24 overflow-y-auto pr-1">
+                            @foreach($lastExecution->trades as $t)
+                                <div class="flex items-center justify-between text-[11px] bg-slate-950/60 p-2 rounded-lg border border-slate-900/60">
+                                    <div class="flex items-center gap-1.5">
+                                        <span class="text-[9px] px-1 py-0.2 rounded font-extrabold uppercase {{ $t->side === 'buy' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
+                                            {{ $t->side === 'buy' ? 'Compra' : 'Venta' }}
+                                        </span>
+                                        <strong class="text-white">{{ $t->symbol }}</strong>
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-slate-200 font-medium">{{ $t->qty }} uds</span>
+                                        <span class="text-slate-500 text-[9px] block">${{ number_format($t->price, 2) }}/ud</span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+            </div>
+        </div>
+
         <!-- Win/Loss Beautiful Banner -->
         <div class="mb-2">
             @if($hasPositions)

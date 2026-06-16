@@ -9,6 +9,29 @@
         </p>
     </header>
 
+    <div class="mt-4 p-4 bg-indigo-950/20 rounded-2xl border border-indigo-500/10 space-y-3">
+        <h3 class="text-xs font-extrabold text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 1 1 .513 1.293l-.042.015-1.478.492a1 1 0 0 0-.674.933V15m3.75 2.25h.008v.008H13v-.008Z" />
+            </svg>
+            Guía de Integración con Alpaca (Paso a Paso)
+        </h3>
+        <ul class="text-xs text-slate-400 space-y-2 list-decimal pl-4 leading-relaxed font-medium">
+            <li>
+                <strong>Crea una cuenta:</strong> Regístrate gratis en <a href="https://alpaca.markets/" target="_blank" class="text-indigo-405 hover:text-indigo-300 font-bold underline transition">Alpaca.markets</a> (puedes empezar usando una cuenta de simulación o "Paper Trading" sin dinero real).
+            </li>
+            <li>
+                <strong>Obtén tus credenciales:</strong> Accede a tu panel de control de Alpaca, navega a la sección de <strong>"API Keys"</strong> en la derecha y haz clic en <strong>"Generate Key"</strong>. Copia tu <span class="text-slate-200 font-bold">API Key ID</span> y tu <span class="text-slate-200 font-bold">Secret Key</span>.
+            </li>
+            <li>
+                <strong>Configura el modo:</strong> Si utilizas claves de simulación (Paper), marca la casilla de <em>"Cuenta de Simulación (Paper Trading)"</em> abajo. Si usas tu cuenta real de inversiones, déjala desmarcada.
+            </li>
+            <li>
+                <strong>Origen de Precios vs Ejecución:</strong> Los gráficos y precios de mercados mundiales se muestran a través de <strong class="text-indigo-400">Yahoo Finance</strong> en tiempo real. Sin embargo, para realizar compras, ventas o consultar tu saldo real de cuenta, GoInvesting requiere interactuar con el broker de <strong class="text-indigo-400">Alpaca</strong>. Si no integras estas claves correctamente, la plataforma no podrá colocar órdenes.
+            </li>
+        </ul>
+    </div>
+
     <form method="post" action="{{ route('profile.update-alpaca') }}" class="mt-6 space-y-6">
         @csrf
 
@@ -40,14 +63,31 @@
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
-            @if (session('status') === 'alpaca-updated')
+            @if (session('status') === 'alpaca-updated-success')
                 <p
                     x-data="{ show: true }"
                     x-show="show"
                     x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
-                >{{ __('Saved.') }}</p>
+                    x-init="setTimeout(() => show = false, 5000)"
+                    class="text-sm text-green-450 font-bold flex items-center gap-1.5"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-green-400">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd" />
+                    </svg>
+                    {{ __('¡Conexión con Alpaca establecida correctamente!') }}
+                </p>
+            @endif
+
+            @if (session('status') === 'alpaca-updated-error')
+                <div class="p-3 bg-red-500/10 border border-red-500/30 text-red-400 text-xs rounded-xl flex flex-col gap-1 w-full max-w-md">
+                    <div class="flex items-center gap-1.5 font-bold">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-red-400">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ __('Conexión fallida') }}
+                    </div>
+                    <p class="text-[11px] leading-normal opacity-90">{{ session('alpaca_error_msg') }}</p>
+                </div>
             @endif
         </div>
     </form>

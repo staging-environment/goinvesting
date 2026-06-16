@@ -227,6 +227,31 @@
             </div>
             @endif
 
+            @if(Auth::check() && empty($alpacaAccount))
+            <!-- Alpaca Setup Onboarding Card -->
+            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4 border-amber-500/20 bg-gradient-to-tr from-slate-900 to-amber-950/20">
+                <h2 class="text-base font-extrabold text-white flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-amber-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.008v.008H12v-.008Z" />
+                    </svg>
+                    Integración de Alpaca Pendiente
+                </h2>
+                <p class="text-xs text-slate-400 leading-relaxed font-medium">
+                    Para que la plataforma pueda realizar compras y ventas (automáticas por el bot o manuales por ti), **debes conectar tu cuenta con Alpaca Broker**.
+                </p>
+                <div class="text-[11px] text-slate-400 space-y-1.5 bg-slate-950/40 p-3 rounded-xl border border-slate-800/50 leading-normal font-medium">
+                    <div>1. Regístrate gratis en <a href="https://alpaca.markets" target="_blank" class="text-indigo-400 hover:underline font-bold">Alpaca.markets</a> (cuenta Paper de simulación).</div>
+                    <div>2. Obtén tus **API Keys** de simulación (Key ID y Secret Key).</div>
+                    <div>3. Introduce las llaves en tu perfil de GoInvesting.</div>
+                </div>
+                <div class="pt-1">
+                    <a href="{{ route('profile.edit') }}" class="w-full inline-flex justify-center items-center gap-1 bg-amber-500/10 hover:bg-amber-500 border border-amber-500/30 text-amber-450 hover:text-white font-bold text-xs py-2.5 px-4 rounded-xl transition duration-150 shadow-sm shadow-amber-500/5 hover:shadow-amber-500/20">
+                        Configurar Integración ahora
+                    </a>
+                </div>
+            </div>
+            @endif
+
             <!-- Watchlist Panel -->
             <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4">
                 <div class="flex items-center justify-between">

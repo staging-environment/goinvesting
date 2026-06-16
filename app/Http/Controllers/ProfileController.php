@@ -72,14 +72,49 @@ class ProfileController extends Controller
 
         $user = $request->user();
         
-        $user->update([
-            'alpaca_key_id' => $request->input('alpaca_key_id'),
-            'alpaca_secret_key' => $request->input('alpaca_secret_key'),
-            'alpaca_account_id' => $request->input('alpaca_account_id'),
-            'alpaca_is_paper' => $request->has('alpaca_is_paper') ? (bool)$request->input('alpaca_is_paper') : false
-        ]);
+        $keyId = $request->input('alpaca_key_id');
+        $secretKey = $request->filled('alpaca_secret_key') ? $request->input('alpaca_secret_key') : $user->alpaca_secret_key;
+        $accountId = $request->input('alpaca_account_id');
+        $isPaper = $request->has('alpaca_is_paper') ? (bool)$request->input('alpaca_is_paper') : false;
 
-        return Redirect::route('profile.edit')->with('status', 'alpaca-updated');
+        $connectionSuccess = true;
+        $connectionMessage = '';
+
+        if ($keyId && $secretKey) {
+            try {
+                $tempService = new \App\Services\AlpacaService($keyId, $secretKey, $accountId, $isPaper);
+                $accountInfo = $tempService->getAccountInfo();
+                if (!$accountInfo) {
+                    $connectionSuccess = false;
+                    $connectionMessage = 'No se pudo conectar con Alpaca. Por favor, verifica tu Key ID y Secret Key (asegúrate de que correspondan al modo de Simulación/Real seleccionado).';
+                }
+            } catch (\Exception $e) {
+                $connectionSuccess = false;
+                $connectionMessage = 'Error al verificar la conexión: ' . $e->getMessage();
+            }
+        } else {
+            $connectionSuccess = false;
+            $connectionMessage = 'Las credenciales de Alpaca están incompletas. El bot de trading no podrá realizar operaciones automáticas ni manuales.';
+        }
+
+        $updateData = [
+            'alpaca_key_id' => $keyId,
+            'alpaca_account_id' => $accountId,
+            'alpaca_is_paper' => $isPaper
+        ];
+        if ($request->filled('alpaca_secret_key')) {
+            $updateData['alpaca_secret_key'] = $secretKey;
+        }
+        $user->update($updateData);
+
+        if ($connectionSuccess) {
+            return Redirect::route('profile.edit')
+                ->with('status', 'alpaca-updated-success');
+        } else {
+            return Redirect::route('profile.edit')
+                ->with('status', 'alpaca-updated-error')
+                ->with('alpaca_error_msg', $connectionMessage);
+        }
     }
 
     /**

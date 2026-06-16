@@ -391,6 +391,69 @@
 
         </div>
     </div>
+
+    @guest
+    <!-- Quiénes Somos Section -->
+    <div id="quienes-somos" class="scroll-mt-20 pt-8 border-t border-slate-900/60 space-y-4">
+        <div class="glass-panel rounded-3xl p-8 lg:p-12 bg-gradient-to-br from-slate-900 to-indigo-950/20 relative overflow-hidden shadow-2xl">
+            <div class="absolute right-0 top-0 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 max-w-4xl space-y-6">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    Quiénes Somos
+                </span>
+                <h2 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
+                    Décadas de Experiencia en Bolsa, Ahora Automatizadas para Ti
+                </h2>
+                <div class="text-sm text-slate-400 leading-relaxed space-y-4 font-medium">
+                    <p>
+                        En <strong class="text-white">GoInvesting</strong>, nacimos como un grupo de operadores apasionados por la bolsa de valores. Llevamos muchos años analizando mercados financieros, identificando tendencias y operando de forma activa en los principales parqués globales. Con el tiempo, comprendimos que la disciplina emocional y la rapidez son claves para el éxito sostenido. Por ello, decidimos digitalizar y sistematizar nuestra experiencia.
+                    </p>
+                    <p>
+                        Nuestra plataforma no realiza predicciones mágicas. En su lugar, <strong class="text-indigo-400">automatizamos el proceso de compra y venta de acciones</strong> basándonos en reglas claras y rigurosas. Conectamos los datos de mercado en tiempo real de <strong class="text-indigo-400">Yahoo Finance</strong> y ejecutamos las operaciones estableciendo estrictos límites de ganancia (Take Profit) y de pérdida (Stop Loss) directamente a través de <strong class="text-indigo-400">Alpaca Broker</strong>. Esto elimina el factor humano emocional y te permite delegar la ejecución en una máquina precisa y eficiente.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contacto Section -->
+    <div id="contacto" class="scroll-mt-20 space-y-4">
+        <div class="glass-panel rounded-3xl p-8 lg:p-12 shadow-2xl space-y-8">
+            <div class="max-w-2xl space-y-2">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    Contacto
+                </span>
+                <h2 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
+                    ¿Tienes dudas o sugerencias? Escríbenos
+                </h2>
+                <p class="text-xs text-slate-500">
+                    Estamos encantados de atenderte. Rellena el formulario y nuestro equipo te responderá lo antes posible.
+                </p>
+            </div>
+
+            <!-- Formulario de contacto simulado -->
+            <form action="#" method="POST" onsubmit="event.preventDefault(); alert('¡Gracias por contactar con nosotros! Hemos recibido tu mensaje.'); this.reset();" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                    <label for="contact-name" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Nombre Completo</label>
+                    <input type="text" id="contact-name" required placeholder="Tu nombre..." class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200">
+                </div>
+                <div class="space-y-2">
+                    <label for="contact-email" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Correo Electrónico</label>
+                    <input type="email" id="contact-email" required placeholder="correo@ejemplo.com" class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200">
+                </div>
+                <div class="md:col-span-2 space-y-2">
+                    <label for="contact-message" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Mensaje o Consulta</label>
+                    <textarea id="contact-message" required rows="5" placeholder="¿En qué podemos ayudarte?..." class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200 resize-none"></textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/15 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer">
+                        Enviar Mensaje
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endguest
 </div>
 
 <script>

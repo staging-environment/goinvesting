@@ -81,28 +81,28 @@
 
 
     <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 w-full bg-gradient-to-r from-slate-950/85 via-[#0b1029]/80 to-slate-950/85 backdrop-blur-md border-b border-indigo-500/20 shadow-lg shadow-indigo-950/10">
+    <header class="sticky top-0 z-40 w-full bg-gradient-to-r from-[#0d122b] via-[#1a1f4c] to-[#0f113a] backdrop-blur-md border-b border-indigo-500/45 shadow-lg shadow-indigo-500/15">
         <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-4">
             
             <!-- Logo -->
             <a href="{{ route('home') }}" class="flex items-center gap-2.5 select-none shrink-0 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-550/20 group-hover:scale-105 transition-all duration-300">
+                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-all duration-300">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-white">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
                     </svg>
                 </div>
-                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">Go<span class="text-indigo-400 font-bold">Investing</span></span>
+                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-355 bg-clip-text text-transparent">Go<span class="text-indigo-305 font-bold">Investing</span></span>
             </a>
 
             <!-- Autocomplete Search Bar -->
             <div class="relative flex-1 max-w-md mx-4 hidden md:block">
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-400">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
                         </svg>
                     </span>
-                    <input type="text" id="global-search" placeholder="Buscar acciones, índices, criptomonedas..." class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 pl-10 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/55 transition duration-200" autocomplete="off">
+                    <input type="text" id="global-search" placeholder="Buscar acciones, índices, criptomonedas..." class="w-full bg-[#070913]/60 border border-indigo-500/30 rounded-xl py-2 pl-10 pr-4 text-sm text-slate-200 placeholder-indigo-300/40 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/50 transition duration-200" autocomplete="off">
                 </div>
                 <!-- Search Floating Dropdown -->
                 <div id="search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl hidden max-h-80 overflow-y-auto z-50"></div>

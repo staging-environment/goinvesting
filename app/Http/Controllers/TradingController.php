@@ -60,6 +60,25 @@ class TradingController extends Controller
         }
 
         $account = $this->tradingService->getAccountInfo();
+        
+        if ($account && !$user->wizard_completed) {
+            $recommendedSymbols = ['AAPL', 'AMZN', 'MSFT'];
+            $marketQuotes = $this->yahooService->getSparkQuotes($recommendedSymbols);
+            
+            $recommendedAssets = [];
+            foreach ($recommendedSymbols as $sym) {
+                $quote = $marketQuotes[$sym] ?? null;
+                $recommendedAssets[] = [
+                    'symbol' => $sym,
+                    'name' => $sym === 'AAPL' ? 'Apple' : ($sym === 'AMZN' ? 'Amazon' : 'Microsoft'),
+                    'price' => $quote ? (float)$quote['price'] : 0.0,
+                    'changePercent' => $quote ? (float)$quote['changePercent'] : 0.0
+                ];
+            }
+            
+            return view('portfolio-wizard', compact('account', 'recommendedAssets'));
+        }
+
         $rawPositions = $this->tradingService->getPositions();
 
         $positions = [];
@@ -192,5 +211,17 @@ class TradingController extends Controller
             'success' => 'Ejecución del Bot completada.',
             'bot_output' => $output
         ]);
+    }
+
+    /**
+     * Completes the onboarding wizard.
+     */
+    public function completeWizard(Request $request)
+    {
+        $user = auth()->user();
+        $user->wizard_completed = true;
+        $user->save();
+
+        return redirect()->route('portfolio')->with('success', '¡Asistente completado! Bienvenido a tu portafolio en vivo.');
     }
 }

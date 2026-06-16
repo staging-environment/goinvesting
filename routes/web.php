@@ -22,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/portfolio', [TradingController::class, 'portfolio'])->name('portfolio');
     Route::post('/api/trade', [TradingController::class, 'executeOrder'])->name('trade.execute');
     Route::post('/portfolio/run-bot', [TradingController::class, 'runBot'])->name('portfolio.run-bot');
+    Route::post('/portfolio/complete-wizard', [TradingController::class, 'completeWizard'])->name('portfolio.complete-wizard');
     
     // Admin Routes
     Route::get('/admin/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');

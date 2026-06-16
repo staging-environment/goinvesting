@@ -47,6 +47,10 @@ class RegisteredUserController extends Controller
                     }
                 },
             ],
+            'terms' => ['required', 'accepted'],
+        ], [
+            'terms.accepted' => 'Debe abrir y aceptar la declaración de riesgo y términos legales para poder registrarse.',
+            'terms.required' => 'Debe abrir y aceptar la declaración de riesgo y términos legales para poder registrarse.',
         ]);
 
         // Clean up captcha answer from session after validation passes

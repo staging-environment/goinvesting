@@ -44,9 +44,9 @@
             </svg>
             <div>
                 @if(session('status') === 'alpaca-updated-error')
-                    {{ session('alpaca_error_msg') }}
+                    {!! session('alpaca_error_msg') !!}
                 @else
-                    {{ session('error') ?? $errors->first() }}
+                    {!! session('error') ?? $errors->first() !!}
                 @endif
             </div>
         </div>

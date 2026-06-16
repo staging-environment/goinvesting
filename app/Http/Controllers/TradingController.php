@@ -255,7 +255,13 @@ class TradingController extends Controller
                 $accountInfo = $tempService->getAccountInfo();
                 if (!$accountInfo) {
                     $connectionSuccess = false;
-                    $connectionMessage = "No se pudo conectar con Alpaca en modo {$modeText}. Por favor, verifica que tus credenciales actuales correspondan a este tipo de cuenta.";
+                    if (!$newMode) {
+                        $connectionMessage = "No se pudo conectar con Alpaca en modo Real (Live).<br><br>" .
+                            "<strong class='text-slate-100'>¿Tu cuenta es nueva?</strong> Alpaca suele tardar entre 24 y 72 horas hábiles en verificar y activar nuevas cuentas reales. Hasta que tu cuenta no esté completamente aprobada y activa por su equipo, tus llaves de API reales devolverán un error de conexión no autorizada.<br><br>" .
+                            "Puedes comprobar el estado de tu aprobación iniciando sesión en tu <a href='https://app.alpaca.markets' target='_blank' class='text-indigo-400 hover:text-indigo-300 underline font-extrabold transition'>Panel de Control de Alpaca</a>, contactar directamente con su soporte en <a href='mailto:support@alpaca.markets' class='text-indigo-400 hover:text-indigo-300 underline font-extrabold transition'>support@alpaca.markets</a> o visitar el <a href='https://support.alpaca.markets' target='_blank' class='text-indigo-400 hover:text-indigo-300 underline font-extrabold transition'>Centro de Ayuda de Alpaca</a>.";
+                    } else {
+                        $connectionMessage = "No se pudo conectar con Alpaca en modo Simulación (Paper). Por favor, verifica que tus credenciales actuales de simulación correspondan a este tipo de cuenta.";
+                    }
                 }
             } catch (\Exception $e) {
                 $connectionSuccess = false;

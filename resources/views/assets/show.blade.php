@@ -356,9 +356,11 @@
                                 open: c.open,
                                 high: c.high,
                                 low: c.low,
-                                close: c.close
+                                close: c.close,
+                                value: c.close
                             };
                         });
+
 
                         // Sort chronologically
                         formattedData.sort((a, b) => a.time - b.time);

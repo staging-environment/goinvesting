@@ -80,9 +80,12 @@
                         $isPositive = ($quote['changePercent'] ?? 0) >= 0;
                         $colorClass = $isPositive ? 'text-green-400' : 'text-red-400';
                         $symbolClean = str_replace(['=X', '^'], '', $symbol);
+                        $meta = $tickerMetadata[$symbol] ?? ['name' => $symbolClean, 'desc' => ''];
                     @endphp
-                    <a href="{{ route('assets.show', $symbol) }}" data-symbol-ticker="{{ $symbol }}" class="inline-flex items-center gap-2 hover:opacity-80 transition duration-150 border-r border-slate-800 pr-6 last:border-none">
+                    <a href="{{ route('assets.show', $symbol) }}" data-symbol-ticker="{{ $symbol }}" title="{{ $meta['desc'] }}" class="inline-flex items-center gap-2 hover:opacity-80 transition duration-150 border-r border-slate-800 pr-6 last:border-none cursor-help">
                         <span class="font-bold text-slate-300">{{ $symbolClean }}</span>
+                        <span class="text-[10px] text-slate-500 font-semibold">({{ $meta['name'] }})</span>
+
                         <span class="font-medium text-slate-100" data-field="price">${{ number_format($quote['price'] ?? 0, 2) }}</span>
                         <span class="flex items-center gap-0.5 font-semibold {{ $colorClass }}" data-field="change-badge">
                             <span data-field="direction">{{ $isPositive ? '▲' : '▼' }}</span>

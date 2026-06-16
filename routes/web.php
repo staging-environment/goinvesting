@@ -51,4 +51,35 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+
+Route::post('/contacto', function (Request $request) {
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'message' => 'required|string',
+    ]);
+
+    $data = [
+        'name' => $request->name,
+        'email' => $request->email,
+        'bodyMessage' => $request->message,
+    ];
+
+    try {
+        Mail::send([], [], function ($message) use ($data) {
+            $message->to(config('mail.from.address'))
+                    ->subject('Nuevo mensaje de contacto de ' . $data['name'])
+                    ->html('<h3>Nuevo mensaje de contacto</h3>' .
+                           '<p><strong>Nombre:</strong> ' . e($data['name']) . '</p>' .
+                           '<p><strong>Email:</strong> ' . e($data['email']) . '</p>' .
+                           '<p><strong>Mensaje:</strong><br>' . nl2br(e($data['bodyMessage'])) . '</p>');
+        });
+        return back()->with('success', '¡Gracias por contactar con nosotros! Hemos recibido tu mensaje.');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Hubo un problema al enviar el correo: ' . $e->getMessage());
+    }
+})->name('contact.send');
+
 require __DIR__.'/auth.php';

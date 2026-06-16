@@ -520,19 +520,20 @@
                 </p>
             </div>
 
-            <!-- Formulario de contacto simulado -->
-            <form action="#" method="POST" onsubmit="event.preventDefault(); alert('¡Gracias por contactar con nosotros! Hemos recibido tu mensaje.'); this.reset();" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Formulario de contacto activo -->
+            <form action="{{ route('contact.send') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @csrf
                 <div class="space-y-2">
                     <label for="contact-name" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Nombre Completo</label>
-                    <input type="text" id="contact-name" required placeholder="Tu nombre..." class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200">
+                    <input type="text" id="contact-name" name="name" required placeholder="Tu nombre..." class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200">
                 </div>
                 <div class="space-y-2">
                     <label for="contact-email" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Correo Electrónico</label>
-                    <input type="email" id="contact-email" required placeholder="correo@ejemplo.com" class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200">
+                    <input type="email" id="contact-email" name="email" required placeholder="correo@ejemplo.com" class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200">
                 </div>
                 <div class="md:col-span-2 space-y-2">
                     <label for="contact-message" class="block text-xs font-bold uppercase tracking-wider text-slate-400">Mensaje o Consulta</label>
-                    <textarea id="contact-message" required rows="5" placeholder="¿En qué podemos ayudarte?..." class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200 resize-none"></textarea>
+                    <textarea id="contact-message" name="message" required rows="5" placeholder="¿En qué podemos ayudarte?..." class="w-full bg-slate-950/70 border border-slate-800 focus:border-indigo-500 rounded-xl py-3 px-4 text-sm text-slate-200 placeholder-slate-600 focus:outline-none transition duration-200 resize-none"></textarea>
                 </div>
                 <div class="md:col-span-2">
                     <button type="submit" class="w-full sm:w-auto px-6 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-600/15 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer">

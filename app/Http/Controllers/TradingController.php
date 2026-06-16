@@ -197,6 +197,24 @@ class TradingController extends Controller
             }
         }
 
+        $pnlValue = null;
+        if ($side === 'sell') {
+            try {
+                $positionInfo = $this->tradingService->getPosition($symbol);
+                if ($positionInfo) {
+                    $avgEntry = (float)($positionInfo['avg_entry_price'] ?? 0.0);
+                    if ($avgEntry > 0) {
+                        // Let's resolve the execution price to calculate PnL
+                        $marketQuotes = $this->yahooService->getSparkQuotes([$symbol]);
+                        $price = isset($marketQuotes[$symbol]) ? (float)$marketQuotes[$symbol]['price'] : ($limitPrice ?? 0.0);
+                        $pnlValue = ($price - $avgEntry) * $qty;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Ignore position lookup errors
+            }
+        }
+
         $result = $this->tradingService->placeOrder($symbol, $qty, $side, $type, $limitPrice);
 
         if ($result['success']) {
@@ -213,7 +231,8 @@ class TradingController extends Controller
                 'price' => $price,
                 'side' => $side,
                 'status' => $orderStatus,
-                'is_dry_run' => (bool)$user->alpaca_is_paper
+                'is_dry_run' => (bool)$user->alpaca_is_paper,
+                'pnl' => $pnlValue
             ]);
 
             $isFilled = strtolower($orderStatus) === 'filled';

@@ -245,6 +245,8 @@ class TradingBotCommand extends Command
                     $this->logLine("-> ALERTA DE VENTA para {$tradingSymbol}: {$reason}", 'warn');
                     Log::info("Bot de Trading: Venta recomendada para {$tradingSymbol} ({$reason}). Rendimiento: {$returnPercent}%");
 
+                    $pnlValue = ($currentPrice - $avgEntry) * $pos['qty'];
+
                     if ($dryRun) {
                         $this->logLine("-> [Simulación] Orden de venta enviada para {$pos['qty']} unidades de {$tradingSymbol}");
                         
@@ -256,7 +258,8 @@ class TradingBotCommand extends Command
                             'price' => $currentPrice,
                             'side' => 'sell',
                             'status' => 'filled',
-                            'is_dry_run' => true
+                            'is_dry_run' => true,
+                            'pnl' => $pnlValue
                         ]);
                     } else {
                         $res = $this->tradingService->placeOrder($tradingSymbol, $pos['qty'], 'sell', 'market');
@@ -272,7 +275,8 @@ class TradingBotCommand extends Command
                                 'price' => $currentPrice,
                                 'side' => 'sell',
                                 'status' => 'filled',
-                                'is_dry_run' => false
+                                'is_dry_run' => false,
+                                'pnl' => $pnlValue
                             ]);
                         } else {
                             $this->logLine("-> [FALLÓ] Error al vender {$tradingSymbol}: " . $res['message'], 'error');

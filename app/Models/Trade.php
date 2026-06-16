@@ -15,13 +15,15 @@ class Trade extends Model
         'price',
         'side',
         'status',
-        'is_dry_run'
+        'is_dry_run',
+        'pnl'
     ];
 
     protected $casts = [
         'qty' => 'float',
         'price' => 'float',
         'is_dry_run' => 'boolean',
+        'pnl' => 'float',
     ];
 
     public function user(): BelongsTo

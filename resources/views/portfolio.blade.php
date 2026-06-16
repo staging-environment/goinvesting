@@ -941,6 +941,7 @@
                                 <th class="py-4 px-5 text-right">Cantidad</th>
                                 <th class="py-4 px-5 text-right">Precio Ejecución</th>
                                 <th class="py-4 px-5 text-right">Total</th>
+                                <th class="py-4 px-5 text-right">Resultado (G/P)</th>
                                 <th class="py-4 px-5 text-center">Estado</th>
                                 <th class="py-4 px-5 text-right">Modo</th>
                             </tr>
@@ -985,6 +986,23 @@
                                         </td>
                                         <td class="py-3.5 px-5 text-right text-xs text-slate-200 font-bold">
                                             ${{ number_format($tradeTotal, 2) }}
+                                        </td>
+                                        <td class="py-3.5 px-5 text-right text-xs font-bold">
+                                            @if(!$isBuy && isset($trade->pnl))
+                                                @php
+                                                    $pnl = (float)$trade->pnl;
+                                                    $pnlColorClass = $pnl >= 0 ? 'text-green-400' : 'text-red-400';
+                                                    $pnlSign = $pnl >= 0 ? '+' : '';
+                                                    $costBasis = ($tradeTotal - $pnl);
+                                                    $returnPercent = $costBasis > 0 ? ($pnl / $costBasis) * 100 : 0;
+                                                @endphp
+                                                <span class="{{ $pnlColorClass }}">
+                                                    {{ $pnlSign }}${{ number_format($pnl, 2) }}
+                                                    <span class="text-[9px] font-medium opacity-80">({{ $pnlSign }}{{ number_format($returnPercent, 1) }}%)</span>
+                                                </span>
+                                            @else
+                                                <span class="text-slate-500 font-medium">-</span>
+                                            @endif
                                         </td>
                                         <td class="py-3.5 px-5 text-center">
                                             @php

@@ -258,7 +258,7 @@
                     <div class="font-bold text-slate-200">
                         @if($lastExecution)
                             Ejecutado hace: <strong class="text-indigo-300">{{ $lastExecution->started_at->diffForHumans() }}</strong>
-                            <span class="text-slate-500 font-medium ml-1">({{ $lastExecution->started_at->format('d M Y, H:i:s') }})</span>
+                            <span class="text-slate-500 font-medium ml-1">({{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d M Y, H:i:s') }})</span>
                         @else
                             El bot de trading automático aún no se ha ejecutado. Puedes configurarlo y ejecutarlo manualmente abajo.
                         @endif
@@ -597,7 +597,7 @@
                     </div>
                     <div class="text-xs text-slate-500 font-medium">
                         @if($lastExecution)
-                            Última ejecución: <strong>{{ $lastExecution->started_at->format('d M Y, H:i:s') }}</strong> (Hace {{ $lastExecution->started_at->diffForHumans() }})
+                            Última ejecución: <strong>{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d M Y, H:i:s') }}</strong> (Hace {{ $lastExecution->started_at->diffForHumans() }})
                         @endif
                     </div>
                 </div>
@@ -959,7 +959,7 @@
                                     @endphp
                                     <tr class="hover:bg-slate-950/20 transition">
                                         <td class="py-3.5 px-5 text-xs text-slate-400 font-medium">
-                                            {{ $trade->created_at->format('d/m/Y, H:i') }}
+                                            {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
                                         </td>
                                         <td class="py-3.5 px-5">
                                             <span class="text-[10px] px-2 py-0.5 rounded font-extrabold uppercase {{ $isBuy ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">

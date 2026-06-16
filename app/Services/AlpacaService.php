@@ -179,4 +179,42 @@ class AlpacaService implements TradingProviderInterface
             ];
         }
     }
+
+    /**
+     * Check if the market is currently open.
+     */
+    public function isMarketOpen(): bool
+    {
+        if (!$this->isConfigured()) return true;
+
+        $clockBaseUrl = $this->baseUrl;
+        if ($this->isBroker) {
+            $clockBaseUrl = str_replace("/v1/trading/accounts/{$this->accountId}", "", $this->baseUrl);
+            $endpoint = "/v1/clock";
+        } else {
+            $endpoint = "/v2/clock";
+        }
+
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(5)
+                ->get("{$clockBaseUrl}{$endpoint}");
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return (bool)($data['is_open'] ?? false);
+            }
+        } catch (\Exception $e) {
+            Log::error("Alpaca Clock API Exception: " . $e->getMessage());
+        }
+
+        // Fallback to manual check based on Spanish Time (15:30 to 22:00, Monday to Friday)
+        $now = now()->timezone('Europe/Madrid');
+        $dayOfWeek = $now->dayOfWeek; // Sunday = 0, Monday = 1, ... Saturday = 6
+        if ($dayOfWeek >= 1 && $dayOfWeek <= 5) {
+            $time = $now->format('H:i');
+            return $time >= '15:30' && $time <= '22:00';
+        }
+        return false;
+    }
 }

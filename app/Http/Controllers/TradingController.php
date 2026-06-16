@@ -257,9 +257,9 @@ class TradingController extends Controller
                 'pnl' => $pnlValue
             ]);
 
-            $isFilled = strtolower($orderStatus) === 'filled';
+            $isMarketOpen = $this->tradingService->isMarketOpen();
             $msg = "Orden de " . ($side === 'buy' ? 'Compra' : 'Venta') . " enviada correctamente. ID de Orden: " . $result['order']['id'];
-            if (!$isFilled) {
+            if (!$isMarketOpen) {
                 $msg .= "<br><br>⚠️ <strong>Nota de Mercado Cerrado:</strong> El mercado de valores de EE.UU. está cerrado actualmente (abre de Lunes a Viernes de 15:30 a 22:00 hora de España). Tu orden ha quedado encolada de forma segura y se ejecutará automáticamente cuando abra el mercado. Tus acciones correspondientes han quedado retenidas/bloqueadas temporalmente en el broker para evitar operaciones duplicadas.";
             }
 

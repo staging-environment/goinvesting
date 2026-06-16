@@ -39,4 +39,9 @@ interface TradingProviderInterface
      * - 'message' (optional string in case of failure)
      */
     public function placeOrder(string $symbol, float $qty, string $side, string $type = 'market', ?float $limitPrice = null): array;
+
+    /**
+     * Check if the market is currently open.
+     */
+    public function isMarketOpen(): bool;
 }

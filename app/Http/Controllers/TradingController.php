@@ -45,6 +45,37 @@ class TradingController extends Controller
         $weeklyLimit = $user->weekly_spend_limit;
         $monthlyLimit = $user->monthly_spend_limit;
 
+        // Cache connection status check for both modes to avoid slowing down page loads
+        $statusPaper = cache()->remember("alpaca_conn_status_paper_{$user->id}", 600, function() use ($user) {
+            if (!$user->alpaca_key_id || !$user->alpaca_secret_key) return 'no_configured';
+            try {
+                $service = new \App\Services\AlpacaService(
+                    $user->alpaca_key_id, 
+                    $user->alpaca_secret_key, 
+                    $user->alpaca_account_id, 
+                    true
+                );
+                return $service->getAccountInfo() ? 'connected' : 'failed';
+            } catch (\Exception $e) {
+                return 'failed';
+            }
+        });
+
+        $statusLive = cache()->remember("alpaca_conn_status_live_{$user->id}", 600, function() use ($user) {
+            if (!$user->alpaca_live_key_id || !$user->alpaca_live_secret_key) return 'no_configured';
+            try {
+                $service = new \App\Services\AlpacaService(
+                    $user->alpaca_live_key_id, 
+                    $user->alpaca_live_secret_key, 
+                    $user->alpaca_live_account_id, 
+                    false
+                );
+                return $service->getAccountInfo() ? 'connected' : 'failed';
+            } catch (\Exception $e) {
+                return 'failed';
+            }
+        });
+
         if (!$this->tradingService->isConfigured()) {
             return view('portfolio', [
                 'error' => 'No has configurado tus credenciales personales de Alpaca o el proveedor actual no está configurado. Por favor, añade tus credenciales en tu Perfil.',
@@ -56,6 +87,8 @@ class TradingController extends Controller
                 'dailyLimit' => $dailyLimit,
                 'weeklyLimit' => $weeklyLimit,
                 'monthlyLimit' => $monthlyLimit,
+                'statusPaper' => $statusPaper,
+                'statusLive' => $statusLive,
             ]);
         }
 
@@ -119,7 +152,9 @@ class TradingController extends Controller
             'monthlySpent',
             'dailyLimit',
             'weeklyLimit',
-            'monthlyLimit'
+            'monthlyLimit',
+            'statusPaper',
+            'statusLive'
         ));
     }
 
@@ -244,12 +279,17 @@ class TradingController extends Controller
         $connectionSuccess = true;
         $connectionMessage = '';
 
-        if ($user->alpaca_key_id && $user->alpaca_secret_key) {
+        // FIX: Resolve the keys for the NEW mode we are testing, NOT always the paper mode
+        $keyId = $newMode ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
+        $secretKey = $newMode ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
+        $accountId = $newMode ? ($user->alpaca_account_id ?? '') : ($user->alpaca_live_account_id ?? '');
+
+        if ($keyId && $secretKey) {
             try {
                 $tempService = new \App\Services\AlpacaService(
-                    $user->alpaca_key_id, 
-                    $user->alpaca_secret_key, 
-                    $user->alpaca_account_id, 
+                    $keyId, 
+                    $secretKey, 
+                    $accountId, 
                     $newMode
                 );
                 $accountInfo = $tempService->getAccountInfo();
@@ -269,8 +309,12 @@ class TradingController extends Controller
             }
         } else {
             $connectionSuccess = false;
-            $connectionMessage = 'No tienes configuradas las credenciales de Alpaca para conectar.';
+            $connectionMessage = 'No tienes configuradas las credenciales de Alpaca para conectar en modo ' . $modeText . '.';
         }
+
+        // Clear cache keys so that the status is re-evaluated
+        cache()->forget("alpaca_conn_status_paper_{$user->id}");
+        cache()->forget("alpaca_conn_status_live_{$user->id}");
 
         if ($connectionSuccess) {
             return redirect()->route('portfolio')->with('success', "Cambiado correctamente a modo {$modeText}. Conexión exitosa.");
@@ -279,7 +323,10 @@ class TradingController extends Controller
             $user->alpaca_is_paper = $originalMode;
             $user->save();
             
-            return redirect()->route('portfolio')->with('error', $connectionMessage);
+            $originalModeText = $originalMode ? 'Simulación (Paper)' : 'Real (Live)';
+            $fullMessage = "No se pudo cambiar al modo <strong>{$modeText}</strong> debido a un fallo de conexión. <br><strong>Hemos mantenido tu modo activo en {$originalModeText}</strong>.<br><br>" . $connectionMessage;
+            
+            return redirect()->route('portfolio')->with('error', $fullMessage);
         }
     }
 }

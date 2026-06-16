@@ -135,6 +135,10 @@ class ProfileController extends Controller
         }
         $user->update($updateData);
 
+        // Clear connection cache keys so they are re-checked immediately
+        cache()->forget("alpaca_conn_status_paper_{$user->id}");
+        cache()->forget("alpaca_conn_status_live_{$user->id}");
+
         if ($connectionSuccess) {
             return Redirect::route('profile.edit')
                 ->with('status', 'alpaca-updated-success');

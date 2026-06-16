@@ -125,7 +125,21 @@
                     </form>
                 @endif
             </div>
-            <p class="text-sm text-slate-400 mt-2">Control de fondos y posiciones integradas con tu cuenta de Alpaca Broker</p>
+            <p class="text-sm text-slate-400 mt-2 flex flex-wrap items-center gap-2">
+                <span>Control de fondos y posiciones integradas con tu cuenta de Alpaca Broker</span>
+                @if(isset($statusPaper) && isset($statusLive))
+                    <span class="inline-flex items-center gap-3 text-[10px] font-bold text-slate-500 bg-slate-950/40 px-2.5 py-1 rounded-lg border border-slate-900/60 shadow-inner">
+                        <span class="flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $statusPaper === 'connected' ? 'bg-green-500' : ($statusPaper === 'failed' ? 'bg-red-500' : 'bg-slate-700') }}"></span>
+                            Simulación: <span class="{{ $statusPaper === 'connected' ? 'text-green-400' : ($statusPaper === 'failed' ? 'text-red-400' : 'text-slate-500') }}">{{ $statusPaper === 'connected' ? 'Activa' : ($statusPaper === 'failed' ? 'Error' : 'Sin configurar') }}</span>
+                        </span>
+                        <span class="flex items-center gap-1 border-l border-slate-900/80 pl-3">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $statusLive === 'connected' ? 'bg-green-500' : ($statusLive === 'failed' ? 'bg-red-500' : 'bg-slate-700') }}"></span>
+                            Real: <span class="{{ $statusLive === 'connected' ? 'text-green-400' : ($statusLive === 'failed' ? 'text-red-400' : 'text-slate-500') }}">{{ $statusLive === 'connected' ? 'Activa' : ($statusLive === 'failed' ? 'Error' : 'Sin configurar') }}</span>
+                        </span>
+                    </span>
+                @endif
+            </p>
         </div>
         <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
             Volver a mercados

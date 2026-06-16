@@ -91,7 +91,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
                     </svg>
                 </div>
-                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-355 bg-clip-text text-transparent">Go<span class="text-indigo-305 font-bold">Investing</span></span>
+                <span class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-indigo-300 bg-clip-text text-transparent">Go<span class="text-indigo-400 font-bold">Investing</span></span>
             </a>
 
             <!-- Autocomplete Search Bar -->

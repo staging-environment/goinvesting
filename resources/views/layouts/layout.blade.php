@@ -81,7 +81,7 @@
 
 
     <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 w-full bg-[#070913]/85 backdrop-blur-md border-b border-slate-900">
+    <header class="sticky top-0 z-40 w-full bg-gradient-to-r from-slate-950/85 via-[#0b1029]/80 to-slate-950/85 backdrop-blur-md border-b border-indigo-500/20 shadow-lg shadow-indigo-950/10">
         <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-4">
             
             <!-- Logo -->

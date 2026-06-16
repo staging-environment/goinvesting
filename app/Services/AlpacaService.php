@@ -223,4 +223,43 @@ class AlpacaService implements TradingProviderInterface
         }
         return false;
     }
+
+    /**
+     * Cancel open orders for a specific symbol and side.
+     */
+    public function cancelOrders(string $symbol, string $side): bool
+    {
+        if (!$this->isConfigured()) return false;
+
+        $symbol = strtoupper($symbol);
+        if (str_ends_with($symbol, '-USD')) {
+            $symbol = str_replace('-USD', '/USD', $symbol);
+        }
+        $side = strtolower($side);
+
+        $endpoint = $this->isBroker ? "/orders" : "/v2/orders";
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(10)
+                ->get("{$this->baseUrl}{$endpoint}");
+
+            if ($response->successful()) {
+                $orders = $response->json();
+                foreach ($orders as $order) {
+                    if (strtoupper($order['symbol']) === $symbol && strtolower($order['side']) === $side) {
+                        $orderId = $order['id'];
+                        $deleteEndpoint = $this->isBroker ? "/orders/{$orderId}" : "/v2/orders/{$orderId}";
+                        Http::withHeaders($this->getHeaders())
+                            ->timeout(10)
+                            ->delete("{$this->baseUrl}{$deleteEndpoint}");
+                        Log::info("Cancelled opposing Alpaca order {$orderId} for symbol {$symbol}");
+                    }
+                }
+                return true;
+            }
+        } catch (\Exception $e) {
+            Log::error("Error cancelling Alpaca orders: " . $e->getMessage());
+        }
+        return false;
+    }
 }

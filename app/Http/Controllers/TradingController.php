@@ -248,6 +248,12 @@ class TradingController extends Controller
             }
         }
 
+        // Cancel any opposing open orders to avoid wash trading errors
+        if (method_exists($this->tradingService, 'cancelOrders')) {
+            $opposingSide = ($side === 'buy') ? 'sell' : 'buy';
+            $this->tradingService->cancelOrders($symbol, $opposingSide);
+        }
+
         $result = $this->tradingService->placeOrder($symbol, $qty, $side, $type, $limitPrice);
 
         if ($result['success']) {

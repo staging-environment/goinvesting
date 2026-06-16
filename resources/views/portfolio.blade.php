@@ -871,11 +871,21 @@
                                                     $friendlyName = $friendlyNames[$pos['symbol']] ?? $pos['name'] ?? $pos['symbol'];
                                                 @endphp
                                                 <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
-                                                <span class="text-[10px] text-slate-500 font-medium">{{ $pos['symbol'] }}</span>
+                                                <div class="flex items-center gap-1.5 mt-0.5">
+                                                    <span class="text-[10px] text-slate-500 font-medium">{{ $pos['symbol'] }}</span>
+                                                    <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                                                        COMPRADO
+                                                    </span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td class="py-4.5 px-5 text-right font-semibold text-slate-200 text-sm">
-                                            {{ $pos['qty'] }}
+                                            <div class="flex flex-col items-end">
+                                                <span class="font-mono text-slate-200">{{ number_format($pos['qty'], 4) }}</span>
+                                                <span class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">
+                                                    {{ (str_contains($pos['symbol'], 'BTC') || str_contains($pos['symbol'], 'ETH') || str_contains($pos['symbol'], 'USD') || str_contains($pos['symbol'], '/')) ? 'unidades' : 'acciones' }}
+                                                </span>
+                                            </div>
                                         </td>
                                         <td class="py-4.5 px-5 text-right font-medium text-slate-400 text-sm">
                                             ${{ number_format($pos['avg_entry_price'], 2) }}

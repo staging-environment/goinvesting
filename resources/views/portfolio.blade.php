@@ -3,6 +3,69 @@
 @section('title', 'Mi Portafolio Financiero | GoInvesting')
 
 @section('content')
+@php
+    $friendlyNames = [
+        // Indices
+        '^GSPC' => 'S&P 500',
+        '^DJI' => 'Dow Jones',
+        '^IXIC' => 'NASDAQ',
+        '^FTSE' => 'FTSE 100',
+        '^GDAXI' => 'DAX 40',
+        '^N225' => 'Nikkei 225',
+        '^IBEX' => 'IBEX 35',
+        '^FCHI' => 'CAC 40',
+        '^STOXX50E' => 'Euro Stoxx 50',
+        '^HSI' => 'Hang Seng',
+
+        // Stocks
+        'AAPL' => 'Apple',
+        'MSFT' => 'Microsoft',
+        'GOOGL' => 'Google',
+        'AMZN' => 'Amazon',
+        'TSLA' => 'Tesla',
+        'NVDA' => 'Nvidia',
+        'META' => 'Meta (Facebook)',
+        'NFLX' => 'Netflix',
+        'AMD' => 'AMD',
+        'JPM' => 'JPMorgan Chase',
+
+        // Forex
+        'EURUSD=X' => 'EUR / USD',
+        'GBPUSD=X' => 'GBP / USD',
+        'USDJPY=X' => 'USD / JPY',
+        'AUDUSD=X' => 'AUD / USD',
+        'USDCAD=X' => 'USD / CAD',
+        'EURGBP=X' => 'EUR / GBP',
+        'USDCHF=X' => 'USD / CHF',
+        'EURJPY=X' => 'EUR / JPY',
+        'GBPJPY=X' => 'GBP / JPY',
+        'NZDUSD=X' => 'NZD / USD',
+
+        // Crypto
+        'BTC-USD' => 'Bitcoin',
+        'ETH-USD' => 'Ethereum',
+        'SOL-USD' => 'Solana',
+        'BNB-USD' => 'Binance Coin',
+        'ADA-USD' => 'Cardano',
+        'XRP-USD' => 'Ripple',
+        'DOT-USD' => 'Polkadot',
+        'DOGE-USD' => 'Dogecoin',
+        'AVAX-USD' => 'Avalanche',
+        'LINK-USD' => 'Chainlink',
+
+        // Commodities
+        'GC=F' => 'Oro',
+        'CL=F' => 'Petróleo Crudo',
+        'SI=F' => 'Plata',
+        'NG=F' => 'Gas Natural',
+        'BZ=F' => 'Petróleo Brent',
+        'HG=F' => 'Cobre',
+        'PL=F' => 'Platino',
+        'PA=F' => 'Paladio',
+        'ZC=F' => 'Maíz',
+        'ZW=F' => 'Trigo'
+    ];
+@endphp
 <div class="space-y-8">
     
     <!-- Header -->
@@ -432,7 +495,7 @@
                             <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
                                 <th class="py-4 px-5">
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-slate-500">Símbolo</span>
+                                        <span class="text-slate-500">Activo</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
                                             <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
@@ -455,7 +518,6 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th class="py-4 px-5 text-slate-500">Nombre</th>
                                 <th class="py-4 px-5 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Cantidad</span>
@@ -612,7 +674,7 @@
                         <tbody class="divide-y divide-slate-900/50">
                             @if(empty($positions))
                                 <tr>
-                                     <td colspan="9" class="py-8 text-center text-sm text-slate-500">No tienes posiciones abiertas en este momento.</td>
+                                     <td colspan="8" class="py-8 text-center text-sm text-slate-500">No tienes posiciones abiertas en este momento.</td>
                                 </tr>
                             @else
                                 @foreach($positions as $pos)
@@ -623,10 +685,13 @@
                                     @endphp
                                     <tr class="hover:bg-slate-950/40 transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $pos['symbol']) }}'">
                                         <td class="py-4.5 px-5">
-                                            <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $pos['symbol'] }}</span>
-                                        </td>
-                                        <td class="py-4.5 px-5">
-                                            <span class="text-xs text-slate-400 block max-w-[120px] truncate">{{ $pos['name'] }}</span>
+                                            <div class="flex flex-col">
+                                                @php
+                                                    $friendlyName = $friendlyNames[$pos['symbol']] ?? $pos['name'] ?? $pos['symbol'];
+                                                @endphp
+                                                <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                                <span class="text-[10px] text-slate-500 font-medium">{{ $pos['symbol'] }}</span>
+                                            </div>
                                         </td>
                                         <td class="py-4.5 px-5 text-right font-semibold text-slate-200 text-sm">
                                             {{ $pos['qty'] }}
@@ -691,7 +756,7 @@
                                 <th class="py-4 px-5">Fecha</th>
                                 <th class="py-4 px-5">Tipo</th>
                                 <th class="py-4 px-5">Origen</th>
-                                <th class="py-4 px-5">Símbolo</th>
+                                <th class="py-4 px-5">Activo</th>
                                 <th class="py-4 px-5 text-right">Cantidad</th>
                                 <th class="py-4 px-5 text-right">Precio Ejecución</th>
                                 <th class="py-4 px-5 text-right">Total</th>
@@ -721,8 +786,14 @@
                                         <td class="py-3.5 px-5 text-xs text-slate-400 font-bold">
                                             {{ $trade->bot_execution_id ? 'Bot Automático' : 'Manual' }}
                                         </td>
-                                        <td class="py-3.5 px-5 text-sm font-bold text-white">
-                                            {{ $trade->symbol }}
+                                        <td class="py-3.5 px-5">
+                                            <div class="flex flex-col">
+                                                @php
+                                                    $friendlyName = $friendlyNames[$trade->symbol] ?? $trade->symbol;
+                                                @endphp
+                                                <span class="font-extrabold text-sm text-white">{{ $friendlyName }}</span>
+                                                <span class="text-[9px] text-slate-500 font-medium">{{ $trade->symbol }}</span>
+                                            </div>
                                         </td>
                                         <td class="py-3.5 px-5 text-right text-xs text-slate-300 font-semibold">
                                             {{ $trade->qty }}

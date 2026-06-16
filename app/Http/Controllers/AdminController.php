@@ -71,6 +71,18 @@ class AdminController extends Controller
     }
 
     /**
+     * Show create user form.
+     */
+    public function createUserForm()
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'No tienes permiso para acceder a esta página.');
+        }
+
+        return view('admin.create-user');
+    }
+
+    /**
      * Create a new user.
      */
     public function createUser(Request $request)
@@ -97,6 +109,62 @@ class AdminController extends Controller
             'weekly_spend_limit' => $request->input('weekly_spend_limit'),
         ]);
 
-        return redirect()->back()->with('success', 'Usuario creado correctamente.');
+        return redirect()->route('admin.dashboard')->with('success', 'Usuario creado correctamente.');
+    }
+
+    /**
+     * Show edit user form.
+     */
+    public function editUserForm($id)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'No tienes permiso para acceder a esta página.');
+        }
+
+        $user = User::findOrFail($id);
+        return view('admin.edit-user', compact('user'));
+    }
+
+    /**
+     * Update user details.
+     */
+    public function updateUser(Request $request, $id)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $user = User::findOrFail($id);
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+            'role' => 'required|in:admin,investor',
+            'daily_spend_limit' => 'nullable|numeric|min:0',
+            'weekly_spend_limit' => 'nullable|numeric|min:0',
+            'password' => 'nullable|string|min:8',
+        ]);
+
+        $updateData = [
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'role' => $request->input('role'),
+            'daily_spend_limit' => $request->input('daily_spend_limit'),
+            'weekly_spend_limit' => $request->input('weekly_spend_limit'),
+        ];
+
+        if ($request->filled('password')) {
+            $updateData['password'] = bcrypt($request->input('password'));
+        }
+
+        // Prevent removing own admin privileges
+        if ($user->id === auth()->id() && $request->input('role') !== 'admin') {
+            return redirect()->back()->withErrors(['error' => 'No puedes revocarte los permisos de administrador a ti mismo.']);
+        }
+
+        $user->update($updateData);
+
+        return redirect()->route('admin.dashboard')->with('success', "Usuario {$user->name} actualizado correctamente.");
     }
 }
+

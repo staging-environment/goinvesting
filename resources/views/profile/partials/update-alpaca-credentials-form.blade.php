@@ -1,10 +1,10 @@
 <section>
     <header>
-        <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+        <h2 class="text-lg font-medium text-slate-100">
             {{ __('Credenciales de Alpaca API') }}
         </h2>
 
-        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <p class="mt-1 text-sm text-slate-400">
             {{ __('Configura tus credenciales personales de Alpaca Broker para interconectar tu cuenta con la plataforma de trading.') }}
         </p>
     </header>
@@ -32,7 +32,7 @@
         </div>
 
         <div class="flex items-center gap-2">
-            <input id="alpaca_is_paper" name="alpaca_is_paper" type="checkbox" value="1" {{ old('alpaca_is_paper', $user->alpaca_is_paper) ? 'checked' : '' }} class="rounded border-gray-350 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 focus:ring-offset-gray-800">
+            <input id="alpaca_is_paper" name="alpaca_is_paper" type="checkbox" value="1" {{ old('alpaca_is_paper', $user->alpaca_is_paper) ? 'checked' : '' }} class="rounded border-slate-800 bg-slate-950 text-indigo-600 shadow-sm focus:ring-indigo-500 focus:ring-offset-slate-900">
             <x-input-label for="alpaca_is_paper" :value="__('Cuenta de Simulación (Paper Trading)')" class="inline" />
             <x-input-error class="mt-2" :messages="$errors->get('alpaca_is_paper')" />
         </div>

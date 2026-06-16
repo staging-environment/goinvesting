@@ -138,6 +138,73 @@
             @php
                 $symbol = $assetData['symbol'] ?? '';
                 $isTradeable = !str_starts_with($symbol, '^') && !str_contains($symbol, '=X') && !str_contains($symbol, '=F');
+                
+                // Mapeo de alternativas de ETFs negociables para símbolos no negociables populares
+                $alternativesMap = [
+                    // Índices
+                    '^IBEX' => [
+                        ['symbol' => 'EWP', 'name' => 'iShares MSCI Spain ETF', 'desc' => 'Replica el rendimiento de empresas españolas de media y gran capitalización.']
+                    ],
+                    '^GSPC' => [
+                        ['symbol' => 'SPY', 'name' => 'SPDR S&P 500 ETF Trust', 'desc' => 'Replica las 500 mayores empresas de EE.UU.'],
+                        ['symbol' => 'VOO', 'name' => 'Vanguard S&P 500 ETF', 'desc' => 'ETF de bajo coste que replica el S&P 500.']
+                    ],
+                    '^IXIC' => [
+                        ['symbol' => 'QQQ', 'name' => 'Invesco QQQ Trust', 'desc' => 'Sigue las 100 mayores empresas no financieras del Nasdaq.'],
+                    ],
+                    '^NDX' => [
+                        ['symbol' => 'QQQ', 'name' => 'Invesco QQQ Trust', 'desc' => 'Sigue las 100 mayores empresas no financieras del Nasdaq.'],
+                    ],
+                    '^DJI' => [
+                        ['symbol' => 'DIA', 'name' => 'SPDR Dow Jones Industrial Average ETF', 'desc' => 'Replica las 30 corporaciones industriales del Dow Jones.']
+                    ],
+                    '^FTSE' => [
+                        ['symbol' => 'EWU', 'name' => 'iShares MSCI United Kingdom ETF', 'desc' => 'Acciones de gran y mediana capitalización del Reino Unido.']
+                    ],
+                    '^GDAXI' => [
+                        ['symbol' => 'EWG', 'name' => 'iShares MSCI Germany ETF', 'desc' => 'Acciones alemanas líderes de gran y mediana capitalización.']
+                    ],
+                    '^N225' => [
+                        ['symbol' => 'EWJ', 'name' => 'iShares MSCI Japan ETF', 'desc' => 'Sigue una amplia gama de acciones líderes en Japón.']
+                    ],
+                    '^FCHI' => [
+                        ['symbol' => 'EWQ', 'name' => 'iShares MSCI France ETF', 'desc' => 'Acciones francesas líderes de gran y mediana capitalización.']
+                    ],
+                    '^STOXX50E' => [
+                        ['symbol' => 'FEZ', 'name' => 'SPDR EURO STOXX 50 ETF', 'desc' => 'Las 50 mayores empresas líderes de la Eurozona.']
+                    ],
+                    '^HSI' => [
+                        ['symbol' => 'EWH', 'name' => 'iShares MSCI Hong Kong ETF', 'desc' => 'Acciones representativas del mercado de Hong Kong.']
+                    ],
+                    
+                    // Forex / Divisas
+                    'EURUSD=X' => [
+                        ['symbol' => 'FXE', 'name' => 'Invesco Euro Currency Trust', 'desc' => 'Sigue de cerca el comportamiento del euro frente al dólar.']
+                    ],
+                    
+                    // Materias Primas
+                    'GC=F' => [
+                        ['symbol' => 'GLD', 'name' => 'SPDR Gold Shares', 'desc' => 'Sigue el precio del lingote de oro físico de forma directa.'],
+                        ['symbol' => 'IAU', 'name' => 'iShares Gold Trust', 'desc' => 'Alternativa de bajo coste para seguir el precio del oro.']
+                    ],
+                    'CL=F' => [
+                        ['symbol' => 'USO', 'name' => 'United States Oil Fund', 'desc' => 'Sigue el precio del petróleo crudo ligero dulce (WTI).']
+                    ],
+                    'BZ=F' => [
+                        ['symbol' => 'BNO', 'name' => 'United States Brent Oil Fund', 'desc' => 'Sigue el precio del petróleo de referencia global Brent.']
+                    ],
+                    'LGO=F' => [
+                        ['symbol' => 'BNO', 'name' => 'United States Brent Oil Fund', 'desc' => 'Sigue el petróleo Brent, el proxy más cercano negociable.']
+                    ],
+                    'SI=F' => [
+                        ['symbol' => 'SLV', 'name' => 'iShares Silver Trust', 'desc' => 'Sigue el precio de los lingotes de plata física.']
+                    ],
+                    'NG=F' => [
+                        ['symbol' => 'UNG', 'name' => 'United States Natural Gas Fund', 'desc' => 'Sigue el precio de los futuros de gas natural.']
+                    ]
+                ];
+                
+                $alternatives = $alternativesMap[$symbol] ?? [];
             @endphp
             <!-- Panel de Trading -->
             <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4">
@@ -179,9 +246,35 @@
                                 Tu bróker (Alpaca) solo soporta la compra y venta de <strong>acciones estadounidenses, ETFs y Criptomonedas principales</strong>.
                             </p>
                         </div>
-                        <p class="text-[11px] text-slate-500 leading-normal">
-                            Si deseas seguir el comportamiento de este índice de forma invertida, puedes buscar e invertir en un ETF indexado compatible que cotice en la bolsa de EE.UU. (ej. ETFs de índices).
-                        </p>
+                        
+                        @if(!empty($alternatives))
+                            <div class="space-y-3 pt-2">
+                                <h3 class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Alternativas operables en Alpaca:</h3>
+                                <div class="space-y-2">
+                                    @foreach($alternatives as $alt)
+                                        <a href="{{ route('asset.show', ['symbol' => $alt['symbol']]) }}" 
+                                           class="block p-3 rounded-xl bg-slate-950/40 border border-slate-900/60 hover:border-indigo-500/60 hover:bg-slate-900/60 transition group">
+                                            <div class="flex items-center justify-between">
+                                                <div class="space-y-1 pr-2">
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-xs font-extrabold text-indigo-400 group-hover:text-indigo-300 transition">{{ $alt['symbol'] }}</span>
+                                                        <span class="text-[10px] font-semibold text-slate-300">{{ $alt['name'] }}</span>
+                                                    </div>
+                                                    <p class="text-[10px] text-slate-500 leading-normal">{{ $alt['desc'] }}</p>
+                                                </div>
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-slate-500 group-hover:text-indigo-400 group-hover:translate-x-0.5 transition-all flex-shrink-0">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                                                </svg>
+                                            </div>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @else
+                            <p class="text-[11px] text-slate-500 leading-normal">
+                                Si deseas obtener exposición a este índice o invertir en el mercado correspondiente, puedes buscar e invertir en un ETF indexado compatible que cotice en la bolsa de EE.UU. (ej. ETFs de índices).
+                            </p>
+                        @endif
                     </div>
                 @else
                     <form action="{{ route('trade.execute') }}" method="POST" class="space-y-4"

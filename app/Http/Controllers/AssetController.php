@@ -50,9 +50,9 @@ class AssetController extends Controller
                 $data['watchlist'] = $this->filterQuotes($watchlistSymbols, $watchlistQuotes);
             }
 
-            $alpacaService = app(\App\Services\AlpacaService::class);
-            if ($alpacaService->isConfigured()) {
-                $data['alpacaAccount'] = $alpacaService->getAccountInfo();
+            $tradingService = app(\App\Services\TradingProviderInterface::class);
+            if ($tradingService->isConfigured()) {
+                $data['alpacaAccount'] = $tradingService->getAccountInfo();
             }
         }
 

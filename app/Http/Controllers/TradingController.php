@@ -282,7 +282,8 @@ class TradingController extends Controller
 
             return redirect()->back()->with('success', $msg)->with('active_tab', $activeTab);
         } else {
-            return redirect()->back()->withErrors(['error' => $result['message']])->with('active_tab', $activeTab);
+            $friendlyError = $this->translateErrorMessage($result['message'] ?? 'Error desconocido al colocar la orden.');
+            return redirect()->back()->withErrors(['error' => $friendlyError])->with('active_tab', $activeTab);
         }
     }
 
@@ -403,5 +404,40 @@ class TradingController extends Controller
             
             return redirect()->back()->with('error', $fullMessage);
         }
+    }
+
+    /**
+     * Translates Alpaca API error messages to user-friendly Spanish.
+     */
+    protected function translateErrorMessage(string $message): string
+    {
+        $messageLower = strtolower($message);
+
+        if (str_contains($messageLower, 'potential wash trade')) {
+            return 'Se ha detectado una posible operación de autocartera (Wash Trade). Esto ocurre si tienes otra orden pendiente de signo opuesto (por ejemplo, una compra abierta mientras intentas vender). Intenta pulsar el botón de nuevo, ya que el sistema debería haber cancelado la orden conflictiva automáticamente.';
+        }
+
+        if (str_contains($messageLower, 'insufficient buying power') || str_contains($messageLower, 'insufficient funds')) {
+            return 'Fondos o poder de compra insuficiente en tu cuenta de Alpaca para realizar esta operación.';
+        }
+
+        if (str_contains($messageLower, 'unauthorized') || str_contains($messageLower, 'forbidden')) {
+            return 'Error de autenticación con Alpaca. Por favor, revisa tus API Keys en tu perfil.';
+        }
+
+        if (str_contains($messageLower, 'qty must be positive')) {
+            return 'La cantidad debe ser mayor que cero.';
+        }
+
+        if (str_contains($messageLower, 'order size is too small')) {
+            return 'El tamaño de la orden es demasiado pequeño para este activo en el bróker.';
+        }
+
+        if (str_contains($messageLower, 'market is closed')) {
+            return 'El mercado está cerrado y esta orden no puede ser procesada actualmente.';
+        }
+
+        // Return original message if no translation is available
+        return $message;
     }
 }

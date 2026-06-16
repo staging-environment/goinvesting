@@ -23,6 +23,10 @@
 
     <!-- Custom Premium Styles -->
     <style>
+        [x-cloak] {
+            display: none !important;
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
             background-color: #070913;
@@ -221,7 +225,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full bg-[#030712] border-t border-slate-900/60 pt-16 pb-8 text-xs text-slate-500">
+    <footer class="w-full bg-[#030712] border-t border-slate-900/60 pt-16 pb-8 text-xs text-slate-500" x-data="{ showPrivacyModal: false, showTermsModal: false }">
         <div class="max-w-7xl mx-auto px-4 lg:px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                 <!-- Col 1: Brand Info -->
@@ -292,7 +296,7 @@
             <!-- Footer Bottom -->
             <div class="border-t border-slate-900/60 pt-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div class="flex flex-col gap-1 text-center md:text-left">
-                    <p class="text-[11px] text-slate-500 leading-relaxed max-w-2xl">
+                    <p class="text-[11px] text-slate-550 leading-relaxed max-w-2xl">
                         Aviso: El trading de activos financieros conlleva riesgos. Los datos de mercados son de carácter meramente informativo y de referencia, suministrados a través de las APIs gratuitas de Yahoo Finance y Alpaca.
                     </p>
                     <p class="text-[11px] text-slate-400 mt-1">
@@ -300,9 +304,72 @@
                     </p>
                 </div>
                 <div class="flex gap-4 shrink-0 text-[11px] text-slate-500">
-                    <a href="#" class="hover:text-indigo-400 transition duration-150">Política de Privacidad</a>
+                    <button @click="showPrivacyModal = true" class="hover:text-indigo-400 transition duration-150 cursor-pointer focus:outline-none">Política de Privacidad</button>
                     <span>&bull;</span>
-                    <a href="#" class="hover:text-indigo-400 transition duration-150">Términos de Servicio</a>
+                    <button @click="showTermsModal = true" class="hover:text-indigo-400 transition duration-150 cursor-pointer focus:outline-none">Términos de Servicio</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Privacy Policy Modal -->
+        <div x-show="showPrivacyModal" 
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             x-cloak>
+            <div class="relative w-full max-w-lg rounded-2xl glass-panel border border-slate-800/80 p-6 shadow-2xl max-h-[85vh] overflow-y-auto space-y-4" @click.away="showPrivacyModal = false">
+                <div class="flex items-center justify-between border-b border-slate-800/60 pb-3">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Política de Privacidad</h3>
+                    <button @click="showPrivacyModal = false" class="text-slate-400 hover:text-white transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-[12px] text-slate-300 space-y-3 leading-relaxed">
+                    <p><strong>1. Confidencialidad de los Datos:</strong> En GoInvesting nos tomamos muy en serio la seguridad. Esta plataforma opera bajo un modelo de trading simulado con fines demostrativos y educativos.</p>
+                    <p><strong>2. Almacenamiento Seguro de Credenciales:</strong> Si configuras tus claves API de Alpaca, éstas se guardan de forma encriptada en tu perfil. Únicamente se utilizan para interactuar con la plataforma de simulación (Paper Trading) de Alpaca Markets. <strong>Recomendamos encarecidamente utilizar solo credenciales Sandbox (de prueba)</strong>.</p>
+                    <p><strong>3. Cookies y Sesión:</strong> Usamos cookies esenciales para mantener tu sesión activa y proteger los formularios mediante tokens CSRF frente a accesos no autorizados.</p>
+                </div>
+                <div class="pt-3 border-t border-slate-800/60 flex justify-end">
+                    <button @click="showPrivacyModal = false" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold text-xs uppercase tracking-wider transition duration-150">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms of Service Modal -->
+        <div x-show="showTermsModal" 
+             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95"
+             x-cloak>
+            <div class="relative w-full max-w-lg rounded-2xl glass-panel border border-slate-800/80 p-6 shadow-2xl max-h-[85vh] overflow-y-auto space-y-4" @click.away="showTermsModal = false">
+                <div class="flex items-center justify-between border-b border-slate-800/60 pb-3">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider">Términos de Servicio</h3>
+                    <button @click="showTermsModal = false" class="text-slate-400 hover:text-white transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="text-[12px] text-slate-300 space-y-3 leading-relaxed">
+                    <div class="p-3 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 font-medium">
+                        ⚠️ AVISO DE RIESGO: El trading financiero conlleva pérdidas potenciales de capital. Utiliza esta herramienta con prudencia.
+                    </div>
+                    <p><strong>1. Uso de Simulación:</strong> Las herramientas de GoInvesting ejecutan compras y ventas automatizadas basadas en límites paramétricos. Todo el entorno está optimizado para cuentas simuladas ("Paper Trading"). El usuario asume plena responsabilidad si conecta claves reales con fondos reales.</p>
+                    <p><strong>2. Origen de los Datos:</strong> Las cotizaciones en vivo se obtienen de Yahoo Finance y Alpaca. Pueden contener desfases de tiempo. No garantizamos la precisión absoluta del precio en milisegundos.</p>
+                    <p><strong>3. Exclusión de Asesoramiento:</strong> GoInvesting no provee recomendaciones de inversión. Eres responsable de definir tus propios límites de gasto y mitigación de riesgos.</p>
+                </div>
+                <div class="pt-3 border-t border-slate-800/60 flex justify-end">
+                    <button @click="showTermsModal = false" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg font-bold text-xs uppercase tracking-wider transition duration-150">Aceptar</button>
                 </div>
             </div>
         </div>

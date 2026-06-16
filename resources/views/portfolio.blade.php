@@ -941,6 +941,7 @@
                                 <th class="py-4 px-5 text-right">Cantidad</th>
                                 <th class="py-4 px-5 text-right">Precio Ejecución</th>
                                 <th class="py-4 px-5 text-right">Total</th>
+                                <th class="py-4 px-5 text-center">Estado</th>
                                 <th class="py-4 px-5 text-right">Modo</th>
                             </tr>
                         </thead>
@@ -984,6 +985,17 @@
                                         </td>
                                         <td class="py-3.5 px-5 text-right text-xs text-slate-200 font-bold">
                                             ${{ number_format($tradeTotal, 2) }}
+                                        </td>
+                                        <td class="py-3.5 px-5 text-center">
+                                            @php
+                                                $status = strtolower($trade->status ?? 'filled');
+                                                $isCompleted = $status === 'filled';
+                                                $statusText = $isCompleted ? 'Completada' : ($status === 'rejected' ? 'Rechazada' : ($status === 'canceled' ? 'Cancelada' : 'En Cola'));
+                                                $statusColorClass = $isCompleted ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ($status === 'rejected' || $status === 'canceled' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20');
+                                            @endphp
+                                            <span class="text-[9px] px-2 py-0.5 rounded font-bold uppercase {{ $statusColorClass }}">
+                                                {{ $statusText }}
+                                            </span>
                                         </td>
                                         <td class="py-3.5 px-5 text-right">
                                             <span class="text-[10px] px-1.5 py-0.5 rounded font-medium uppercase {{ $trade->is_dry_run ? 'bg-amber-500/10 text-amber-400' : 'bg-green-500/10 text-green-400' }}">

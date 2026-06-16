@@ -203,6 +203,7 @@ class TradingController extends Controller
             // Record manual trade
             $marketQuotes = $this->yahooService->getSparkQuotes([$symbol]);
             $price = isset($marketQuotes[$symbol]) ? (float)$marketQuotes[$symbol]['price'] : ($limitPrice ?? 0.0);
+            $orderStatus = $result['order']['status'] ?? 'filled';
             
             \App\Models\Trade::create([
                 'user_id' => $user->id,
@@ -211,11 +212,16 @@ class TradingController extends Controller
                 'qty' => $qty,
                 'price' => $price,
                 'side' => $side,
-                'status' => 'filled',
+                'status' => $orderStatus,
                 'is_dry_run' => (bool)$user->alpaca_is_paper
             ]);
 
+            $isFilled = strtolower($orderStatus) === 'filled';
             $msg = "Orden de " . ($side === 'buy' ? 'Compra' : 'Venta') . " enviada correctamente. ID de Orden: " . $result['order']['id'];
+            if (!$isFilled) {
+                $msg .= "<br><br>⚠️ <strong>Nota de Mercado Cerrado:</strong> El mercado de valores de EE.UU. está cerrado actualmente (abre de Lunes a Viernes de 15:30 a 22:00 hora de España). Tu orden ha quedado encolada de forma segura y se ejecutará automáticamente cuando abra el mercado. Tus acciones correspondientes han quedado retenidas/bloqueadas temporalmente en el broker para evitar operaciones duplicadas.";
+            }
+
             return redirect()->back()->with('success', $msg);
         } else {
             return redirect()->back()->withErrors(['error' => $result['message']]);

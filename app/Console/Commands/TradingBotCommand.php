@@ -161,8 +161,10 @@ class TradingBotCommand extends Command
 
         $cash = (float)$account['cash'];
         $portfolioValue = (float)$account['portfolio_value'];
+        $buyingPower = (float)($account['buying_power'] ?? 0.0);
         $this->logLine("Balance de cuenta (Efectivo): \${$cash}");
         $this->logLine("Valor total del Portafolio: \${$portfolioValue}");
+        $this->logLine("Poder de Compra (Buying Power): \${$buyingPower}");
 
         // 2. Fetch Open Positions
         $rawPositions = $this->tradingService->getPositions();
@@ -285,8 +287,8 @@ class TradingBotCommand extends Command
                         continue;
                     }
 
-                    if ($cash < $this->orderSize) {
-                        $this->logLine("-> Compra cancelada: Efectivo disponible (\${$cash}) insuficiente para la orden de \${$this->orderSize}", 'warn');
+                    if ($buyingPower < $this->orderSize) {
+                        $this->logLine("-> Compra cancelada: Poder de compra (\${$buyingPower}) insuficiente para la orden de \${$this->orderSize}", 'warn');
                         continue;
                     }
 
@@ -331,6 +333,7 @@ class TradingBotCommand extends Command
                         // Update values for consecutive orders in this run
                         $totalInvested += $this->orderSize;
                         $cash -= $this->orderSize;
+                        $buyingPower -= $this->orderSize;
                     } else {
                         $res = $this->tradingService->placeOrder($tradingSymbol, $qtyToBuy, 'buy', 'market');
                         if ($res['success']) {
@@ -350,6 +353,7 @@ class TradingBotCommand extends Command
                             // Update values for consecutive orders in this run
                             $totalInvested += $this->orderSize;
                             $cash -= $this->orderSize;
+                            $buyingPower -= $this->orderSize;
                         } else {
                             $this->logLine("-> [FALLÓ] Error al comprar {$tradingSymbol}: " . $res['message'], 'error');
                         }

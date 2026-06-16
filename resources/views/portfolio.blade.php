@@ -259,7 +259,7 @@
 
             <!-- Execution Result details -->
             <div class="pt-4 flex flex-col md:flex-row md:items-start justify-between gap-4 text-xs">
-                <div class="space-y-2 max-w-2xl leading-relaxed text-left">
+                <div class="space-y-2 w-full md:flex-1 max-w-2xl leading-relaxed text-left">
                     <div class="font-bold text-slate-200">
                         @if($lastExecution)
                             Ejecutado hace: <strong class="text-indigo-300">{{ $lastExecution->started_at->diffForHumans() }}</strong>

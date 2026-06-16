@@ -93,6 +93,9 @@ class ProfileController extends Controller
             'bot_stop_loss' => 'required|numeric|max:0',
             'bot_order_size' => 'required|numeric|min:1',
             'bot_max_investment' => 'required|numeric|min:1',
+            'daily_spend_limit' => 'nullable|numeric|min:0',
+            'weekly_spend_limit' => 'nullable|numeric|min:0',
+            'monthly_spend_limit' => 'nullable|numeric|min:0',
         ]);
 
         $user = $request->user();
@@ -103,6 +106,9 @@ class ProfileController extends Controller
             'bot_stop_loss' => $request->input('bot_stop_loss'),
             'bot_order_size' => $request->input('bot_order_size'),
             'bot_max_investment' => $request->input('bot_max_investment'),
+            'daily_spend_limit' => $request->input('daily_spend_limit'),
+            'weekly_spend_limit' => $request->input('weekly_spend_limit'),
+            'monthly_spend_limit' => $request->input('monthly_spend_limit'),
         ]);
 
         return Redirect::route('profile.edit')->with('status', 'bot-strategy-updated');

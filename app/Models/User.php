@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
     'role',
     'daily_spend_limit',
     'weekly_spend_limit',
+    'monthly_spend_limit',
     'alpaca_key_id',
     'alpaca_secret_key',
     'alpaca_account_id',
@@ -48,6 +49,7 @@ class User extends Authenticatable
             'alpaca_is_paper' => 'boolean',
             'daily_spend_limit' => 'float',
             'weekly_spend_limit' => 'float',
+            'monthly_spend_limit' => 'float',
             'bot_buy_threshold' => 'float',
             'bot_take_profit' => 'float',
             'bot_stop_loss' => 'float',
@@ -93,6 +95,18 @@ class User extends Authenticatable
             ->sum(\DB::raw('qty * price'));
     }
 
+    public function getMonthlySpent(): float
+    {
+        return (float) $this->trades()
+            ->whereBetween('created_at', [
+                \Carbon\Carbon::now()->startOfMonth(),
+                \Carbon\Carbon::now()->endOfMonth()
+            ])
+            ->where('is_dry_run', false)
+            ->where('side', 'buy')
+            ->sum(\DB::raw('qty * price'));
+    }
+
     public function hasExceededDailyLimit(float $amountToAdd = 0.0): bool
     {
         if (is_null($this->daily_spend_limit)) return false;
@@ -103,6 +117,12 @@ class User extends Authenticatable
     {
         if (is_null($this->weekly_spend_limit)) return false;
         return ($this->getWeeklySpent() + $amountToAdd) > (float)$this->weekly_spend_limit;
+    }
+
+    public function hasExceededMonthlyLimit(float $amountToAdd = 0.0): bool
+    {
+        if (is_null($this->monthly_spend_limit)) return false;
+        return ($this->getMonthlySpent() + $amountToAdd) > (float)$this->monthly_spend_limit;
     }
 
     public function isAdmin(): bool

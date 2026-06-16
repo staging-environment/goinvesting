@@ -40,8 +40,10 @@ class TradingController extends Controller
             
         $dailySpent = $user->getDailySpent();
         $weeklySpent = $user->getWeeklySpent();
+        $monthlySpent = $user->getMonthlySpent();
         $dailyLimit = $user->daily_spend_limit;
         $weeklyLimit = $user->weekly_spend_limit;
+        $monthlyLimit = $user->monthly_spend_limit;
 
         if (!$this->tradingService->isConfigured()) {
             return view('portfolio', [
@@ -50,8 +52,10 @@ class TradingController extends Controller
                 'recentTrades' => $recentTrades,
                 'dailySpent' => $dailySpent,
                 'weeklySpent' => $weeklySpent,
+                'monthlySpent' => $monthlySpent,
                 'dailyLimit' => $dailyLimit,
                 'weeklyLimit' => $weeklyLimit,
+                'monthlyLimit' => $monthlyLimit,
             ]);
         }
 
@@ -93,8 +97,10 @@ class TradingController extends Controller
             'recentTrades',
             'dailySpent',
             'weeklySpent',
+            'monthlySpent',
             'dailyLimit',
-            'weeklyLimit'
+            'weeklyLimit',
+            'monthlyLimit'
         ));
     }
 
@@ -131,6 +137,9 @@ class TradingController extends Controller
             }
             if ($user->hasExceededWeeklyLimit($estimatedCost)) {
                 return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})."]);
+            }
+            if ($user->hasExceededMonthlyLimit($estimatedCost)) {
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite mensual de gasto (\${$user->monthly_spend_limit}, gastado este mes: \${$user->getMonthlySpent()})."]);
             }
         }
 

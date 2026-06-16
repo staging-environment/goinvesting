@@ -41,11 +41,32 @@
                 <x-input-error class="mt-2" :messages="$errors->get('bot_order_size')" />
             </div>
 
-            <div class="sm:col-span-2">
+            <div>
                 <x-input-label for="bot_max_investment" :value="__('Límite Máximo de Inversión del Bot ($)')" />
                 <x-text-input id="bot_max_investment" name="bot_max_investment" type="number" step="0.01" min="1" class="mt-1 block w-full" :value="old('bot_max_investment', $user->bot_max_investment ?? 500000.0)" required />
                 <span class="text-[10px] text-slate-500 mt-1 block">El presupuesto total máximo de tu cartera que el bot puede tener invertido en total de manera simultánea (ej: $500,000).</span>
                 <x-input-error class="mt-2" :messages="$errors->get('bot_max_investment')" />
+            </div>
+
+            <div>
+                <x-input-label for="daily_spend_limit" :value="__('Límite de Gasto Diario ($)')" />
+                <x-text-input id="daily_spend_limit" name="daily_spend_limit" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('daily_spend_limit', $user->daily_spend_limit)" />
+                <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra que el bot puede realizar en un solo día. Deja en blanco para sin límite.</span>
+                <x-input-error class="mt-2" :messages="$errors->get('daily_spend_limit')" />
+            </div>
+
+            <div>
+                <x-input-label for="weekly_spend_limit" :value="__('Límite de Gasto Semanal ($)')" />
+                <x-text-input id="weekly_spend_limit" name="weekly_spend_limit" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('weekly_spend_limit', $user->weekly_spend_limit)" />
+                <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra acumulado en una semana. Deja en blanco para sin límite.</span>
+                <x-input-error class="mt-2" :messages="$errors->get('weekly_spend_limit')" />
+            </div>
+
+            <div class="sm:col-span-2">
+                <x-input-label for="monthly_spend_limit" :value="__('Límite de Gasto Mensual ($)')" />
+                <x-text-input id="monthly_spend_limit" name="monthly_spend_limit" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('monthly_spend_limit', $user->monthly_spend_limit)" />
+                <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra acumulado en un mes. Deja en blanco para sin límite.</span>
+                <x-input-error class="mt-2" :messages="$errors->get('monthly_spend_limit')" />
             </div>
         </div>
 

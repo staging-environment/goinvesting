@@ -301,6 +301,11 @@ class TradingBotCommand extends Command
                         continue;
                     }
 
+                    if ($user->hasExceededMonthlyLimit($this->orderSize)) {
+                        $this->logLine("-> Compra cancelada: Supera el límite mensual de gasto del usuario (\${$user->monthly_spend_limit}, gastado este mes: \${$user->getMonthlySpent()})", 'warn');
+                        continue;
+                    }
+
                     $qtyToBuy = round($this->orderSize / $currentPrice, 4);
                     if ($qtyToBuy <= 0) {
                         $this->logLine("-> Compra cancelada: Cantidad a comprar es 0 debido al alto precio del activo.", 'warn');

@@ -58,13 +58,15 @@ class AdminController extends Controller
 
         $request->validate([
             'daily_spend_limit' => 'nullable|numeric|min:0',
-            'weekly_spend_limit' => 'nullable|numeric|min:0'
+            'weekly_spend_limit' => 'nullable|numeric|min:0',
+            'monthly_spend_limit' => 'nullable|numeric|min:0'
         ]);
 
         $user = User::findOrFail($id);
         $user->update([
             'daily_spend_limit' => $request->input('daily_spend_limit'),
-            'weekly_spend_limit' => $request->input('weekly_spend_limit')
+            'weekly_spend_limit' => $request->input('weekly_spend_limit'),
+            'monthly_spend_limit' => $request->input('monthly_spend_limit')
         ]);
 
         return redirect()->back()->with('success', "Límites de gasto para el usuario {$user->name} actualizados.");
@@ -98,6 +100,7 @@ class AdminController extends Controller
             'role' => 'required|in:admin,investor',
             'daily_spend_limit' => 'nullable|numeric|min:0',
             'weekly_spend_limit' => 'nullable|numeric|min:0',
+            'monthly_spend_limit' => 'nullable|numeric|min:0',
         ]);
 
         User::create([
@@ -107,6 +110,7 @@ class AdminController extends Controller
             'role' => $request->input('role'),
             'daily_spend_limit' => $request->input('daily_spend_limit'),
             'weekly_spend_limit' => $request->input('weekly_spend_limit'),
+            'monthly_spend_limit' => $request->input('monthly_spend_limit'),
         ]);
 
         return redirect()->route('admin.dashboard')->with('success', 'Usuario creado correctamente.');
@@ -142,6 +146,7 @@ class AdminController extends Controller
             'role' => 'required|in:admin,investor',
             'daily_spend_limit' => 'nullable|numeric|min:0',
             'weekly_spend_limit' => 'nullable|numeric|min:0',
+            'monthly_spend_limit' => 'nullable|numeric|min:0',
             'password' => 'nullable|string|min:8',
         ]);
 
@@ -151,6 +156,7 @@ class AdminController extends Controller
             'role' => $request->input('role'),
             'daily_spend_limit' => $request->input('daily_spend_limit'),
             'weekly_spend_limit' => $request->input('weekly_spend_limit'),
+            'monthly_spend_limit' => $request->input('monthly_spend_limit'),
         ];
 
         if ($request->filled('password')) {

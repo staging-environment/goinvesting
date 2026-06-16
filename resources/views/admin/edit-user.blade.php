@@ -73,6 +73,12 @@
                     <x-text-input id="weekly_spend_limit" type="number" step="0.01" name="weekly_spend_limit" placeholder="Ej: 25000 (Opcional)" class="w-full" :value="old('weekly_spend_limit', $user->weekly_spend_limit)" />
                     <x-input-error class="mt-2" :messages="$errors->get('weekly_spend_limit')" />
                 </div>
+
+                <div class="space-y-1 sm:col-span-2">
+                    <x-input-label for="monthly_spend_limit" :value="__('Límite de Gasto Mensual ($)')" />
+                    <x-text-input id="monthly_spend_limit" type="number" step="0.01" name="monthly_spend_limit" placeholder="Ej: 100000 (Opcional)" class="w-full" :value="old('monthly_spend_limit', $user->monthly_spend_limit)" />
+                    <x-input-error class="mt-2" :messages="$errors->get('monthly_spend_limit')" />
+                </div>
             </div>
 
             <div class="flex justify-end pt-4">

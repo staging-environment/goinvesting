@@ -53,7 +53,90 @@
             $buyingPower = (float)$account['buying_power'];
             $initialMargin = (float)$account['initial_margin'];
             $isPaper = str_contains($account['currency'], 'USD') && (auth()->user()->alpaca_is_paper ?? config('services.alpaca.is_paper'));
+
+            $totalUnrealizedPL = 0.0;
+            $hasPositions = !empty($positions);
+            foreach($positions as $pos) {
+                $totalUnrealizedPL += $pos['unrealized_pl'];
+            }
+            $isWinning = $totalUnrealizedPL >= 0;
         @endphp
+
+        <!-- Win/Loss Beautiful Banner -->
+        <div class="mb-2">
+            @if($hasPositions)
+                @if($isWinning)
+                    <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-emerald-950/20 via-slate-900 to-indigo-950/20 border-emerald-500/20 shadow-lg relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400 shrink-0 shadow-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 14.102-14.102M3.75 18h16.5" />
+                                </svg>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                    </span>
+                                    <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">¡Tu portafolio está en verde! 🚀</h3>
+                                </div>
+                                <p class="text-xs text-slate-350 leading-relaxed font-medium">
+                                    Actualmente estás ganando un total acumulado de <strong class="text-emerald-400 font-bold">${{ number_format($totalUnrealizedPL, 2) }}</strong> en tus posiciones abiertas. El bot de trading automático está gestionando tu capital con éxito.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-rose-950/20 via-slate-900 to-indigo-950/20 border-rose-500/20 shadow-lg relative overflow-hidden">
+                        <div class="absolute right-0 top-0 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                        <div class="flex items-start gap-4">
+                            <div class="p-3 bg-rose-500/10 rounded-xl border border-rose-500/20 text-rose-400 shrink-0 shadow-inner">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6 9 12.75l4.306-4.306A11.95 11.95 0 0 1 15 21.75M3.75 6h16.5" />
+                                </svg>
+                            </div>
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="relative flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                    </span>
+                                    <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Tu portafolio registra un ajuste temporal 📉</h3>
+                                </div>
+                                <p class="text-xs text-slate-350 leading-relaxed font-medium">
+                                    Tus posiciones actuales reflejan una variación de <strong class="text-rose-400 font-bold">${{ number_format($totalUnrealizedPL, 2) }}</strong>. La estrategia opera a mediano plazo y tus límites de pérdidas están activos para resguardar tu inversión.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                @endif
+            @else
+                <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-blue-950/20 via-slate-900 to-indigo-950/20 border-blue-500/20 shadow-lg relative overflow-hidden">
+                    <div class="absolute right-0 top-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400 shrink-0 shadow-inner">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                        </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                </span>
+                                <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Sin posiciones activas en cartera 📊</h3>
+                            </div>
+                            <p class="text-xs text-slate-350 leading-relaxed font-medium">
+                                Tu saldo líquido está disponible. Puedes configurar tu estrategia de trading automático en tu perfil y presionar "Ejecutar Bot" para iniciar operaciones.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @endif
+        </div>
 
         <!-- Account Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -152,7 +235,7 @@
         </div>
 
         <!-- Limits Progress Bars -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Daily Limit -->
             <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
                 <div class="flex items-center justify-between text-xs">
@@ -170,7 +253,7 @@
                     <div class="h-full {{ $dailyBarColor }} transition-all duration-500" style="width: {{ $dailyPercent }}%"></div>
                 </div>
                 <div class="text-[10px] text-slate-500 flex justify-between">
-                    <span>Límite establecido por el administrador para evitar pérdidas excesivas en un día.</span>
+                    <span>Límite diario establecido para evitar pérdidas excesivas en un solo día.</span>
                     <span class="font-bold text-slate-400">{{ round($dailyPercent, 1) }}%</span>
                 </div>
             </div>
@@ -192,8 +275,30 @@
                     <div class="h-full {{ $weeklyBarColor }} transition-all duration-500" style="width: {{ $weeklyPercent }}%"></div>
                 </div>
                 <div class="text-[10px] text-slate-500 flex justify-between">
-                    <span>Límite establecido para controlar el presupuesto de compra acumulado de la semana.</span>
+                    <span>Límite semanal establecido para controlar el presupuesto de compra acumulado.</span>
                     <span class="font-bold text-slate-400">{{ round($weeklyPercent, 1) }}%</span>
+                </div>
+            </div>
+
+            <!-- Monthly Limit -->
+            <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-bold text-slate-400 uppercase">Gasto Mensual Controlado</span>
+                    <span class="font-extrabold text-slate-200">
+                        ${{ number_format($monthlySpent, 2) }} / 
+                        {{ $monthlyLimit ? '$' . number_format($monthlyLimit, 2) : 'Sin Límite' }}
+                    </span>
+                </div>
+                @php
+                    $monthlyPercent = $monthlyLimit > 0 ? min(($monthlySpent / $monthlyLimit) * 100, 100) : 0;
+                    $monthlyBarColor = $monthlyPercent >= 90 ? 'bg-red-500' : ($monthlyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
+                @endphp
+                <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
+                    <div class="h-full {{ $monthlyBarColor }} transition-all duration-500" style="width: {{ $monthlyPercent }}%"></div>
+                </div>
+                <div class="text-[10px] text-slate-500 flex justify-between">
+                    <span>Límite mensual establecido para controlar el presupuesto acumulado a largo plazo.</span>
+                    <span class="font-bold text-slate-400">{{ round($monthlyPercent, 1) }}%</span>
                 </div>
             </div>
         </div>

@@ -66,6 +66,10 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #4f46e5;
         }
+        
+        [x-cloak] {
+            display: none !important;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">

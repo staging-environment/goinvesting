@@ -48,7 +48,7 @@
                 @endphp
                 <div>{!! $errText !!}</div>
                 @if(str_contains($errText ?? '', 'Real') || str_contains($errText ?? '', 'Live'))
-                    <button type="button" @click="$dispatch('open-alpaca-support')" class="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-extrabold underline flex items-center gap-1 cursor-pointer">
+                    <button type="button" x-data @click="$dispatch('open-alpaca-support')" class="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-extrabold underline flex items-center gap-1 cursor-pointer">
                         ¿Necesitas ayuda? Abre nuestro Asistente de Contacto con Alpaca
                     </button>
                 @endif

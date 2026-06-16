@@ -92,7 +92,7 @@
             <div>
                 <div>{!! session('error') ?? $errors->first() !!}</div>
                 @if(str_contains(session('error') ?? '', 'Real') || str_contains(session('error') ?? '', 'Live') || str_contains($errors->first() ?? '', 'Real') || str_contains($errors->first() ?? '', 'Live'))
-                    <button type="button" @click="$dispatch('open-alpaca-support')" class="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-extrabold underline flex items-center gap-1 cursor-pointer">
+                    <button type="button" x-data @click="$dispatch('open-alpaca-support')" class="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-extrabold underline flex items-center gap-1 cursor-pointer">
                         ¿Necesitas ayuda? Abre nuestro Asistente de Contacto con Alpaca
                     </button>
                 @endif
@@ -162,7 +162,7 @@
                 <strong class="text-slate-200">Guía de Origen de Datos:</strong> Esta página muestra el estado en tiempo real de tu cuenta. Los saldos de capital y el poder de compra se consultan directamente de tu broker en <strong class="text-indigo-400">Alpaca API</strong>. El precio actual de tus posiciones abiertas y la valoración diaria se calculan enriqueciendo los datos con cotizaciones de <strong class="text-indigo-400">Yahoo Finance</strong> en tiempo real.
             </div>
         </div>
-        <button type="button" @click="$dispatch('open-alpaca-support')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-extrabold transition duration-150 shrink-0 cursor-pointer shadow-md shadow-indigo-650/10">
+        <button type="button" x-data @click="$dispatch('open-alpaca-support')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-extrabold transition duration-150 shrink-0 cursor-pointer shadow-md shadow-indigo-650/10">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-300">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-3.658A8.955 8.955 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
             </svg>

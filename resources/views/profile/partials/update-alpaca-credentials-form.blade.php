@@ -30,7 +30,7 @@
         <hr class="border-indigo-500/10 my-2">
         <div class="pt-1 flex flex-wrap items-center justify-between gap-2">
             <span class="text-[10px] text-slate-500 font-semibold">¿Tienes problemas con la aprobación de tu cuenta real en Alpaca?</span>
-            <button type="button" @click="$dispatch('open-alpaca-support')" class="text-xs text-indigo-400 hover:text-indigo-300 font-bold underline flex items-center gap-1.5 cursor-pointer">
+            <button type="button" x-data @click="$dispatch('open-alpaca-support')" class="text-xs text-indigo-400 hover:text-indigo-300 font-bold underline flex items-center gap-1.5 cursor-pointer">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-3.658A8.955 8.955 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
                 </svg>

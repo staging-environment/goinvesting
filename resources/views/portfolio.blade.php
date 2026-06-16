@@ -58,15 +58,23 @@
         <!-- Account Summary Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <!-- Net Asset Value -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative overflow-hidden bg-gradient-to-tr from-slate-900 to-indigo-950/30 group">
+            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative bg-gradient-to-tr from-slate-900 to-indigo-950/30 group">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera (Net Worth)</span>
                     <!-- Tooltip -->
-                    <div class="relative group/tooltip">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
+                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                         </svg>
-                        <div class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 opacity-0 group-hover/tooltip:opacity-100 transition duration-200 pointer-events-none z-50 shadow-2xl leading-normal">
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-1"
+                             style="display: none;"
+                             class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 z-50 shadow-2xl leading-normal">
                             Es la suma de tu dinero en efectivo más el valor actual de mercado de todas tus acciones y criptomonedas abiertas.
                         </div>
                     </div>
@@ -84,11 +92,19 @@
             <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative group">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Efectivo Disponible (Cash)</span>
-                    <div class="relative group/tooltip">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
+                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                         </svg>
-                        <div class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 opacity-0 group-hover/tooltip:opacity-100 transition duration-200 pointer-events-none z-50 shadow-2xl leading-normal">
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-1"
+                             style="display: none;"
+                             class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 z-50 shadow-2xl leading-normal">
                             Es el saldo líquido en tu cuenta que no está invertido. Puedes usarlo inmediatamente para abrir nuevas operaciones.
                         </div>
                     </div>
@@ -101,11 +117,19 @@
             <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative group">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra (Buying Power)</span>
-                    <div class="relative group/tooltip">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
+                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                         </svg>
-                        <div class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 opacity-0 group-hover/tooltip:opacity-100 transition duration-200 pointer-events-none z-50 shadow-2xl leading-normal">
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-1"
+                             style="display: none;"
+                             class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 z-50 shadow-2xl leading-normal">
                             Es el límite máximo de capital que puedes emplear para comprar activos, incluyendo el margen de apalancamiento que te otorga el broker.
                         </div>
                     </div>

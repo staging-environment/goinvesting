@@ -606,12 +606,13 @@
                                         </div>
                                     </div>
                                 </th>
+                                <th class="py-4 px-5 text-center text-slate-500">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-900/50">
                             @if(empty($positions))
                                 <tr>
-                                    <td colspan="8" class="py-8 text-center text-sm text-slate-500">No tienes posiciones abiertas en este momento.</td>
+                                     <td colspan="9" class="py-8 text-center text-sm text-slate-500">No tienes posiciones abiertas en este momento.</td>
                                 </tr>
                             @else
                                 @foreach($positions as $pos)
@@ -651,6 +652,18 @@
                                                     {{ $isPositive ? '+' : '' }}{{ number_format($pos['unrealized_plpc'], 2) }}%
                                                 </span>
                                             </div>
+                                        </td>
+                                        <td class="py-4.5 px-5 text-center">
+                                            <form action="{{ route('trade.execute') }}" method="POST" class="inline" onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de que deseas vender las {{ $pos['qty'] }} acciones de {{ $pos['symbol'] }} a precio de mercado?');" onclick="event.stopPropagation();">
+                                                @csrf
+                                                <input type="hidden" name="symbol" value="{{ $pos['symbol'] }}">
+                                                <input type="hidden" name="qty" value="{{ $pos['qty'] }}">
+                                                <input type="hidden" name="side" value="sell">
+                                                <input type="hidden" name="type" value="market">
+                                                <button type="submit" onclick="event.stopPropagation();" class="px-3 py-1.5 text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 border border-red-500/30 rounded-lg transition duration-150 shadow-sm shadow-red-500/5 hover:shadow-red-500/20">
+                                                    Vender
+                                                </button>
+                                            </form>
                                         </td>
                                     </tr>
                                 @endforeach

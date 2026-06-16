@@ -181,6 +181,32 @@
         </div>
     </div>
 
+    <!-- Global Notifications / Alerts -->
+    @if(!Route::is('portfolio') && !Route::is('assets.show') && !Route::is('profile.edit'))
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 mt-4">
+            @if(session('success'))
+                <div class="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex gap-3 items-start shadow-lg shadow-emerald-950/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                    </svg>
+                    <div class="leading-relaxed font-medium">
+                        {!! session('success') !!}
+                    </div>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="p-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-xs flex gap-3 items-start shadow-lg shadow-red-950/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-red-405 shrink-0 mt-0.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                    </svg>
+                    <div class="leading-relaxed font-medium">
+                        {!! session('error') !!}
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-6 py-6 lg:py-8">
         @yield('content')

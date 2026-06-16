@@ -232,13 +232,13 @@
                     </svg>
                     Bot de Trading
                 </button>
-                <button @click="activeTab = 'history'" 
-                        :class="activeTab === 'history' ? 'border-indigo-500 text-indigo-400 font-extrabold bg-indigo-500/5' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-800 hover:bg-slate-950/20'"
+                <button @click="activeTab = 'markets'" 
+                        :class="activeTab === 'markets' ? 'border-indigo-500 text-indigo-400 font-extrabold bg-indigo-500/5' : 'border-transparent text-slate-400 hover:text-slate-200 hover:border-slate-800 hover:bg-slate-950/20'"
                         class="px-5 py-3 border-b-2 text-xs font-bold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 shrink-0 cursor-pointer rounded-t-xl">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                     </svg>
-                    Historial de Operaciones
+                    Mercados en Vivo
                 </button>
             </div>
 
@@ -865,6 +865,115 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Recent Trades History -->
+                <div class="space-y-4 border-t border-slate-900/60 pt-8 mt-4">
+                    <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        Historial de Operaciones Recientes
+                    </h2>
+
+                    <div class="glass-panel rounded-2xl overflow-hidden shadow-xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse min-w-[700px]">
+                                <thead>
+                                    <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
+                                        <th class="py-4 px-5">Fecha</th>
+                                        <th class="py-4 px-5">Tipo</th>
+                                        <th class="py-4 px-5">Origen</th>
+                                        <th class="py-4 px-5">Activo</th>
+                                        <th class="py-4 px-5 text-right">Cantidad</th>
+                                        <th class="py-4 px-5 text-right">Precio Ejecución</th>
+                                        <th class="py-4 px-5 text-right">Total</th>
+                                        <th class="py-4 px-5 text-right">Resultado (G/P)</th>
+                                        <th class="py-4 px-5 text-center">Estado</th>
+                                        <th class="py-4 px-5 text-right">Modo</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-900/50">
+                                    @if($recentTrades->isEmpty())
+                                        <tr>
+                                            <td colspan="10" class="py-8 text-center text-sm text-slate-500">Aún no se han registrado transacciones en esta cuenta.</td>
+                                        </tr>
+                                    @else
+                                        @foreach($recentTrades as $trade)
+                                            @php
+                                                $isBuy = $trade->side === 'buy';
+                                                $tradeTotal = $trade->qty * $trade->price;
+                                            @endphp
+                                            <tr class="hover:bg-slate-950/20 transition">
+                                                <td class="py-3.5 px-5 text-xs text-slate-400 font-medium">
+                                                    {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
+                                                </td>
+                                                <td class="py-3.5 px-5">
+                                                    <span class="text-[10px] px-2 py-0.5 rounded font-extrabold uppercase {{ $isBuy ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
+                                                        {{ $isBuy ? 'Compra' : 'Venta' }}
+                                                    </span>
+                                                </td>
+                                                <td class="py-3.5 px-5 text-xs text-slate-400 font-bold">
+                                                    {{ $trade->bot_execution_id ? 'Bot Automático' : 'Manual' }}
+                                                </td>
+                                                <td class="py-3.5 px-5">
+                                                    <div class="flex flex-col">
+                                                        @php
+                                                            $friendlyName = $friendlyNames[$trade->symbol] ?? $trade->symbol;
+                                                        @endphp
+                                                        <span class="font-extrabold text-sm text-white">{{ $friendlyName }}</span>
+                                                        <span class="text-[9px] text-slate-500 font-medium">{{ $trade->symbol }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="py-3.5 px-5 text-right text-xs text-slate-300 font-semibold">
+                                                    {{ $trade->qty }}
+                                                </td>
+                                                <td class="py-3.5 px-5 text-right text-xs text-slate-400">
+                                                    ${{ number_format($trade->price, 2) }}
+                                                </td>
+                                                <td class="py-3.5 px-5 text-right text-xs text-slate-200 font-bold">
+                                                    ${{ number_format($tradeTotal, 2) }}
+                                                </td>
+                                                <td class="py-3.5 px-5 text-right text-xs font-bold">
+                                                    @if(!$isBuy && isset($trade->pnl))
+                                                        @php
+                                                            $pnl = (float)$trade->pnl;
+                                                            $pnlColorClass = $pnl >= 0 ? 'text-green-400' : 'text-red-400';
+                                                            $pnlSign = $pnl >= 0 ? '+' : '';
+                                                            $costBasis = ($tradeTotal - $pnl);
+                                                            $returnPercent = $costBasis > 0 ? ($pnl / $costBasis) * 100 : 0;
+                                                        @endphp
+                                                        <span class="{{ $pnlColorClass }}">
+                                                            {{ $pnlSign }}${{ number_format($pnl, 2) }}
+                                                            <span class="text-[9px] font-medium opacity-80">({{ $pnlSign }}{{ number_format($returnPercent, 1) }}%)</span>
+                                                        </span>
+                                                    @else
+                                                        <span class="text-slate-500 font-medium">-</span>
+                                                    @endif
+                                                </td>
+                                                <td class="py-3.5 px-5 text-center">
+                                                    @php
+                                                        $status = strtolower($trade->status ?? 'filled');
+                                                        $isCompleted = $status === 'filled';
+                                                        $statusText = $isCompleted ? 'Completada' : ($status === 'rejected' ? 'Rechazada' : ($status === 'canceled' ? 'Cancelada' : 'En Cola'));
+                                                        $statusColorClass = $isCompleted ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ($status === 'rejected' || $status === 'canceled' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20');
+                                                    @endphp
+                                                    <span class="text-[9px] px-2 py-0.5 rounded font-bold uppercase {{ $statusColorClass }}">
+                                                        {{ $statusText }}
+                                                    </span>
+                                                </td>
+                                                <td class="py-3.5 px-5 text-right">
+                                                    <span class="text-[10px] px-1.5 py-0.5 rounded font-medium uppercase {{ $trade->is_dry_run ? 'bg-amber-500/10 text-amber-400' : 'bg-green-500/10 text-green-400' }}">
+                                                        {{ $trade->is_dry_run ? 'Simulado' : 'Real' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- TAB 3: BOT -->
@@ -1080,115 +1189,61 @@
                 </div>
             </div>
 
-            <!-- TAB 4: HISTORY -->
-            <div x-show="activeTab === 'history'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                <!-- Recent Trades History -->
+            <!-- TAB 4: LIVE MARKETS -->
+            <div x-show="activeTab === 'markets'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="space-y-4">
                     <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                         </svg>
-                        Historial de Operaciones Recientes
+                        Mercados en Vivo y Cotizaciones de Referencia
                     </h2>
+                    <p class="text-xs text-slate-400 leading-relaxed max-w-3xl">
+                        A continuación se muestran los principales índices globales, divisas, materias primas y criptomonedas. Estos datos se actualizan en tiempo real a través de Yahoo Finance y sirven como barómetro de la tendencia macroeconómica.
+                    </p>
 
-                    <div class="glass-panel rounded-2xl overflow-hidden shadow-xl">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse min-w-[700px]">
-                                <thead>
-                                    <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
-                                        <th class="py-4 px-5">Fecha</th>
-                                        <th class="py-4 px-5">Tipo</th>
-                                        <th class="py-4 px-5">Origen</th>
-                                        <th class="py-4 px-5">Activo</th>
-                                        <th class="py-4 px-5 text-right">Cantidad</th>
-                                        <th class="py-4 px-5 text-right">Precio Ejecución</th>
-                                        <th class="py-4 px-5 text-right">Total</th>
-                                        <th class="py-4 px-5 text-right">Resultado (G/P)</th>
-                                        <th class="py-4 px-5 text-center">Estado</th>
-                                        <th class="py-4 px-5 text-right">Modo</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-slate-900/50">
-                                    @if($recentTrades->isEmpty())
-                                        <tr>
-                                            <td colspan="8" class="py-8 text-center text-sm text-slate-500">Aún no se han registrado transacciones en esta cuenta.</td>
-                                        </tr>
-                                    @else
-                                        @foreach($recentTrades as $trade)
-                                            @php
-                                                $isBuy = $trade->side === 'buy';
-                                                $tradeTotal = $trade->qty * $trade->price;
-                                            @endphp
-                                            <tr class="hover:bg-slate-950/20 transition">
-                                                <td class="py-3.5 px-5 text-xs text-slate-400 font-medium">
-                                                    {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
-                                                </td>
-                                                <td class="py-3.5 px-5">
-                                                    <span class="text-[10px] px-2 py-0.5 rounded font-extrabold uppercase {{ $isBuy ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
-                                                        {{ $isBuy ? 'Compra' : 'Venta' }}
-                                                    </span>
-                                                </td>
-                                                <td class="py-3.5 px-5 text-xs text-slate-400 font-bold">
-                                                    {{ $trade->bot_execution_id ? 'Bot Automático' : 'Manual' }}
-                                                </td>
-                                                <td class="py-3.5 px-5">
-                                                    <div class="flex flex-col">
-                                                        @php
-                                                            $friendlyName = $friendlyNames[$trade->symbol] ?? $trade->symbol;
-                                                        @endphp
-                                                        <span class="font-extrabold text-sm text-white">{{ $friendlyName }}</span>
-                                                        <span class="text-[9px] text-slate-500 font-medium">{{ $trade->symbol }}</span>
-                                                    </div>
-                                                </td>
-                                                <td class="py-3.5 px-5 text-right text-xs text-slate-300 font-semibold">
-                                                    {{ $trade->qty }}
-                                                </td>
-                                                <td class="py-3.5 px-5 text-right text-xs text-slate-400">
-                                                    ${{ number_format($trade->price, 2) }}
-                                                </td>
-                                                <td class="py-3.5 px-5 text-right text-xs text-slate-200 font-bold">
-                                                    ${{ number_format($tradeTotal, 2) }}
-                                                </td>
-                                                <td class="py-3.5 px-5 text-right text-xs font-bold">
-                                                    @if(!$isBuy && isset($trade->pnl))
-                                                        @php
-                                                            $pnl = (float)$trade->pnl;
-                                                            $pnlColorClass = $pnl >= 0 ? 'text-green-400' : 'text-red-400';
-                                                            $pnlSign = $pnl >= 0 ? '+' : '';
-                                                            $costBasis = ($tradeTotal - $pnl);
-                                                            $returnPercent = $costBasis > 0 ? ($pnl / $costBasis) * 100 : 0;
-                                                        @endphp
-                                                        <span class="{{ $pnlColorClass }}">
-                                                            {{ $pnlSign }}${{ number_format($pnl, 2) }}
-                                                            <span class="text-[9px] font-medium opacity-80">({{ $pnlSign }}{{ number_format($returnPercent, 1) }}%)</span>
-                                                        </span>
-                                                    @else
-                                                        <span class="text-slate-500 font-medium">-</span>
-                                                    @endif
-                                                </td>
-                                                <td class="py-3.5 px-5 text-center">
-                                                    @php
-                                                        $status = strtolower($trade->status ?? 'filled');
-                                                        $isCompleted = $status === 'filled';
-                                                        $statusText = $isCompleted ? 'Completada' : ($status === 'rejected' ? 'Rechazada' : ($status === 'canceled' ? 'Cancelada' : 'En Cola'));
-                                                        $statusColorClass = $isCompleted ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : ($status === 'rejected' || $status === 'canceled' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-amber-500/10 text-amber-400 border border-amber-500/20');
-                                                    @endphp
-                                                    <span class="text-[9px] px-2 py-0.5 rounded font-bold uppercase {{ $statusColorClass }}">
-                                                        {{ $statusText }}
-                                                    </span>
-                                                </td>
-                                                <td class="py-3.5 px-5 text-right">
-                                                    <span class="text-[10px] px-1.5 py-0.5 rounded font-medium uppercase {{ $trade->is_dry_run ? 'bg-amber-500/10 text-amber-400' : 'bg-green-500/10 text-green-400' }}">
-                                                        {{ $trade->is_dry_run ? 'Simulado' : 'Real' }}
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
+                    @if(!empty($tickerQuotes))
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            @foreach($tickerQuotes as $symbol => $quote)
+                                @php
+                                    $isPositive = ($quote['changePercent'] ?? 0) >= 0;
+                                    $colorClass = $isPositive ? 'text-green-400' : 'text-red-400';
+                                    $bgClass = $isPositive ? 'bg-green-500/5 border-green-500/10' : 'bg-red-500/5 border-red-500/10';
+                                    $symbolClean = str_replace(['=X', '^'], '', $symbol);
+                                    $meta = $tickerMetadata[$symbol] ?? ['name' => $symbolClean, 'desc' => ''];
+                                @endphp
+                                <a href="{{ route('assets.show', $symbol) }}" class="glass-panel glass-panel-hover rounded-2xl p-5 block transition duration-200 border relative overflow-hidden group {{ $bgClass }}">
+                                    <div class="absolute right-4 top-4 text-slate-700/30 group-hover:text-indigo-500/20 transition-colors duration-200">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
+                                        </svg>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-extrabold text-white text-base">{{ $meta['name'] }}</span>
+                                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider bg-slate-950/40 px-2 py-0.5 rounded border border-slate-900/60">
+                                            {{ $symbolClean }}
+                                        </span>
+                                    </div>
+                                    <p class="text-xs text-slate-400 mt-2 line-clamp-2 h-8 leading-relaxed">
+                                        {{ $meta['desc'] }}
+                                    </p>
+                                    <div class="mt-4 pt-4 border-t border-slate-900/40 flex items-center justify-between">
+                                        <span class="text-lg font-mono font-extrabold text-white">
+                                            ${{ number_format($quote['price'] ?? 0, 2) }}
+                                        </span>
+                                        <span class="flex items-center gap-1 font-bold text-sm {{ $colorClass }}">
+                                            <span>{{ $isPositive ? '▲' : '▼' }}</span>
+                                            <span>{{ number_format(abs($quote['changePercent'] ?? 0), 2) }}%</span>
+                                        </span>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
-                    </div>
+                    @else
+                        <div class="glass-panel rounded-2xl p-6 text-center text-slate-500">
+                            No hay cotizaciones de mercado en vivo disponibles en este momento.
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>

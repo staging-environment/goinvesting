@@ -107,16 +107,16 @@
             <!-- Auth Actions -->
             <div class="flex items-center gap-3 shrink-0">
                 @auth
-                    <!-- Selector de Modo de Trading -->
-                    <div class="hidden sm:flex items-center gap-0.5 p-0.5 bg-slate-950/80 border border-slate-900/60 rounded-xl shadow-inner select-none">
+                    <!-- Selector de Modo de Trading Prominente -->
+                    <div class="flex items-center gap-1 p-1 bg-slate-950/90 border border-slate-800/80 rounded-2xl shadow-xl select-none scale-90 sm:scale-100">
                         <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
                             @csrf
                             <input type="hidden" name="mode" value="paper">
                             <button type="submit" 
                                     @if(Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider transition duration-150 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650/20 border border-indigo-500/30 text-indigo-400 shadow-sm cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50' : 'bg-slate-600' }}"></span>
-                                Ficticio
+                                    class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650/30 border border-indigo-500/40 text-indigo-400 shadow-md shadow-indigo-600/5 cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
+                                <span class="w-2 h-2 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
+                                Ficticio (Demo)
                             </button>
                         </form>
                         <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
@@ -124,9 +124,9 @@
                             <input type="hidden" name="mode" value="live">
                             <button type="submit" 
                                     @if(!Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider transition duration-150 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 shadow-sm cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-600' }}"></span>
-                                Real
+                                    class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600/20 border border-emerald-500/35 text-emerald-450 shadow-md shadow-emerald-600/5 cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
+                                <span class="w-2 h-2 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
+                                Real (En Vivo)
                             </button>
                         </form>
                     </div>

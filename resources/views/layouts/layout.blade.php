@@ -107,6 +107,30 @@
             <!-- Auth Actions -->
             <div class="flex items-center gap-3 shrink-0">
                 @auth
+                    <!-- Selector de Modo de Trading -->
+                    <div class="hidden sm:flex items-center gap-0.5 p-0.5 bg-slate-950/80 border border-slate-900/60 rounded-xl shadow-inner select-none">
+                        <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
+                            @csrf
+                            <input type="hidden" name="mode" value="paper">
+                            <button type="submit" 
+                                    @if(Auth::user()->alpaca_is_paper) disabled @endif
+                                    class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider transition duration-150 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650/20 border border-indigo-500/30 text-indigo-400 shadow-sm cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50' : 'bg-slate-600' }}"></span>
+                                Ficticio
+                            </button>
+                        </form>
+                        <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
+                            @csrf
+                            <input type="hidden" name="mode" value="live">
+                            <button type="submit" 
+                                    @if(!Auth::user()->alpaca_is_paper) disabled @endif
+                                    class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider transition duration-150 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600/20 border border-emerald-500/30 text-emerald-400 shadow-sm cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-600' }}"></span>
+                                Real
+                            </button>
+                        </form>
+                    </div>
+
                     <a href="{{ route('portfolio') }}" class="text-xs font-bold text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-900/40 transition duration-150 flex items-center gap-1.5">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />

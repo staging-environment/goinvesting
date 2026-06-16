@@ -315,7 +315,15 @@ class TradingController extends Controller
         $user = auth()->user();
         
         $originalMode = (bool)$user->alpaca_is_paper;
-        $newMode = !$originalMode;
+        
+        if ($request->has('mode')) {
+            $newMode = $request->input('mode') === 'paper';
+            if ($newMode === $originalMode) {
+                return redirect()->back(); // Already in requested mode
+            }
+        } else {
+            $newMode = !$originalMode;
+        }
 
         // Temporarily change and save to test
         $user->alpaca_is_paper = $newMode;
@@ -364,7 +372,7 @@ class TradingController extends Controller
         cache()->forget("alpaca_conn_status_live_{$user->id}");
 
         if ($connectionSuccess) {
-            return redirect()->route('portfolio')->with('success', "Cambiado correctamente a modo {$modeText}. Conexión exitosa.");
+            return redirect()->back()->with('success', "Cambiado correctamente a modo {$modeText}. Conexión exitosa.");
         } else {
             // Revert the change since connection failed in the new mode
             $user->alpaca_is_paper = $originalMode;
@@ -373,7 +381,7 @@ class TradingController extends Controller
             $originalModeText = $originalMode ? 'Simulación (Paper)' : 'Real (Live)';
             $fullMessage = "No se pudo cambiar al modo <strong>{$modeText}</strong> debido a un fallo de conexión. <br><strong>Hemos mantenido tu modo activo en {$originalModeText}</strong>.<br><br>" . $connectionMessage;
             
-            return redirect()->route('portfolio')->with('error', $fullMessage);
+            return redirect()->back()->with('error', $fullMessage);
         }
     }
 }

@@ -143,8 +143,16 @@
                                                 <div class="flex flex-col">
                                                     @php
                                                         $friendlyName = $friendlyNames[$quote['symbol']] ?? $quote['shortName'] ?? $symbolClean;
+                                                        $isQuoteTradeable = !str_starts_with($quote['symbol'], '^') && !str_contains($quote['symbol'], '=X') && !str_contains($quote['symbol'], '=F');
                                                     @endphp
-                                                    <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                                        @if($isQuoteTradeable)
+                                                            <span class="text-[8px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/10">Operable</span>
+                                                        @else
+                                                            <span class="text-[8px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-slate-500/10 text-slate-400 border border-slate-500/10">Info</span>
+                                                        @endif
+                                                    </div>
                                                     <span class="text-[10px] text-slate-500 font-medium">{{ $symbolClean }}</span>
                                                 </div>
                                             </td>
@@ -281,8 +289,16 @@
                                     <div class="flex flex-col">
                                         @php
                                             $friendlyName = $friendlyNames[$quote['symbol']] ?? $quote['shortName'] ?? $symbolClean;
+                                            $isQuoteTradeable = !str_starts_with($quote['symbol'], '^') && !str_contains($quote['symbol'], '=X') && !str_contains($quote['symbol'], '=F');
                                         @endphp
-                                        <span class="font-extrabold text-sm text-slate-200 group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-extrabold text-sm text-slate-200 group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                            @if($isQuoteTradeable)
+                                                <span class="text-[8px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/10">Operable</span>
+                                            @else
+                                                <span class="text-[8px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider bg-slate-500/10 text-slate-400 border border-slate-500/10">Info</span>
+                                            @endif
+                                        </div>
                                         <span class="text-[10px] text-slate-500 font-medium">{{ $symbolClean }}</span>
                                     </div>
                                     <div class="text-right flex flex-col">

@@ -19,11 +19,16 @@ class AppServiceProvider extends ServiceProvider
             
             $user = auth()->user();
             if ($user) {
+                $isPaper = (bool)($user->alpaca_is_paper ?? true);
+                $keyId = $isPaper ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
+                $secretKey = $isPaper ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
+                $accountId = $isPaper ? $user->alpaca_account_id : $user->alpaca_live_account_id;
+
                 return new \App\Services\AlpacaService(
-                    $user->alpaca_key_id ?? '',
-                    $user->alpaca_secret_key ?? '',
-                    $user->alpaca_account_id,
-                    $user->alpaca_is_paper ?? true
+                    $keyId,
+                    $secretKey,
+                    $accountId,
+                    $isPaper
                 );
             }
             

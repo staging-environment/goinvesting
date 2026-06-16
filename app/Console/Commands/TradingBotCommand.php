@@ -101,11 +101,16 @@ class TradingBotCommand extends Command
         }
 
         // Configure Alpaca service with user credentials
+        $isPaper = (bool)($user->alpaca_is_paper ?? true);
+        $keyId = $isPaper ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
+        $secretKey = $isPaper ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
+        $accountId = $isPaper ? $user->alpaca_account_id : $user->alpaca_live_account_id;
+
         $this->tradingService = new \App\Services\AlpacaService(
-            $user->alpaca_key_id ?? '',
-            $user->alpaca_secret_key ?? '',
-            $user->alpaca_account_id,
-            $user->alpaca_is_paper ?? true
+            $keyId,
+            $secretKey,
+            $accountId,
+            $isPaper
         );
 
         // Load bot strategy and limit parameters from the user's settings, falling back to env/defaults

@@ -67,43 +67,65 @@ class ProfileController extends Controller
             'alpaca_key_id' => 'nullable|string|max:255',
             'alpaca_secret_key' => 'nullable|string|max:255',
             'alpaca_account_id' => 'nullable|string|max:255',
+            'alpaca_live_key_id' => 'nullable|string|max:255',
+            'alpaca_live_secret_key' => 'nullable|string|max:255',
+            'alpaca_live_account_id' => 'nullable|string|max:255',
             'alpaca_is_paper' => 'nullable|boolean'
         ]);
 
         $user = $request->user();
         
+        // Paper
         $keyId = $request->input('alpaca_key_id');
         $secretKey = $request->filled('alpaca_secret_key') ? $request->input('alpaca_secret_key') : $user->alpaca_secret_key;
         $accountId = $request->input('alpaca_account_id');
+        
+        // Live
+        $liveKeyId = $request->input('alpaca_live_key_id');
+        $liveSecretKey = $request->filled('alpaca_live_secret_key') ? $request->input('alpaca_live_secret_key') : $user->alpaca_live_secret_key;
+        $liveAccountId = $request->input('alpaca_live_account_id');
+        
         $isPaper = $request->has('alpaca_is_paper') ? (bool)$request->input('alpaca_is_paper') : false;
 
         $connectionSuccess = true;
         $connectionMessage = '';
 
-        if ($keyId && $secretKey) {
+        // Validate the ACTIVE credentials
+        $activeKeyId = $isPaper ? $keyId : $liveKeyId;
+        $activeSecretKey = $isPaper ? $secretKey : $liveSecretKey;
+        $activeAccountId = $isPaper ? $accountId : $liveAccountId;
+        $activeModeText = $isPaper ? 'Simulación (Paper)' : 'Real (Live)';
+
+        if ($activeKeyId && $activeSecretKey) {
             try {
-                $tempService = new \App\Services\AlpacaService($keyId, $secretKey, $accountId, $isPaper);
+                $tempService = new \App\Services\AlpacaService($activeKeyId, $activeSecretKey, $activeAccountId, $isPaper);
                 $accountInfo = $tempService->getAccountInfo();
                 if (!$accountInfo) {
                     $connectionSuccess = false;
-                    $connectionMessage = 'No se pudo conectar con Alpaca. Por favor, verifica tu Key ID y Secret Key (asegúrate de que correspondan al modo de Simulación/Real seleccionado).';
+                    $connectionMessage = 'No se pudo conectar con Alpaca. Por favor, verifica tus credenciales (asegúrate de que correspondan al modo de ' . $activeModeText . ' activo).';
                 }
             } catch (\Exception $e) {
                 $connectionSuccess = false;
                 $connectionMessage = 'Error al verificar la conexión: ' . $e->getMessage();
             }
         } else {
+            // Only require keys for the active mode
             $connectionSuccess = false;
-            $connectionMessage = 'Las credenciales de Alpaca están incompletas. El bot de trading no podrá realizar operaciones automáticas ni manuales.';
+            $connectionMessage = 'Las credenciales de Alpaca para el modo activo (' . $activeModeText . ') están incompletas.';
         }
 
         $updateData = [
             'alpaca_key_id' => $keyId,
             'alpaca_account_id' => $accountId,
+            'alpaca_live_key_id' => $liveKeyId,
+            'alpaca_live_account_id' => $liveAccountId,
             'alpaca_is_paper' => $isPaper
         ];
         if ($request->filled('alpaca_secret_key')) {
             $updateData['alpaca_secret_key'] = $secretKey;
+        }
+        if ($request->filled('alpaca_live_secret_key')) {
+            $updateData['alpaca_live_secret_key'] = $liveSecretKey;
         }
         $user->update($updateData);
 

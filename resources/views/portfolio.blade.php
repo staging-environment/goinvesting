@@ -194,10 +194,12 @@
 
             $totalUnrealizedPL = 0.0;
             $totalCostBasis = 0.0;
+            $totalMarketValue = 0.0;
             $hasPositions = !empty($positions);
             foreach($positions as $pos) {
                 $totalUnrealizedPL += $pos['unrealized_pl'];
                 $totalCostBasis += $pos['cost_basis'];
+                $totalMarketValue += $pos['market_value'];
             }
             $totalPLPercent = $totalCostBasis > 0 ? ($totalUnrealizedPL / $totalCostBasis) * 100 : 0.0;
             $isWinning = $totalUnrealizedPL >= 0;
@@ -980,6 +982,45 @@
                                         </td>
                                     </tr>
                                 @endforeach
+
+                                <!-- Total Row -->
+                                <tr class="bg-slate-950/65 font-bold border-t-2 border-indigo-500/25">
+                                    <td class="py-4.5 px-5 text-indigo-400 font-extrabold text-xs uppercase tracking-wider">
+                                        Total Cartera
+                                    </td>
+                                    <td class="py-4.5 px-5 text-right text-slate-400 text-xs font-bold font-mono">
+                                        {{ count($positions) }} ACTIVOS
+                                    </td>
+                                    <td class="py-4.5 px-5 text-right text-slate-500 text-xs font-normal">
+                                        -
+                                    </td>
+                                    <td class="py-4.5 px-5 text-right text-slate-500 text-xs font-normal">
+                                        -
+                                    </td>
+                                    <td class="py-4.5 px-5 text-right text-slate-200 text-sm font-extrabold font-mono">
+                                        ${{ number_format($totalCostBasis, 2) }}
+                                    </td>
+                                    <td class="py-4.5 px-5 text-right text-indigo-400 text-sm font-extrabold font-mono">
+                                        ${{ number_format($totalMarketValue, 2) }}
+                                    </td>
+                                    <td class="py-4.5 px-5 text-right">
+                                        @php
+                                            $totalPLColor = $totalUnrealizedPL >= 0 ? 'text-green-400' : 'text-red-400';
+                                            $totalPLBg = $totalUnrealizedPL >= 0 ? 'bg-green-500/10' : 'bg-red-500/10';
+                                        @endphp
+                                        <div class="flex flex-col items-end">
+                                            <span class="text-sm font-extrabold {{ $totalPLColor }} font-mono">
+                                                {{ $totalUnrealizedPL >= 0 ? '+' : '' }}${{ number_format($totalUnrealizedPL, 2) }}
+                                            </span>
+                                            <span class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold {{ $totalPLColor }} {{ $totalPLBg }} mt-0.5">
+                                                {{ $totalUnrealizedPL >= 0 ? '+' : '' }}{{ number_format($totalPLPercent, 2) }}%
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4.5 px-5 text-center">
+                                        <!-- Actions empty -->
+                                    </td>
+                                </tr>
                             @endif
                         </tbody>
                     </table>

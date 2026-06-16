@@ -785,31 +785,6 @@
                                 </th>
                                 <th class="py-4 px-5 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <span class="text-slate-500">Precio Medio</span>
-                                        <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                                            </svg>
-                                            <div x-show="open"
-                                                 x-transition:enter="transition ease-out duration-200"
-                                                 x-transition:enter-start="opacity-0 translate-y-1"
-                                                 x-transition:enter-end="opacity-100 translate-y-0"
-                                                 x-transition:leave="transition ease-in duration-150"
-                                                 x-transition:leave-start="opacity-100 translate-y-0"
-                                                 x-transition:leave-end="opacity-0 translate-y-1"
-                                                 style="display: none; width: 220px; max-width: 85vw;"
-                                                 class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
-                                                <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                                    Precio promedio al que compraste estas acciones en tu cartera.
-                                                    <!-- Caret pointing UP -->
-                                                    <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </th>
-                                <th class="py-4 px-5 text-right">
-                                    <div class="flex items-center justify-end gap-1.5">
                                         <span class="text-slate-500">Precio Actual</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
                                             <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
@@ -833,11 +808,11 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th class="py-4 px-5 text-right">
+                                <th class="py-4 px-5 text-right bg-indigo-500/5">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <span class="text-slate-500">Costo Total</span>
+                                        <span class="text-indigo-300 font-extrabold">Dinero Invertido</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400 hover:text-indigo-350 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -850,7 +825,7 @@
                                                  style="display: none; width: 220px; max-width: 85vw;"
                                                  class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                                    Total del capital invertido en esta posición (Cantidad × Precio Medio).
+                                                    Dinero total invertido en comprar estas acciones (Cantidad × Precio de Compra).
                                                     <!-- Caret pointing UP -->
                                                     <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
@@ -858,11 +833,11 @@
                                         </div>
                                     </div>
                                 </th>
-                                <th class="py-4 px-5 text-right">
+                                <th class="py-4 px-5 text-right bg-emerald-500/5">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <span class="text-slate-500">Valor Actual</span>
+                                        <span class="text-emerald-300 font-extrabold">Dinero al Vender (en el acto)</span>
                                         <div class="relative inline-block" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-slate-400 hover:text-indigo-400 transition-colors cursor-pointer">
+                                            <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                                             </svg>
                                             <div x-show="open"
@@ -875,7 +850,7 @@
                                                  style="display: none; width: 220px; max-width: 85vw;"
                                                  class="absolute top-full right-0 mt-2 z-50 text-left normal-case">
                                                 <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                                    Valorización actual de tu posición al precio de mercado (Cantidad × Precio Actual).
+                                                    Dinero que recibirás en tu balance si vendes esta posición ahora mismo (Cantidad × Precio Actual).
                                                     <!-- Caret pointing UP -->
                                                     <div class="absolute bottom-full right-1.5 -mb-[5px] w-2 h-2 bg-slate-950 border-t border-l border-slate-800/80 transform rotate-45"></div>
                                                 </div>
@@ -946,16 +921,13 @@
                                                 </span>
                                             </div>
                                         </td>
-                                        <td class="py-4.5 px-5 text-right font-medium text-slate-400 text-sm">
-                                            ${{ number_format($pos['avg_entry_price'], 2) }}
-                                        </td>
-                                        <td class="py-4.5 px-5 text-right font-bold text-slate-200 text-sm">
+                                        <td class="py-4.5 px-5 text-right font-bold text-slate-200 text-sm font-mono">
                                             ${{ number_format($pos['current_price'], 2) }}
                                         </td>
-                                        <td class="py-4.5 px-5 text-right font-medium text-slate-400 text-sm">
+                                        <td class="py-4.5 px-5 text-right font-bold text-indigo-300 text-sm font-mono bg-indigo-500/5">
                                             ${{ number_format($pos['cost_basis'], 2) }}
                                         </td>
-                                        <td class="py-4.5 px-5 text-right font-bold text-slate-100 text-sm">
+                                        <td class="py-4.5 px-5 text-right font-black text-emerald-400 text-sm font-mono bg-emerald-500/5">
                                             ${{ number_format($pos['market_value'], 2) }}
                                         </td>
                                         <td class="py-4.5 px-5 text-right">
@@ -994,13 +966,10 @@
                                     <td class="py-4.5 px-5 text-right text-slate-500 text-xs font-normal">
                                         -
                                     </td>
-                                    <td class="py-4.5 px-5 text-right text-slate-500 text-xs font-normal">
-                                        -
-                                    </td>
-                                    <td class="py-4.5 px-5 text-right text-slate-200 text-sm font-extrabold font-mono">
+                                    <td class="py-4.5 px-5 text-right text-slate-300 text-sm font-extrabold font-mono bg-indigo-500/5">
                                         ${{ number_format($totalCostBasis, 2) }}
                                     </td>
-                                    <td class="py-4.5 px-5 text-right text-indigo-400 text-sm font-extrabold font-mono">
+                                    <td class="py-4.5 px-5 text-right text-emerald-400 text-sm font-extrabold font-mono bg-emerald-500/5">
                                         ${{ number_format($totalMarketValue, 2) }}
                                     </td>
                                     <td class="py-4.5 px-5 text-right">

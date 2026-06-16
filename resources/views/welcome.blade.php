@@ -69,19 +69,103 @@
 <div class="space-y-8" x-data="{ activeTab: 'indices' }">
     
     <!-- Hero / Welcome Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 border border-slate-900 p-8 lg:p-12 shadow-2xl">
-        <div class="absolute top-0 right-0 w-80 h-80 bg-indigo-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-        <div class="relative z-10 max-w-2xl space-y-4">
-            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-                Datos en tiempo real / diferidos
-            </span>
-            <h1 class="text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-                Plataforma de Seguimiento de Mercados Globales
-            </h1>
-            <p class="text-sm text-slate-400 leading-relaxed max-w-lg">
-                Analiza las principales bolsas del mundo, materias primas, pares de divisas y criptomonedas basándote en datos actualizados y gráficos de alta precisión.
-            </p>
+    <div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-900/60 p-8 lg:p-14 shadow-2xl bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950">
+        <!-- Animated glowing mesh background orbs -->
+        <div class="absolute top-0 right-0 w-[450px] h-[450px] bg-gradient-to-br from-indigo-500/10 to-violet-500/10 rounded-full blur-3xl -mr-32 -mt-32 animate-pulse duration-[6000ms]"></div>
+        <div class="absolute bottom-0 left-1/3 w-[300px] h-[300px] bg-violet-600/5 rounded-full blur-3xl animate-pulse duration-[8000ms]"></div>
+        
+        <!-- Subtle Grid Pattern -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-[0.15]"></div>
+
+        <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-12">
+            <!-- Left Side: Copy and Main Title -->
+            <div class="max-w-2xl space-y-6">
+                <span class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-indigo-400 animate-ping"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 absolute"></span>
+                    Dashboard Financiero de Alta Precisión
+                </span>
+                
+                <h1 class="text-3xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+                    Optimiza tus Inversiones con <span class="bg-gradient-to-r from-indigo-400 via-violet-400 to-purple-400 bg-clip-text text-transparent">Trading Inteligente</span>
+                </h1>
+                
+                <p class="text-sm lg:text-base text-slate-400 leading-relaxed font-medium">
+                    Sigue mercados globales en tiempo real con datos enriquecidos de Yahoo Finance y automatiza tus operaciones de forma segura configurando tus límites y estrategias con Alpaca Broker.
+                </p>
+
+                @guest
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <a href="{{ route('register') }}" class="px-6 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg shadow-indigo-650/25 hover:scale-[1.03] active:scale-[0.97] transition duration-200 cursor-pointer">
+                            Crear Cuenta Gratuita
+                        </a>
+                        <a href="#quienes-somos" class="px-5 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-slate-900/60 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800/80 transition duration-200 cursor-pointer">
+                            Saber más
+                        </a>
+                    </div>
+                @else
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <a href="{{ route('portfolio') }}" class="px-6 py-3 rounded-xl text-xs font-extrabold uppercase tracking-wider bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white shadow-lg shadow-indigo-650/25 hover:scale-[1.03] active:scale-[0.97] transition duration-200 cursor-pointer">
+                            Ir a Mi Portafolio
+                        </a>
+                    </div>
+                @endguest
+            </div>
+
+            <!-- Right Side: Beautiful Glass Cards (Stats or Highlights) -->
+            <div class="w-full lg:max-w-md grid grid-cols-1 sm:grid-cols-2 gap-4 shrink-0">
+                <!-- Highlight Card 1 -->
+                <div class="glass-panel rounded-2xl p-5 space-y-2.5 bg-gradient-to-tr from-slate-950 to-indigo-950/20 border-slate-900 hover:border-indigo-500/20 transition duration-300 group">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Trading Automático</h3>
+                        <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-1">El bot ejecuta compras y ventas usando tus límites definidos sin intervención emocional.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight Card 2 -->
+                <div class="glass-panel rounded-2xl p-5 space-y-2.5 bg-gradient-to-tr from-slate-950 to-indigo-950/20 border-slate-900 hover:border-indigo-500/20 transition duration-300 group">
+                    <div class="w-8 h-8 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Datos En Vivo</h3>
+                        <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-1">Monitorea índices, acciones, criptomonedas y forex enriquecidos con Yahoo Finance.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight Card 3 -->
+                <div class="glass-panel rounded-2xl p-5 space-y-2.5 bg-gradient-to-tr from-slate-950 to-indigo-950/20 border-slate-900 hover:border-indigo-500/20 transition duration-300 group">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Broker Integrado</h3>
+                        <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-1">Conexión directa y segura a Alpaca Markets para operar con tu capital de forma ágil.</p>
+                    </div>
+                </div>
+
+                <!-- Highlight Card 4 -->
+                <div class="glass-panel rounded-2xl p-5 space-y-2.5 bg-gradient-to-tr from-slate-950 to-indigo-950/20 border-slate-900 hover:border-indigo-500/20 transition duration-300 group">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-extrabold text-white uppercase tracking-wider">Gestión de Riesgo</h3>
+                        <p class="text-[11px] text-slate-400 font-medium leading-relaxed mt-1">Límites de presupuesto diario, semanal y mensual para proteger tu cartera.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
  

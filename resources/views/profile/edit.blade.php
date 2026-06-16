@@ -1,35 +1,38 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Profile') }}
-        </h2>
-    </x-slot>
+@extends('layouts.layout')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
-            </div>
+@section('title', 'Mi Perfil | GoInvesting')
 
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-alpaca-credentials-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
-            </div>
-
-            <div class="p-4 sm:p-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
-            </div>
+@section('content')
+<div class="space-y-8 max-w-3xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between">
+        <div>
+            <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Mi Perfil</h1>
+            <p class="text-sm text-slate-400">Gestiona la información de tu cuenta y credenciales de trading</p>
         </div>
+        <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
+            Volver a Portafolio
+        </a>
     </div>
-</x-app-layout>
+
+    <!-- Profile Info Block -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl">
+        @include('profile.partials.update-profile-information-form')
+    </div>
+
+    <!-- Alpaca Credentials Block -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl">
+        @include('profile.partials.update-alpaca-credentials-form')
+    </div>
+
+    <!-- Password Update Block -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl">
+        @include('profile.partials.update-password-form')
+    </div>
+
+    <!-- Delete Account Block -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl border-red-500/20 bg-red-500/5">
+        @include('profile.partials.delete-user-form')
+    </div>
+</div>
+@endsection

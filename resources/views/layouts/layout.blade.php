@@ -155,6 +155,9 @@
                         <!-- Dropdown -->
                         <div x-show="open" class="absolute right-0 mt-2 w-48 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl py-1 z-50" x-transition>
                             <a href="{{ route('profile.edit') }}" class="block px-4 py-2.5 text-sm text-slate-300 hover:bg-slate-900/60 hover:text-white transition">Mi Perfil</a>
+                            @if(Auth::user()->isAdmin())
+                                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2.5 text-sm text-red-400 hover:bg-slate-900/60 hover:text-red-300 transition">Panel Admin</a>
+                            @endif
                             <hr class="border-slate-800 my-1">
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf

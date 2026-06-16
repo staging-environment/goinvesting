@@ -21,11 +21,11 @@ class AssetController extends Controller
      */
     public function index()
     {
-        $indices = ['^GSPC', '^DJI', '^IXIC', '^FTSE', '^GDAXI', '^N225', '^IBEX'];
-        $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META'];
-        $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X'];
-        $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD'];
-        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F', 'LGO=F', 'RB=F'];
+        $indices = ['^GSPC', '^DJI', '^IXIC', '^FTSE', '^GDAXI', '^N225', '^IBEX', '^FCHI', '^STOXX50E', '^HSI'];
+        $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'JPM'];
+        $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X', 'USDCHF=X', 'EURJPY=X', 'GBPJPY=X', 'NZDUSD=X'];
+        $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD', 'DOT-USD', 'DOGE-USD', 'AVAX-USD', 'LINK-USD'];
+        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F', 'HG=F', 'PL=F', 'PA=F', 'ZC=F', 'ZW=F'];
 
         // Gather all default symbols to fetch in one multi-spark call
         $allDefaultSymbols = array_merge($indices, $stocks, $forex, $crypto, $commodities);
@@ -138,11 +138,11 @@ class AssetController extends Controller
      */
     public function getQuotes()
     {
-        $indices = ['^GSPC', '^DJI', '^IXIC', '^FTSE', '^GDAXI', '^N225', '^IBEX'];
-        $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META'];
-        $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X'];
-        $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD'];
-        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F', 'LGO=F', 'RB=F'];
+        $indices = ['^GSPC', '^DJI', '^IXIC', '^FTSE', '^GDAXI', '^N225', '^IBEX', '^FCHI', '^STOXX50E', '^HSI'];
+        $stocks = ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'TSLA', 'NVDA', 'META', 'NFLX', 'AMD', 'JPM'];
+        $forex = ['EURUSD=X', 'GBPUSD=X', 'USDJPY=X', 'AUDUSD=X', 'USDCAD=X', 'EURGBP=X', 'USDCHF=X', 'EURJPY=X', 'GBPJPY=X', 'NZDUSD=X'];
+        $crypto = ['BTC-USD', 'ETH-USD', 'SOL-USD', 'BNB-USD', 'ADA-USD', 'XRP-USD', 'DOT-USD', 'DOGE-USD', 'AVAX-USD', 'LINK-USD'];
+        $commodities = ['GC=F', 'CL=F', 'SI=F', 'NG=F', 'BZ=F', 'HG=F', 'PL=F', 'PA=F', 'ZC=F', 'ZW=F'];
 
         $allDefaultSymbols = array_merge($indices, $stocks, $forex, $crypto, $commodities);
         $sparkQuotes = $this->yahooService->getSparkQuotes($allDefaultSymbols);

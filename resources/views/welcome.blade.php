@@ -3,6 +3,69 @@
 @section('title', 'GoInvesting | Tu Dashboard de Mercados Financieros')
 
 @section('content')
+@php
+    $friendlyNames = [
+        // Indices
+        '^GSPC' => 'S&P 500',
+        '^DJI' => 'Dow Jones',
+        '^IXIC' => 'NASDAQ',
+        '^FTSE' => 'FTSE 100',
+        '^GDAXI' => 'DAX 40',
+        '^N225' => 'Nikkei 225',
+        '^IBEX' => 'IBEX 35',
+        '^FCHI' => 'CAC 40',
+        '^STOXX50E' => 'Euro Stoxx 50',
+        '^HSI' => 'Hang Seng',
+
+        // Stocks
+        'AAPL' => 'Apple',
+        'MSFT' => 'Microsoft',
+        'GOOGL' => 'Google',
+        'AMZN' => 'Amazon',
+        'TSLA' => 'Tesla',
+        'NVDA' => 'Nvidia',
+        'META' => 'Meta (Facebook)',
+        'NFLX' => 'Netflix',
+        'AMD' => 'AMD',
+        'JPM' => 'JPMorgan Chase',
+
+        // Forex
+        'EURUSD=X' => 'EUR / USD',
+        'GBPUSD=X' => 'GBP / USD',
+        'USDJPY=X' => 'USD / JPY',
+        'AUDUSD=X' => 'AUD / USD',
+        'USDCAD=X' => 'USD / CAD',
+        'EURGBP=X' => 'EUR / GBP',
+        'USDCHF=X' => 'USD / CHF',
+        'EURJPY=X' => 'EUR / JPY',
+        'GBPJPY=X' => 'GBP / JPY',
+        'NZDUSD=X' => 'NZD / USD',
+
+        // Crypto
+        'BTC-USD' => 'Bitcoin',
+        'ETH-USD' => 'Ethereum',
+        'SOL-USD' => 'Solana',
+        'BNB-USD' => 'Binance Coin',
+        'ADA-USD' => 'Cardano',
+        'XRP-USD' => 'Ripple',
+        'DOT-USD' => 'Polkadot',
+        'DOGE-USD' => 'Dogecoin',
+        'AVAX-USD' => 'Avalanche',
+        'LINK-USD' => 'Chainlink',
+
+        // Commodities
+        'GC=F' => 'Oro',
+        'CL=F' => 'Petróleo Crudo',
+        'SI=F' => 'Plata',
+        'NG=F' => 'Gas Natural',
+        'BZ=F' => 'Petróleo Brent',
+        'HG=F' => 'Cobre',
+        'PL=F' => 'Platino',
+        'PA=F' => 'Paladio',
+        'ZC=F' => 'Maíz',
+        'ZW=F' => 'Trigo'
+    ];
+@endphp
 <div class="space-y-8" x-data="{ activeTab: 'indices' }">
     
     <!-- Hero / Welcome Banner -->
@@ -54,8 +117,7 @@
                         <table class="w-full text-left border-collapse min-w-[600px]">
                             <thead>
                                 <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
-                                    <th class="py-4 px-5">Símbolo</th>
-                                    <th class="py-4 px-5">Nombre</th>
+                                    <th class="py-4 px-5">Activo</th>
                                     <th class="py-4 px-5 text-right">Precio</th>
                                     <th class="py-4 px-5 text-right">Cambio</th>
                                     <th class="py-4 px-5 text-right">Cambio %</th>
@@ -65,7 +127,7 @@
                             <tbody class="divide-y divide-slate-900/50">
                                 @if(empty($$tabKey))
                                     <tr>
-                                        <td colspan="6" class="py-8 text-center text-sm text-slate-500">Cargando datos del mercado...</td>
+                                        <td colspan="5" class="py-8 text-center text-sm text-slate-500">Cargando datos del mercado...</td>
                                     </tr>
                                 @else
                                     @foreach($$tabKey as $quote)
@@ -78,10 +140,13 @@
                                         @endphp
                                         <tr data-symbol-row="{{ $quote['symbol'] }}" class="hover:bg-slate-950/40 transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $quote['symbol']) }}'">
                                             <td class="py-4.5 px-5">
-                                                <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $symbolClean }}</span>
-                                            </td>
-                                            <td class="py-4.5 px-5">
-                                                <span class="text-xs text-slate-400 truncate block max-w-[150px]">{{ $quote['shortName'] }}</span>
+                                                <div class="flex flex-col">
+                                                    @php
+                                                        $friendlyName = $friendlyNames[$quote['symbol']] ?? $quote['shortName'] ?? $symbolClean;
+                                                    @endphp
+                                                    <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                                    <span class="text-[10px] text-slate-500 font-medium">{{ $symbolClean }}</span>
+                                                </div>
                                             </td>
                                             <td class="py-4.5 px-5 text-right font-bold text-slate-100 text-sm" data-field="price">
                                                 ${{ number_format($quote['price'] ?? 0, 2) }}
@@ -189,8 +254,11 @@
                                 @endphp
                                 <div data-symbol-watchlist="{{ $quote['symbol'] }}" class="flex items-center justify-between py-3 hover:bg-slate-900/30 px-2 rounded-xl transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $quote['symbol']) }}'">
                                     <div class="flex flex-col">
-                                        <span class="font-extrabold text-sm text-slate-200 group-hover:text-indigo-400 transition">{{ $symbolClean }}</span>
-                                        <span class="text-[10px] text-slate-500 truncate max-w-[120px]">{{ $quote['shortName'] }}</span>
+                                        @php
+                                            $friendlyName = $friendlyNames[$quote['symbol']] ?? $quote['shortName'] ?? $symbolClean;
+                                        @endphp
+                                        <span class="font-extrabold text-sm text-slate-200 group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
+                                        <span class="text-[10px] text-slate-500 font-medium">{{ $symbolClean }}</span>
                                     </div>
                                     <div class="text-right flex flex-col">
                                         <span class="text-sm font-bold text-slate-100" data-field="price">${{ number_format($quote['price'] ?? 0, 2) }}</span>

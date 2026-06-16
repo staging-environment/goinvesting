@@ -193,10 +193,13 @@
             $isPaper = str_contains($account['currency'], 'USD') && (auth()->user()->alpaca_is_paper ?? config('services.alpaca.is_paper'));
 
             $totalUnrealizedPL = 0.0;
+            $totalCostBasis = 0.0;
             $hasPositions = !empty($positions);
             foreach($positions as $pos) {
                 $totalUnrealizedPL += $pos['unrealized_pl'];
+                $totalCostBasis += $pos['cost_basis'];
             }
+            $totalPLPercent = $totalCostBasis > 0 ? ($totalUnrealizedPL / $totalCostBasis) * 100 : 0.0;
             $isWinning = $totalUnrealizedPL >= 0;
         @endphp
 
@@ -383,14 +386,14 @@
         </div>
 
         <!-- Account Summary Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
             <!-- Net Asset Value -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative bg-gradient-to-tr from-slate-900 to-indigo-950/30 group">
+            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative bg-gradient-to-tr from-slate-900 to-indigo-950/30 group">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera (Net Worth)</span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera</span>
                     <!-- Tooltip -->
                     <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
+                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
                         </svg>
                         <div x-show="open"
@@ -400,29 +403,85 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 translate-y-1"
-                             style="display: none; width: 256px; max-width: 85vw;"
+                             style="display: none; width: 220px; max-width: 85vw;"
                              class="absolute bottom-full right-0 mb-2.5 z-50">
-                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[11px] p-3 rounded-xl border border-slate-800/80 shadow-2xl leading-normal">
-                                Es la suma de tu dinero en efectivo más el valor actual de mercado de todas tus acciones y criptomonedas abiertas.
-                                <!-- Caret (Triangle) -->
+                             <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                Es la suma de tu dinero en efectivo más el valor actual de tus acciones.
                                 <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <span class="text-3xl font-extrabold text-white block">${{ number_format($portfolioValue, 2) }}</span>
-                <div class="flex items-center gap-1.5 mt-2">
-                    <span class="text-xs px-2 py-0.5 rounded-md font-extrabold bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
-                        {{ $isPaper ? 'Simulación (Paper)' : 'Dinero Real (Live)' }}
-                    </span>
-                    <span class="text-xs text-slate-500 font-medium">Moneda: {{ $account['currency'] }}</span>
+                <span class="text-2xl font-extrabold text-white block">${{ number_format($portfolioValue, 2) }}</span>
+                <span class="text-[10px] text-slate-500 font-medium block">Efectivo + Acciones</span>
+            </div>
+
+            <!-- Capital Invertido -->
+            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Dinero Invertido</span>
+                    <!-- Tooltip -->
+                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                        </svg>
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-1"
+                             style="display: none; width: 220px; max-width: 85vw;"
+                             class="absolute bottom-full right-0 mb-2.5 z-50">
+                             <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                Es el costo de adquisición de todas las acciones/unidades que tienes compradas.
+                                <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+                <span class="text-2xl font-extrabold text-slate-200 block">${{ number_format($totalCostBasis, 2) }}</span>
+                <span class="text-[10px] text-slate-500 font-medium block">Costo de adquisición</span>
+            </div>
+
+            <!-- Ganancia/Pérdida Total -->
+            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative bg-gradient-to-tr {{ $isWinning ? 'from-slate-900 to-emerald-950/25 border-emerald-500/10' : 'from-slate-900 to-rose-950/25 border-rose-500/10' }} group">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Ganancia / Pérdida</span>
+                    <!-- Tooltip -->
+                    <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                        <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                        </svg>
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-1"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-1"
+                             style="display: none; width: 220px; max-width: 85vw;"
+                             class="absolute bottom-full right-0 mb-2.5 z-50">
+                             <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                Muestra tu ganancia o pérdida no realizada tanto en dólares como en porcentaje.
+                                <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <span class="text-2xl font-extrabold {{ $isWinning ? 'text-emerald-400' : 'text-rose-400' }} block">
+                    {{ $isWinning ? '+' : '' }}${{ number_format($totalUnrealizedPL, 2) }}
+                </span>
+                <span class="text-[10px] {{ $isWinning ? 'text-emerald-500' : 'text-rose-500' }} font-bold block">
+                    {{ $isWinning ? '+' : '' }}{{ number_format($totalPLPercent, 2) }}%
+                </span>
             </div>
 
             <!-- Cash & Capital -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative group">
+            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Efectivo Disponible (Cash)</span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo (Cash)</span>
                     <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
                         <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
@@ -434,24 +493,23 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 translate-y-1"
-                             style="display: none; width: 256px; max-width: 85vw;"
+                             style="display: none; width: 220px; max-width: 85vw;"
                              class="absolute bottom-full right-0 mb-2.5 z-50">
-                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[11px] p-3 rounded-xl border border-slate-800/80 shadow-2xl leading-normal">
-                                Es el saldo líquido en tu cuenta que no está invertido. Puedes usarlo inmediatamente para abrir nuevas operaciones.
-                                <!-- Caret (Triangle) -->
+                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                Es el saldo líquido en tu cuenta que no está invertido.
                                 <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <span class="text-3xl font-extrabold text-slate-200 block">${{ number_format($cash, 2) }}</span>
-                <span class="text-xs text-slate-500 block">Garantía Inicial: ${{ number_format($initialMargin, 2) }}</span>
+                <span class="text-2xl font-extrabold text-slate-200 block">${{ number_format($cash, 2) }}</span>
+                <span class="text-[10px] text-slate-500 font-medium block">Saldo libre líquido</span>
             </div>
 
             <!-- Buying Power -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-2 relative group">
+            <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra (Buying Power)</span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra</span>
                     <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
                         <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
@@ -463,18 +521,17 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 translate-y-1"
-                             style="display: none; width: 256px; max-width: 85vw;"
+                             style="display: none; width: 220px; max-width: 85vw;"
                              class="absolute bottom-full right-0 mb-2.5 z-50">
-                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[11px] p-3 rounded-xl border border-slate-800/80 shadow-2xl leading-normal">
-                                Es el límite máximo de capital que puedes emplear para comprar activos, incluyendo el margen de apalancamiento que te otorga el broker.
-                                <!-- Caret (Triangle) -->
+                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                Límite máximo de capital que puedes emplear para comprar activos.
                                 <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <span class="text-3xl font-extrabold text-indigo-400 block">${{ number_format($buyingPower, 2) }}</span>
-                <span class="text-xs text-slate-500 block">Apalancamiento Máx: {{ $account['multiplier'] }}x</span>
+                <span class="text-2xl font-extrabold text-indigo-400 block">${{ number_format($buyingPower, 2) }}</span>
+                <span class="text-[10px] text-slate-500 font-medium block">Apalancamiento incl.</span>
             </div>
         </div>
 

@@ -38,6 +38,51 @@
         </div>
     @endif
 
+    <!-- Create User Form -->
+    <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4">
+        <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" />
+            </svg>
+            Crear Nuevo Usuario
+        </h2>
+        <form action="{{ route('admin.user.create') }}" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            @csrf
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-400 block">Nombre Completo</label>
+                <input type="text" name="name" required placeholder="Nombre del usuario" class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-400 block">Correo Electrónico</label>
+                <input type="email" name="email" required placeholder="correo@ejemplo.com" class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-400 block">Contraseña Temporal</label>
+                <input type="password" name="password" required placeholder="Mínimo 8 caracteres" class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-400 block">Rol del Usuario</label>
+                <select name="role" required class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3 text-xs text-slate-200 focus:outline-none focus:border-indigo-500">
+                    <option value="investor">Inversor (Investor)</option>
+                    <option value="admin">Administrador (Admin)</option>
+                </select>
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-400 block">Límite de Gasto Diario ($)</label>
+                <input type="number" step="0.01" name="daily_spend_limit" placeholder="Ej: 5000 (Opcional)" class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="space-y-1">
+                <label class="text-xs font-bold text-slate-400 block">Límite de Gasto Semanal ($)</label>
+                <input type="number" step="0.01" name="weekly_spend_limit" placeholder="Ej: 25000 (Opcional)" class="w-full bg-slate-950/70 border border-slate-800 rounded-xl py-2 px-3.5 text-xs text-slate-200 placeholder-slate-600 focus:outline-none focus:border-indigo-500">
+            </div>
+            <div class="md:col-span-3 flex justify-end pt-2">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-extrabold text-xs shadow-md shadow-indigo-600/20 hover:bg-indigo-500 transition">
+                    Crear y Registrar Usuario
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Users Management Table -->
     <div class="space-y-4">
         <h2 class="text-lg font-extrabold text-white flex items-center gap-2">

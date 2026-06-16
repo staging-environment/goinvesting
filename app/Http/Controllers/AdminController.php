@@ -69,4 +69,34 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', "Límites de gasto para el usuario {$user->name} actualizados.");
     }
+
+    /**
+     * Create a new user.
+     */
+    public function createUser(Request $request)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
+            'role' => 'required|in:admin,investor',
+            'daily_spend_limit' => 'nullable|numeric|min:0',
+            'weekly_spend_limit' => 'nullable|numeric|min:0',
+        ]);
+
+        User::create([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'password' => bcrypt($request->input('password')),
+            'role' => $request->input('role'),
+            'daily_spend_limit' => $request->input('daily_spend_limit'),
+            'weekly_spend_limit' => $request->input('weekly_spend_limit'),
+        ]);
+
+        return redirect()->back()->with('success', 'Usuario creado correctamente.');
+    }
 }

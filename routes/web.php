@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::post('/admin/user/{id}/update-role', [\App\Http\Controllers\AdminController::class, 'updateRole'])->name('admin.update-role');
     Route::post('/admin/user/{id}/update-limits', [\App\Http\Controllers\AdminController::class, 'updateLimits'])->name('admin.update-limits');
+    Route::post('/admin/user/create', [\App\Http\Controllers\AdminController::class, 'createUser'])->name('admin.user.create');
 
     // Profile Alpaca Config Route
     Route::post('/profile/alpaca', [ProfileController::class, 'updateAlpaca'])->name('profile.update-alpaca');

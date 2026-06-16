@@ -212,7 +212,7 @@ class TradingController extends Controller
                 'price' => $price,
                 'side' => $side,
                 'status' => 'filled',
-                'is_dry_run' => false
+                'is_dry_run' => (bool)$user->alpaca_is_paper
             ]);
 
             $msg = "Orden de " . ($side === 'buy' ? 'Compra' : 'Venta') . " enviada correctamente. ID de Orden: " . $result['order']['id'];

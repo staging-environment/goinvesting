@@ -274,7 +274,7 @@ class TradingBotCommand extends Command
                                     'price' => $currentPrice,
                                     'side' => 'sell',
                                     'status' => 'filled',
-                                    'is_dry_run' => false,
+                                    'is_dry_run' => (bool)$isPaper,
                                     'pnl' => $pnlValue
                                 ]);
                             } else {
@@ -354,7 +354,7 @@ class TradingBotCommand extends Command
                                     'price' => $currentPrice,
                                     'side' => 'buy',
                                     'status' => 'filled',
-                                    'is_dry_run' => false
+                                    'is_dry_run' => (bool)$isPaper
                                 ]);
                                 // Update values for consecutive orders in this run
                                 $totalInvested += $orderSize;

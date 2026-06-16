@@ -910,18 +910,39 @@
                                                 <span class="font-extrabold text-sm text-white group-hover:text-indigo-400 transition">{{ $friendlyName }}</span>
                                                 <div class="flex items-center gap-1.5 mt-0.5">
                                                     <span class="text-[10px] text-slate-500 font-medium">{{ $pos['symbol'] }}</span>
-                                                    <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                                                        COMPRADO
-                                                    </span>
+                                                    @if(isset($pos['pending_qty']) && $pos['pending_qty'] > 0)
+                                                        @if($pos['available_qty'] <= 0)
+                                                            <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/25 animate-pulse">
+                                                                VENTA EN COLA
+                                                            </span>
+                                                        @else
+                                                            <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                                                                COMPRADO
+                                                            </span>
+                                                            <span class="inline-flex items-center text-[9px] font-bold px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                                {{ number_format($pos['pending_qty'], 2) }} EN COLA
+                                                            </span>
+                                                        @endif
+                                                    @else
+                                                        <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
+                                                            COMPRADO
+                                                        </span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="py-4.5 px-5 text-right font-semibold text-slate-200 text-sm">
                                             <div class="flex flex-col items-end">
                                                 <span class="font-mono text-slate-200">{{ number_format($pos['qty'], 4) }}</span>
-                                                <span class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">
-                                                    {{ (str_contains($pos['symbol'], 'BTC') || str_contains($pos['symbol'], 'ETH') || str_contains($pos['symbol'], 'USD') || str_contains($pos['symbol'], '/')) ? 'unidades' : 'acciones' }}
-                                                </span>
+                                                @if(isset($pos['pending_qty']) && $pos['pending_qty'] > 0)
+                                                    <span class="text-[9px] text-amber-400 font-semibold mt-0.5">
+                                                        {{ number_format($pos['available_qty'], 4) }} disp.
+                                                    </span>
+                                                @else
+                                                    <span class="text-[9px] text-slate-500 font-bold uppercase mt-0.5">
+                                                        {{ (str_contains($pos['symbol'], 'BTC') || str_contains($pos['symbol'], 'ETH') || str_contains($pos['symbol'], 'USD') || str_contains($pos['symbol'], '/')) ? 'unidades' : 'acciones' }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </td>
                                         <td class="py-4.5 px-5 text-right font-bold text-slate-200 text-sm font-mono">
@@ -944,16 +965,22 @@
                                             </div>
                                         </td>
                                         <td class="py-4.5 px-5 text-center">
-                                            <form action="{{ route('trade.execute') }}" method="POST" class="inline" onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de que deseas vender las {{ $pos['qty'] }} acciones de {{ $pos['symbol'] }} a precio de mercado?');" onclick="event.stopPropagation();">
-                                                @csrf
-                                                <input type="hidden" name="symbol" value="{{ $pos['symbol'] }}">
-                                                <input type="hidden" name="qty" value="{{ $pos['qty'] }}">
-                                                <input type="hidden" name="side" value="sell">
-                                                <input type="hidden" name="type" value="market">
-                                                <button type="submit" onclick="event.stopPropagation();" class="px-3 py-1.5 text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 border border-red-500/30 rounded-lg transition duration-150 shadow-sm shadow-red-500/5 hover:shadow-red-500/20">
-                                                    Vender
+                                            @if(isset($pos['available_qty']) && $pos['available_qty'] <= 0)
+                                                <button disabled onclick="event.stopPropagation();" class="px-3 py-1.5 text-xs font-bold text-slate-500 bg-slate-800/20 border border-slate-800/40 rounded-lg cursor-not-allowed">
+                                                    En Cola
                                                 </button>
-                                            </form>
+                                            @else
+                                                <form action="{{ route('trade.execute') }}" method="POST" class="inline" onsubmit="event.stopPropagation(); return confirm('¿Estás seguro de que deseas vender las {{ $pos['available_qty'] ?? $pos['qty'] }} acciones de {{ $pos['symbol'] }} a precio de mercado?');" onclick="event.stopPropagation();">
+                                                    @csrf
+                                                    <input type="hidden" name="symbol" value="{{ $pos['symbol'] }}">
+                                                    <input type="hidden" name="qty" value="{{ $pos['available_qty'] ?? $pos['qty'] }}">
+                                                    <input type="hidden" name="side" value="sell">
+                                                    <input type="hidden" name="type" value="market">
+                                                    <button type="submit" onclick="event.stopPropagation();" class="px-3 py-1.5 text-xs font-bold text-red-400 hover:text-white bg-red-500/10 hover:bg-red-500 border border-red-500/30 rounded-lg transition duration-150 shadow-sm shadow-red-500/5 hover:shadow-red-500/20 cursor-pointer">
+                                                        Vender
+                                                     </button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach

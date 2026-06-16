@@ -114,6 +114,13 @@ class TradingController extends Controller
 
         $rawPositions = $this->tradingService->getPositions();
 
+        $pendingSells = \App\Models\Trade::where('user_id', $user->id)
+            ->where('side', 'sell')
+            ->whereNotIn('status', ['filled', 'rejected', 'canceled', 'expired'])
+            ->get()
+            ->groupBy('symbol')
+            ->map(fn($trades) => $trades->sum('qty'));
+
         $positions = [];
         if ($account && !empty($rawPositions)) {
             // Collect symbols to enrich with current market prices from Yahoo Finance
@@ -123,11 +130,14 @@ class TradingController extends Controller
             foreach ($rawPositions as $pos) {
                 $symbol = $pos['symbol'];
                 $quote = $marketQuotes[$symbol] ?? null;
+                $pendingQty = (float)($pendingSells[$symbol] ?? 0.0);
 
                 $positions[] = [
                     'symbol' => $symbol,
                     'name' => $pos['name'] ?? ($quote['shortName'] ?? $symbol),
                     'qty' => (float)$pos['qty'],
+                    'pending_qty' => $pendingQty,
+                    'available_qty' => max(0.0, (float)$pos['qty'] - $pendingQty),
                     'avg_entry_price' => (float)$pos['avg_entry_price'],
                     'current_price' => $quote ? (float)$quote['price'] : (float)($pos['current_price'] ?? $pos['avg_entry_price']),
                     'cost_basis' => (float)$pos['cost_basis'],
@@ -202,6 +212,18 @@ class TradingController extends Controller
             try {
                 $positionInfo = $this->tradingService->getPosition($symbol);
                 if ($positionInfo) {
+                    $totalQty = (float)($positionInfo['qty'] ?? 0.0);
+                    $pendingQty = (float)\App\Models\Trade::where('user_id', $user->id)
+                        ->where('symbol', $symbol)
+                        ->where('side', 'sell')
+                        ->whereNotIn('status', ['filled', 'rejected', 'canceled', 'expired'])
+                        ->sum('qty');
+                    $availableQty = max(0.0, $totalQty - $pendingQty);
+
+                    if ($qty > $availableQty) {
+                        return redirect()->back()->withErrors(['error' => "No puedes vender {$qty} unidades de {$symbol}. Ya tienes {$pendingQty} en cola de venta, dejándote solo {$availableQty} disponibles para vender."]);
+                    }
+
                     $avgEntry = (float)($positionInfo['avg_entry_price'] ?? 0.0);
                     if ($avgEntry > 0) {
                         // Let's resolve the execution price to calculate PnL

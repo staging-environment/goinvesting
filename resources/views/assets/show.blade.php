@@ -135,38 +135,12 @@
         <div class="space-y-6">
             
             @auth
+            @php
+                $symbol = $assetData['symbol'] ?? '';
+                $isTradeable = !str_starts_with($symbol, '^') && !str_contains($symbol, '=X') && !str_contains($symbol, '=F');
+            @endphp
             <!-- Panel de Trading -->
-            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4" 
-                 x-data="{ 
-                     tradeType: 'market', 
-                     investMode: 'amount', 
-                     amount: '', 
-                     qty: 1, 
-                     limitPrice: '',
-                     currentPrice: {{ $assetData['price'] ?? 0 }}, 
-                     dailyLimit: {{ auth()->user()->daily_spend_limit ?? 5000.0 }},
-                     spentToday: {{ auth()->user()->getDailySpent() ?? 0.0 }},
-                     
-                     get estimatedCost() {
-                         if (this.investMode === 'amount') {
-                             return parseFloat(this.amount) || 0;
-                         } else {
-                             let price = this.tradeType === 'limit' && this.limitPrice ? parseFloat(this.limitPrice) : this.currentPrice;
-                             return (parseFloat(this.qty) || 0) * price;
-                         }
-                     },
-                     
-                     get computedQty() {
-                         if (this.investMode === 'qty') {
-                             return parseFloat(this.qty) || 0;
-                         } else {
-                             let price = this.tradeType === 'limit' && this.limitPrice ? parseFloat(this.limitPrice) : this.currentPrice;
-                             if (!price) return 0;
-                             let val = (parseFloat(this.amount) || 0) / price;
-                             return parseFloat(val.toFixed(6));
-                         }
-                     }
-                 }">
+            <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-4">
                 <h2 class="text-base font-extrabold text-white flex items-center gap-2 border-b border-slate-900 pb-3">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L17.5 12M21 7.5H7.5" />
@@ -188,122 +162,176 @@
                     </div>
                 @endif
 
-                <form action="{{ route('trade.execute') }}" method="POST" class="space-y-4">
-                    @csrf
-                    <input type="hidden" name="symbol" value="{{ $assetData['symbol'] }}">
-                    <input type="hidden" name="qty" :value="computedQty">
-
-                    <!-- Order Type -->
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tipo de Orden</label>
-                        <select name="type" x-model="tradeType" class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-                            <option value="market">A Mercado (Market)</option>
-                            <option value="limit">Límite (Limit)</option>
-                        </select>
-                        <p class="text-[10px] text-slate-400 leading-normal" x-show="tradeType === 'market'">
-                            ℹ️ <strong>A Mercado:</strong> Compra o vende al instante al mejor precio del mercado hoy.
-                        </p>
-                        <p class="text-[10px] text-slate-400 leading-normal" x-show="tradeType === 'limit'">
-                            ℹ️ <strong>Límite:</strong> Compra o vende únicamente si el precio del activo alcanza el precio límite que tú indiques.
+                @if(!$isTradeable)
+                    <!-- Non-tradeable Asset Notice -->
+                    <div class="space-y-4 py-2 text-left">
+                        <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs leading-relaxed space-y-2 font-medium">
+                            <div class="font-bold flex items-center gap-1.5 text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-amber-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                </svg>
+                                Activo No Operable
+                            </div>
+                            <p>
+                                Este activo representativo (Índice bursátil, Divisa Forex o Materia Prima) se muestra únicamente como <strong>referencia informativa</strong> del mercado.
+                            </p>
+                            <p>
+                                Tu bróker (Alpaca) solo soporta la compra y venta de <strong>acciones estadounidenses, ETFs y Criptomonedas principales</strong>.
+                            </p>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-normal">
+                            Si deseas seguir el comportamiento de este índice de forma invertida, puedes buscar e invertir en un ETF indexado compatible que cotice en la bolsa de EE.UU. (ej. ETFs de índices).
                         </p>
                     </div>
+                @else
+                    <form action="{{ route('trade.execute') }}" method="POST" class="space-y-4"
+                         x-data="{ 
+                             tradeType: 'market', 
+                             investMode: 'amount', 
+                             amount: '', 
+                             qty: 1, 
+                             limitPrice: '',
+                             currentPrice: {{ $assetData['price'] ?? 0 }}, 
+                             dailyLimit: {{ auth()->user()->daily_spend_limit ?? 5000.0 }},
+                             spentToday: {{ auth()->user()->getDailySpent() ?? 0.0 }},
+                             
+                             get estimatedCost() {
+                                 if (this.investMode === 'amount') {
+                                     return parseFloat(this.amount) || 0;
+                                 } else {
+                                     let price = this.tradeType === 'limit' && this.limitPrice ? parseFloat(this.limitPrice) : this.currentPrice;
+                                     return (parseFloat(this.qty) || 0) * price;
+                                 }
+                             },
+                             
+                             get computedQty() {
+                                 if (this.investMode === 'qty') {
+                                     return parseFloat(this.qty) || 0;
+                                 } else {
+                                     let price = this.tradeType === 'limit' && this.limitPrice ? parseFloat(this.limitPrice) : this.currentPrice;
+                                     if (!price) return 0;
+                                     let val = (parseFloat(this.amount) || 0) / price;
+                                     return parseFloat(val.toFixed(6));
+                                 }
+                             }
+                         }">
+                        @csrf
+                        <input type="hidden" name="symbol" value="{{ $assetData['symbol'] }}">
+                        <input type="hidden" name="qty" :value="computedQty">
 
-                    <!-- Invest Mode Toggle -->
-                    <div class="space-y-1.5">
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cómo quieres operar</label>
-                        <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-950/80 border border-slate-900/60 shadow-inner">
-                            <button type="button" 
-                                    @click="investMode = 'amount'; qty = 1;"
-                                    :class="investMode === 'amount' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-                                    class="py-1.5 rounded-lg text-xs font-bold transition duration-150 cursor-pointer">
-                                Monto en Dólares ($)
+                        <!-- Order Type -->
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Tipo de Orden</label>
+                            <select name="type" x-model="tradeType" class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                                <option value="market">A Mercado (Market)</option>
+                                <option value="limit">Límite (Limit)</option>
+                            </select>
+                            <p class="text-[10px] text-slate-400 leading-normal" x-show="tradeType === 'market'">
+                                ℹ️ <strong>A Mercado:</strong> Compra o vende al instante al mejor precio del mercado hoy.
+                            </p>
+                            <p class="text-[10px] text-slate-400 leading-normal" x-show="tradeType === 'limit'">
+                                ℹ️ <strong>Límite:</strong> Compra o vende únicamente si el precio del activo alcanza el precio límite que tú indiques.
+                            </p>
+                        </div>
+
+                        <!-- Invest Mode Toggle -->
+                        <div class="space-y-1.5">
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cómo quieres operar</label>
+                            <div class="grid grid-cols-2 gap-2 p-1 rounded-xl bg-slate-950/80 border border-slate-900/60 shadow-inner">
+                                <button type="button" 
+                                        @click="investMode = 'amount'; qty = 1;"
+                                        :class="investMode === 'amount' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
+                                        class="py-1.5 rounded-lg text-xs font-bold transition duration-150 cursor-pointer">
+                                    Monto en Dólares ($)
+                                </button>
+                                <button type="button" 
+                                        @click="investMode = 'qty'; amount = '';"
+                                        :class="investMode === 'qty' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
+                                        class="py-1.5 rounded-lg text-xs font-bold transition duration-150 cursor-pointer">
+                                    Número de Acciones
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Input based on Mode -->
+                        <div class="space-y-1.5" x-show="investMode === 'amount'" x-transition>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Monto a Invertir ($ USD)</label>
+                            <input type="number" 
+                                   x-model.number="amount" 
+                                   min="1" 
+                                   step="any" 
+                                   placeholder="Ej: 500" 
+                                   class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <p class="text-[10px] text-slate-500 leading-normal">
+                                Introduce cuántos dólares deseas gastar/invertir en este activo.
+                            </p>
+                        </div>
+
+                        <div class="space-y-1.5" x-show="investMode === 'qty'" x-transition>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cantidad (Acciones)</label>
+                            <input type="number" 
+                                   x-model.number="qty" 
+                                   min="0.0001" 
+                                   step="any" 
+                                   placeholder="Ej: 1.5" 
+                                   class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <p class="text-[10px] text-slate-500 leading-normal">
+                                Introduce el número exacto (o fracción) de acciones que quieres comprar o vender.
+                            </p>
+                        </div>
+
+                        <!-- Limit Price (Only visible if type === limit) -->
+                        <div class="space-y-1.5" x-show="tradeType === 'limit'" x-transition>
+                            <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Precio Límite por Acción ($)</label>
+                            <input type="number" 
+                                   name="limit_price" 
+                                   x-model.number="limitPrice" 
+                                   step="0.01" 
+                                   placeholder="Ej: {{ number_format($assetData['price'] ?? 0, 2, '.', '') }}" 
+                                   class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                            <p class="text-[10px] text-slate-500 leading-normal">
+                                La orden solo se activará si el precio del activo es igual o mejor que este valor unitario.
+                            </p>
+                        </div>
+
+                        <!-- Summary & Warnings -->
+                        <div class="space-y-2">
+                            <!-- Equivalent shares preview when investing by amount -->
+                            <div x-show="investMode === 'amount' && amount > 0" class="p-3 bg-slate-950/20 rounded-xl border border-slate-900/40 flex justify-between items-center text-xs">
+                                <span class="text-slate-500 font-medium">Equivale aprox. a</span>
+                                <span class="font-extrabold text-indigo-400" x-text="computedQty + ' acciones'"></span>
+                            </div>
+
+                            <!-- Cost Estimate -->
+                            <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-900 flex justify-between items-center text-xs">
+                                <span class="text-slate-500 font-semibold">Costo Estimado</span>
+                                <span class="font-extrabold text-slate-200" x-text="'$' + estimatedCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
+                            </div>
+
+                            <!-- Limit Exceeded Warning -->
+                            <div x-show="estimatedCost > (dailyLimit - spentToday)" class="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-[11px] leading-normal font-bold">
+                                ⚠️ La compra manual excede tu límite diario de gasto disponible (${(dailyLimit - spentToday).toFixed(2)} de un total de ${dailyLimit.toFixed(2)}).
+                            </div>
+                        </div>
+
+                        <!-- Action buttons -->
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <button type="submit" name="side" value="buy" 
+                                    :disabled="estimatedCost > (dailyLimit - spentToday) || estimatedCost <= 0"
+                                    :class="estimatedCost > (dailyLimit - spentToday) || estimatedCost <= 0 ? 'opacity-40 cursor-not-allowed bg-slate-800 text-slate-500' : 'bg-green-600 hover:bg-green-500 text-white shadow-green-600/10 cursor-pointer shadow-lg'"
+                                    class="py-2.5 rounded-xl text-xs font-extrabold transition text-center uppercase">
+                                COMPRAR
                             </button>
-                            <button type="button" 
-                                    @click="investMode = 'qty'; amount = '';"
-                                    :class="investMode === 'qty' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-                                    class="py-1.5 rounded-lg text-xs font-bold transition duration-150 cursor-pointer">
-                                Número de Acciones
+                            <button type="submit" name="side" value="sell" 
+                                    :disabled="estimatedCost <= 0"
+                                    :class="estimatedCost <= 0 ? 'opacity-40 cursor-not-allowed bg-slate-800 text-slate-500' : 'bg-red-600 hover:bg-red-500 text-white shadow-red-600/10 cursor-pointer shadow-lg'"
+                                    class="py-2.5 rounded-xl text-xs font-extrabold transition text-center uppercase">
+                                VENDER
                             </button>
                         </div>
-                    </div>
-
-                    <!-- Input based on Mode -->
-                    <div class="space-y-1.5" x-show="investMode === 'amount'" x-transition>
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Monto a Invertir ($ USD)</label>
-                        <input type="number" 
-                               x-model.number="amount" 
-                               min="1" 
-                               step="any" 
-                               placeholder="Ej: 500" 
-                               class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-                        <p class="text-[10px] text-slate-500 leading-normal">
-                            Introduce cuántos dólares deseas gastar/invertir en este activo.
-                        </p>
-                    </div>
-
-                    <div class="space-y-1.5" x-show="investMode === 'qty'" x-transition>
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cantidad (Acciones)</label>
-                        <input type="number" 
-                               x-model.number="qty" 
-                               min="0.0001" 
-                               step="any" 
-                               placeholder="Ej: 1.5" 
-                               class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-                        <p class="text-[10px] text-slate-500 leading-normal">
-                            Introduce el número exacto (o fracción) de acciones que quieres comprar o vender.
-                        </p>
-                    </div>
-
-                    <!-- Limit Price (Only visible if type === limit) -->
-                    <div class="space-y-1.5" x-show="tradeType === 'limit'" x-transition>
-                        <label class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Precio Límite por Acción ($)</label>
-                        <input type="number" 
-                               name="limit_price" 
-                               x-model.number="limitPrice" 
-                               step="0.01" 
-                               placeholder="Ej: {{ number_format($assetData['price'] ?? 0, 2, '.', '') }}" 
-                               class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
-                        <p class="text-[10px] text-slate-500 leading-normal">
-                            La orden solo se activará si el precio del activo es igual o mejor que este valor unitario.
-                        </p>
-                    </div>
-
-                    <!-- Summary & Warnings -->
-                    <div class="space-y-2">
-                        <!-- Equivalent shares preview when investing by amount -->
-                        <div x-show="investMode === 'amount' && amount > 0" class="p-3 bg-slate-950/20 rounded-xl border border-slate-900/40 flex justify-between items-center text-xs">
-                            <span class="text-slate-500 font-medium">Equivale aprox. a</span>
-                            <span class="font-extrabold text-indigo-400" x-text="computedQty + ' acciones'"></span>
-                        </div>
-
-                        <!-- Cost Estimate -->
-                        <div class="p-3 bg-slate-950/40 rounded-xl border border-slate-900 flex justify-between items-center text-xs">
-                            <span class="text-slate-500 font-semibold">Costo Estimado</span>
-                            <span class="font-extrabold text-slate-200" x-text="'$' + estimatedCost.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>
-                        </div>
-
-                        <!-- Limit Exceeded Warning -->
-                        <div x-show="estimatedCost > (dailyLimit - spentToday)" class="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-[11px] leading-normal font-bold">
-                            ⚠️ La compra manual excede tu límite diario de gasto disponible (${(dailyLimit - spentToday).toFixed(2)} de un total de ${dailyLimit.toFixed(2)}).
-                        </div>
-                    </div>
-
-                    <!-- Action buttons -->
-                    <div class="grid grid-cols-2 gap-3 pt-2">
-                        <button type="submit" name="side" value="buy" 
-                                :disabled="estimatedCost > (dailyLimit - spentToday) || estimatedCost <= 0"
-                                :class="estimatedCost > (dailyLimit - spentToday) || estimatedCost <= 0 ? 'opacity-40 cursor-not-allowed bg-slate-800 text-slate-500' : 'bg-green-600 hover:bg-green-500 text-white shadow-green-600/10 cursor-pointer shadow-lg'"
-                                class="py-2.5 rounded-xl text-xs font-extrabold transition text-center uppercase">
-                            COMPRAR
-                        </button>
-                        <button type="submit" name="side" value="sell" 
-                                :disabled="estimatedCost <= 0"
-                                :class="estimatedCost <= 0 ? 'opacity-40 cursor-not-allowed bg-slate-800 text-slate-500' : 'bg-red-600 hover:bg-red-500 text-white shadow-red-600/10 cursor-pointer shadow-lg'"
-                                class="py-2.5 rounded-xl text-xs font-extrabold transition text-center uppercase">
-                            VENDER
-                        </button>
-                    </div>
-                </form>
+                    </form>
+                @endif
+            </div>
             </div>
             @endauth
 

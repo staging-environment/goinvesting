@@ -43,10 +43,14 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
             </svg>
             <div>
-                @if(session('status') === 'alpaca-updated-error')
-                    {!! session('alpaca_error_msg') !!}
-                @else
-                    {!! session('error') ?? $errors->first() !!}
+                @php
+                    $errText = session('status') === 'alpaca-updated-error' ? session('alpaca_error_msg') : (session('error') ?? $errors->first());
+                @endphp
+                <div>{!! $errText !!}</div>
+                @if(str_contains($errText ?? '', 'Real') || str_contains($errText ?? '', 'Live'))
+                    <button type="button" @click="$dispatch('open-alpaca-support')" class="mt-3 text-xs text-indigo-400 hover:text-indigo-300 font-extrabold underline flex items-center gap-1 cursor-pointer">
+                        ¿Necesitas ayuda? Abre nuestro Asistente de Contacto con Alpaca
+                    </button>
                 @endif
             </div>
         </div>

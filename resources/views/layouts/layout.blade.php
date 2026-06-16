@@ -291,5 +291,94 @@
             });
         }
     </script>
+
+    <!-- Alpaca Support Assistant Modal -->
+    @auth
+    @php
+        $nowEST = \Carbon\Carbon::now('America/New_York');
+        $isAlpacaChatOpen = $nowEST->isWeekday() && $nowEST->hour >= 9 && $nowEST->hour < 17;
+        $alpacaTimeStr = $nowEST->format('H:i') . ' EST';
+    @endphp
+    <div x-data="{ openAlpacaSupportModal: false }" 
+         @open-alpaca-support.window="openAlpacaSupportModal = true"
+         x-show="openAlpacaSupportModal" 
+         x-cloak 
+         class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+         x-transition>
+        
+        <div class="glass-panel w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-800/80 bg-[#0d1222]/95 space-y-6 relative overflow-hidden" @click.outside="openAlpacaSupportModal = false">
+            <div class="absolute right-4 top-4">
+                <button @click="openAlpacaSupportModal = false" class="text-slate-400 hover:text-white transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-3.658A8.955 8.955 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                    </svg>
+                </div>
+                <div class="text-left">
+                    <h3 class="text-base font-extrabold text-white">Asistente de Soporte Alpaca</h3>
+                    <p class="text-xs text-slate-400">Te ayudamos a resolver problemas con tu cuenta de inversión real</p>
+                </div>
+            </div>
+
+            <!-- Status banner -->
+            <div class="p-3.5 rounded-xl border flex items-center justify-between text-xs font-bold leading-normal text-left {{ $isAlpacaChatOpen ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-slate-900/60 border-slate-800 text-slate-400' }}">
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-2 w-2">
+                        <span class="absolute inline-flex h-full w-full rounded-full opacity-75 {{ $isAlpacaChatOpen ? 'animate-ping bg-emerald-400' : 'bg-slate-500' }}"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 {{ $isAlpacaChatOpen ? 'bg-emerald-500' : 'bg-slate-500' }}"></span>
+                    </span>
+                    <span>Chat de Soporte Alpaca: {{ $isAlpacaChatOpen ? 'ABIERTO' : 'CERRADO ACTUALMENTE' }}</span>
+                </div>
+                <span class="text-[10px] opacity-80">Hora en NY: {{ $alpacaTimeStr }}</span>
+            </div>
+
+            <div class="space-y-4 text-xs font-medium text-slate-350 leading-relaxed text-left">
+                <p>
+                    Las cuentas reales de Alpaca requieren un proceso obligatorio de verificación manual para cumplir con las regulaciones de la SEC y FINRA. Si tus credenciales dan error, el motivo habitual es que tu cuenta aún está en proceso de revisión.
+                </p>
+
+                <div class="space-y-2.5 bg-slate-950/40 p-4 rounded-xl border border-slate-900">
+                    <div class="font-bold text-white flex items-center gap-1.5">
+                        <span class="w-1.5 h-3 bg-indigo-500 rounded"></span>
+                        Opciones de Contacto Directo:
+                    </div>
+                    <ul class="list-disc pl-4 space-y-2 text-slate-400">
+                        <li>
+                            <strong class="text-slate-200">Chat en Vivo (Recomendado):</strong> Disponible de Lunes a Viernes de 9:00 a 17:00 EST. Requiere que inicies sesión en tu <a href="https://app.alpaca.markets" target="_blank" class="text-indigo-400 hover:text-indigo-300 font-bold underline">consola de Alpaca</a> y abras el globo de chat en la esquina inferior derecha.
+                        </li>
+                        <li>
+                            <strong class="text-slate-200">Soporte por Email:</strong> Puedes escribir directamente a <a href="mailto:support@alpaca.markets?subject=Estado de Cuenta Real - Alpaca&body=Hola equipo de Alpaca,%0D%0A%0D%0AMi cuenta real de Alpaca no está validada todavía y no puedo conectar mis API Keys. ¿Podrían revisar el estado de mi aprobación?%0D%0A%0D%0AEmail de registro de mi cuenta: {{ Auth::user()->email }}%0D%0ANombre: {{ Auth::user()->name }}" class="text-indigo-400 hover:text-indigo-300 font-bold underline">support@alpaca.markets</a>. Te responderán habitualmente en un plazo de 24 horas.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                <a href="mailto:support@alpaca.markets?subject=Estado de Cuenta Real - Alpaca&body=Hola equipo de Alpaca,%0D%0A%0D%0AMi cuenta real de Alpaca no está validada todavía y no puedo conectar mis API Keys. ¿Podrían revisar el estado de mi aprobación?%0D%0A%0D%0AEmail de registro de mi cuenta: {{ Auth::user()->email }}%0D%0ANombre: {{ Auth::user()->name }}" 
+                   class="flex-1 inline-flex justify-center items-center gap-1.5 bg-slate-900 border border-slate-800 text-slate-200 font-bold text-xs py-2.5 px-4 rounded-xl hover:bg-slate-800 transition cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+                    </svg>
+                    Enviar Email de Consulta
+                </a>
+                
+                <a href="https://app.alpaca.markets" target="_blank" 
+                   class="flex-1 inline-flex justify-center items-center gap-1.5 bg-indigo-650 hover:bg-indigo-550 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-md shadow-indigo-650/10 cursor-pointer">
+                    Ir al Dashboard de Alpaca
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    @endauth
 </body>
 </html>

@@ -72,9 +72,27 @@
 
     <!-- Top Live Ticker -->
     @if(!empty($tickerQuotes))
-    <div class="w-full bg-[#030712] border-b border-slate-900 py-2.5 overflow-hidden text-xs">
-        <div class="max-w-7xl mx-auto px-4 lg:px-6">
-            <div class="flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
+    <div class="w-full bg-[#030712] border-b border-slate-900 py-2.5 overflow-visible text-xs relative z-50">
+        <div class="max-w-7xl mx-auto px-4 lg:px-6 flex items-center gap-4">
+            
+            <!-- Info Badge for Beginners -->
+            <div class="flex items-center gap-1.5 px-2.5 py-1 bg-indigo-950/30 border border-indigo-500/20 rounded-lg text-[10px] text-indigo-300 font-bold cursor-help group relative select-none shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 1 1 .513 1.293l-.042.015-1.478.492a1 1 0 0 0-.674.933V15m3.75 2.25h.008v.008H13v-.008Z" />
+                </svg>
+                <span>Mercados en Vivo</span>
+                
+                <!-- Custom elegant tooltip -->
+                <div class="absolute left-0 top-full mt-2 w-72 p-4 bg-[#0d1222] border border-slate-800 text-slate-350 rounded-xl shadow-2xl z-50 hidden group-hover:block whitespace-normal text-xs font-medium leading-relaxed">
+                    <strong class="text-white block mb-1.5">Índices y Activos de Referencia</strong>
+                    Estos valores muestran la tendencia en tiempo real de los principales indicadores económicos mundiales (bolsas, materias primas y criptomonedas). 
+                    <hr class="border-slate-800 my-2">
+                    <span class="text-[10px] text-slate-500 block">Fuente de datos en tiempo real: Yahoo Finance.</span>
+                </div>
+            </div>
+
+            <!-- Ticker Items Carousel -->
+            <div class="flex-grow flex items-center gap-6 overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap overflow-visible">
                 @foreach($tickerQuotes as $symbol => $quote)
                     @php
                         $isPositive = ($quote['changePercent'] ?? 0) >= 0;
@@ -82,16 +100,23 @@
                         $symbolClean = str_replace(['=X', '^'], '', $symbol);
                         $meta = $tickerMetadata[$symbol] ?? ['name' => $symbolClean, 'desc' => ''];
                     @endphp
-                    <a href="{{ route('assets.show', $symbol) }}" data-symbol-ticker="{{ $symbol }}" title="{{ $meta['desc'] }}" class="inline-flex items-center gap-2 hover:opacity-80 transition duration-150 border-r border-slate-800 pr-6 last:border-none cursor-help">
-                        <span class="font-bold text-slate-300">{{ $symbolClean }}</span>
-                        <span class="text-[10px] text-slate-500 font-semibold">({{ $meta['name'] }})</span>
+                    <div class="relative group inline-flex items-center">
+                        <a href="{{ route('assets.show', $symbol) }}" data-symbol-ticker="{{ $symbol }}" class="inline-flex items-center gap-2 hover:opacity-85 transition duration-150 border-r border-slate-800/80 pr-6 last:border-none">
+                            <span class="font-bold text-slate-200">{{ $meta['name'] }}</span>
+                            <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">[{{ $symbolClean }}]</span>
+                            <span class="font-medium text-slate-100" data-field="price">${{ number_format($quote['price'] ?? 0, 2) }}</span>
+                            <span class="flex items-center gap-0.5 font-bold {{ $colorClass }}" data-field="change-badge">
+                                <span data-field="direction">{{ $isPositive ? '▲' : '▼' }}</span>
+                                <span data-field="changePercent">{{ number_format(abs($quote['changePercent'] ?? 0), 2) }}%</span>
+                            </span>
+                        </a>
 
-                        <span class="font-medium text-slate-100" data-field="price">${{ number_format($quote['price'] ?? 0, 2) }}</span>
-                        <span class="flex items-center gap-0.5 font-semibold {{ $colorClass }}" data-field="change-badge">
-                            <span data-field="direction">{{ $isPositive ? '▲' : '▼' }}</span>
-                            <span data-field="changePercent">{{ number_format(abs($quote['changePercent'] ?? 0), 2) }}%</span>
-                        </span>
-                    </a>
+                        <!-- Custom elegant item tooltip -->
+                        <div class="absolute left-0 top-full mt-2 w-64 p-3 bg-[#0d1222]/95 backdrop-blur-md border border-slate-800/80 text-slate-350 rounded-xl shadow-2xl z-50 hidden group-hover:block whitespace-normal text-[11px] font-normal leading-relaxed">
+                            <strong class="text-white block mb-0.5">{{ $meta['name'] }} ({{ $symbolClean }})</strong>
+                            {{ $meta['desc'] }}
+                        </div>
+                    </div>
                 @endforeach
             </div>
         </div>

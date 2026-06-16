@@ -247,11 +247,6 @@
 
     <!-- Alpaca Support Assistant Modal -->
     @auth
-    @php
-        $nowEST = \Carbon\Carbon::now('America/New_York');
-        $isAlpacaChatOpen = $nowEST->isWeekday() && $nowEST->hour >= 9 && $nowEST->hour < 17;
-        $alpacaTimeStr = $nowEST->format('H:i') . ' EST';
-    @endphp
     <div x-data="{ openAlpacaSupportModal: false }" 
          @open-alpaca-support.window="openAlpacaSupportModal = true"
          x-show="openAlpacaSupportModal" 
@@ -281,20 +276,16 @@
             </div>
 
             <!-- Status banner -->
-            <div class="p-3.5 rounded-xl border flex items-center justify-between text-xs font-bold leading-normal text-left {{ $isAlpacaChatOpen ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' : 'bg-slate-900/60 border-slate-800 text-slate-400' }}">
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                        <span class="absolute inline-flex h-full w-full rounded-full opacity-75 {{ $isAlpacaChatOpen ? 'animate-ping bg-emerald-400' : 'bg-slate-500' }}"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 {{ $isAlpacaChatOpen ? 'bg-emerald-500' : 'bg-slate-500' }}"></span>
-                    </span>
-                    <span>Chat de Soporte Alpaca: {{ $isAlpacaChatOpen ? 'ABIERTO' : 'CERRADO ACTUALMENTE' }}</span>
-                </div>
-                <span class="text-[10px] opacity-80">Hora en NY: {{ $alpacaTimeStr }}</span>
+            <div class="p-3.5 rounded-xl border border-indigo-500/10 bg-indigo-500/5 text-indigo-300 text-xs font-bold leading-normal text-left flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 shrink-0">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25.041-.02a.75.75 0 1 1 .513 1.293l-.042.015-1.478.492a1 1 0 0 0-.674.933V15m3.75 2.25h.008v.008H13v-.008Z" />
+                </svg>
+                <span>Canales Oficiales: Correo de Soporte y Centro de Ayuda</span>
             </div>
 
             <div class="space-y-4 text-xs font-medium text-slate-350 leading-relaxed text-left">
                 <p>
-                    Las cuentas reales de Alpaca requieren un proceso obligatorio de verificación manual para cumplir con las regulaciones de la SEC y FINRA. Si tus credenciales dan error, el motivo habitual es que tu cuenta aún está en proceso de revisión.
+                    Las cuentas reales de Alpaca requieren un proceso obligatorio de verificación manual para cumplir con las regulaciones de la SEC y FINRA. Si tus credenciales dan error, el motivo habitual es que tu cuenta aún está en revisión en el broker.
                 </p>
 
                 <div class="space-y-2.5 bg-slate-950/40 p-4 rounded-xl border border-slate-900">
@@ -304,10 +295,10 @@
                     </div>
                     <ul class="list-disc pl-4 space-y-2 text-slate-400">
                         <li>
-                            <strong class="text-slate-200">Chat en Vivo (Recomendado):</strong> Disponible de Lunes a Viernes de 9:00 a 17:00 EST. Requiere que inicies sesión en tu <a href="https://app.alpaca.markets" target="_blank" class="text-indigo-400 hover:text-indigo-300 font-bold underline">consola de Alpaca</a> y abras el globo de chat en la esquina inferior derecha.
+                            <strong class="text-slate-200">Soporte por Email (Recomendado):</strong> Puedes escribir directamente a <a href="mailto:support@alpaca.markets?subject=Estado de Cuenta Real - Alpaca&body=Hola equipo de Alpaca,%0D%0A%0D%0AMi cuenta real de Alpaca no está validada todavía y no puedo conectar mis API Keys. ¿Podrían revisar el estado de mi aprobación?%0D%0A%0D%0AEmail de registro de mi cuenta: {{ Auth::user()->email }}%0D%0ANombre: {{ Auth::user()->name }}" class="text-indigo-400 hover:text-indigo-300 font-bold underline">support@alpaca.markets</a>. Te responderán habitualmente en un plazo de 24 horas laborables.
                         </li>
                         <li>
-                            <strong class="text-slate-200">Soporte por Email:</strong> Puedes escribir directamente a <a href="mailto:support@alpaca.markets?subject=Estado de Cuenta Real - Alpaca&body=Hola equipo de Alpaca,%0D%0A%0D%0AMi cuenta real de Alpaca no está validada todavía y no puedo conectar mis API Keys. ¿Podrían revisar el estado de mi aprobación?%0D%0A%0D%0AEmail de registro de mi cuenta: {{ Auth::user()->email }}%0D%0ANombre: {{ Auth::user()->name }}" class="text-indigo-400 hover:text-indigo-300 font-bold underline">support@alpaca.markets</a>. Te responderán habitualmente en un plazo de 24 horas.
+                            <strong class="text-slate-200">Centro de Soporte Oficial:</strong> Consulta documentación, estados de cuenta y abre incidencias en la <a href="https://alpaca.markets/support" target="_blank" class="text-indigo-400 hover:text-indigo-300 font-bold underline">página de soporte de Alpaca</a>.
                         </li>
                     </ul>
                 </div>
@@ -322,9 +313,9 @@
                     Enviar Email de Consulta
                 </a>
                 
-                <a href="https://app.alpaca.markets" target="_blank" 
+                <a href="https://alpaca.markets/support" target="_blank" 
                    class="flex-1 inline-flex justify-center items-center gap-1.5 bg-indigo-650 hover:bg-indigo-550 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition shadow-md shadow-indigo-650/10 cursor-pointer">
-                    Ir al Dashboard de Alpaca
+                    Centro de Soporte Alpaca
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
                     </svg>

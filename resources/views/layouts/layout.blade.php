@@ -225,7 +225,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full bg-[#030712] border-t border-slate-900/60 pt-16 pb-8 text-xs text-slate-500" x-data="{ showPrivacyModal: false, showTermsModal: false }">
+    <footer class="w-full bg-gradient-to-b from-slate-950 via-[#0a0f24] to-slate-950 border-t border-indigo-500/20 pt-16 pb-8 text-xs text-slate-500" x-data="{ showPrivacyModal: false, showTermsModal: false }">
         <div class="max-w-7xl mx-auto px-4 lg:px-6">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
                 <!-- Col 1: Brand Info -->

@@ -224,4 +224,56 @@ class TradingController extends Controller
 
         return redirect()->route('portfolio')->with('success', '¡Asistente completado! Bienvenido a tu portafolio en vivo.');
     }
+
+    /**
+     * Toggles the user's Alpaca mode between Paper (Simulation) and Live (Real).
+     */
+    public function togglePaper(Request $request)
+    {
+        $user = auth()->user();
+        
+        $originalMode = (bool)$user->alpaca_is_paper;
+        $newMode = !$originalMode;
+
+        // Temporarily change and save to test
+        $user->alpaca_is_paper = $newMode;
+        $user->save();
+
+        $modeText = $newMode ? 'Simulación (Paper)' : 'Real (Live)';
+        
+        $connectionSuccess = true;
+        $connectionMessage = '';
+
+        if ($user->alpaca_key_id && $user->alpaca_secret_key) {
+            try {
+                $tempService = new \App\Services\AlpacaService(
+                    $user->alpaca_key_id, 
+                    $user->alpaca_secret_key, 
+                    $user->alpaca_account_id, 
+                    $newMode
+                );
+                $accountInfo = $tempService->getAccountInfo();
+                if (!$accountInfo) {
+                    $connectionSuccess = false;
+                    $connectionMessage = "No se pudo conectar con Alpaca en modo {$modeText}. Por favor, verifica que tus credenciales actuales correspondan a este tipo de cuenta.";
+                }
+            } catch (\Exception $e) {
+                $connectionSuccess = false;
+                $connectionMessage = 'Error al verificar la conexión: ' . $e->getMessage();
+            }
+        } else {
+            $connectionSuccess = false;
+            $connectionMessage = 'No tienes configuradas las credenciales de Alpaca para conectar.';
+        }
+
+        if ($connectionSuccess) {
+            return redirect()->route('portfolio')->with('success', "Cambiado correctamente a modo {$modeText}. Conexión exitosa.");
+        } else {
+            // Revert the change since connection failed in the new mode
+            $user->alpaca_is_paper = $originalMode;
+            $user->save();
+            
+            return redirect()->route('portfolio')->with('error', $connectionMessage);
+        }
+    }
 }

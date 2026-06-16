@@ -65,14 +65,55 @@
         'ZC=F' => 'Maíz',
         'ZW=F' => 'Trigo'
     ];
+    $isPaper = false;
+    if (isset($account)) {
+        $isPaper = str_contains($account['currency'] ?? 'USD', 'USD') && (auth()->user()->alpaca_is_paper ?? config('services.alpaca.is_paper'));
+    }
 @endphp
 <div class="space-y-8">
     
+    <!-- Alerts -->
+    @if(session('success'))
+        <div class="glass-panel border-green-500/20 bg-green-500/5 rounded-2xl p-4 text-sm text-green-400 font-bold flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+            </svg>
+            <div>
+                {{ session('success') }}
+            </div>
+        </div>
+    @endif
+
+    @if(session('error') || $errors->any())
+        <div class="glass-panel border-red-500/20 bg-red-500/5 rounded-2xl p-4 text-sm text-red-400 font-bold flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 shrink-0">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+            <div>
+                {{ session('error') ?? $errors->first() }}
+            </div>
+        </div>
+    @endif
+
     <!-- Header -->
-    <div class="flex items-center justify-between">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-            <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Mi Portafolio</h1>
-            <p class="text-sm text-slate-400">Control de fondos y posiciones integradas con tu cuenta de Alpaca Broker</p>
+            <div class="flex flex-wrap items-center gap-3">
+                <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Mi Portafolio</h1>
+                @if(isset($account))
+                    <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="inline-block">
+                        @csrf
+                        <button type="submit" title="Haz clic para alternar entre Cuenta de Simulación y Real" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-extrabold transition duration-200 hover:scale-[1.03] active:scale-[0.97] cursor-pointer {{ $isPaper ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 hover:bg-indigo-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20' }}">
+                            <span class="w-2 h-2 rounded-full {{ $isPaper ? 'bg-indigo-400 animate-pulse' : 'bg-emerald-400 animate-pulse' }}"></span>
+                            Modo: {{ $isPaper ? 'Simulación (Paper)' : 'Real (Live)' }}
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3 h-3 ml-0.5 opacity-70">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                            </svg>
+                        </button>
+                    </form>
+                @endif
+            </div>
+            <p class="text-sm text-slate-400 mt-1">Control de fondos y posiciones integradas con tu cuenta de Alpaca Broker</p>
         </div>
         <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
             Volver a mercados

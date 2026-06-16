@@ -48,10 +48,22 @@
             <x-input-error class="mt-2" :messages="$errors->get('alpaca_secret_key')" />
         </div>
 
-        <div>
-            <x-input-label for="alpaca_account_id" :value="__('Alpaca Account ID (Opcional, para bróker/sandbox)')" />
-            <x-text-input id="alpaca_account_id" name="alpaca_account_id" type="text" class="mt-1 block w-full" :value="old('alpaca_account_id', $user->alpaca_account_id)" placeholder="Ingresa tu Account ID si usas cuenta Broker" autocomplete="off" />
-            <x-input-error class="mt-2" :messages="$errors->get('alpaca_account_id')" />
+        <div x-data="{ showAdvanced: {{ $user->alpaca_account_id ? 'true' : 'false' }} }" class="space-y-4">
+            <button type="button" @click="showAdvanced = !showAdvanced" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1.5 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 transition-transform duration-200" :class="showAdvanced ? 'rotate-90' : ''">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                </svg>
+                Opciones avanzadas (Conexión Broker)
+            </button>
+            
+            <div x-show="showAdvanced" x-cloak class="space-y-4 pt-2 border-t border-slate-800">
+                <div>
+                    <x-input-label for="alpaca_account_id" :value="__('Alpaca Account ID (Opcional, para bróker/sandbox)')" />
+                    <x-text-input id="alpaca_account_id" name="alpaca_account_id" type="text" class="mt-1 block w-full" :value="old('alpaca_account_id', $user->alpaca_account_id)" placeholder="Ingresa tu Account ID si usas cuenta Broker" autocomplete="new-password" />
+                    <span class="text-[11px] text-slate-500 mt-1 block">Solo es necesario si utilizas una cuenta de tipo Alpaca Broker o Sandbox multi-cuenta. Déjalo completamente vacío si usas una cuenta de simulación o real estándar (retail).</span>
+                    <x-input-error class="mt-2" :messages="$errors->get('alpaca_account_id')" />
+                </div>
+            </div>
         </div>
 
         <div class="flex items-center gap-2">

@@ -100,15 +100,13 @@ class TradingBotCommand extends Command
             }
         }
 
-        // Configure Alpaca service with user credentials if available
-        if ($user->alpaca_key_id && $user->alpaca_secret_key) {
-            $this->tradingService = new \App\Services\AlpacaService(
-                $user->alpaca_key_id,
-                $user->alpaca_secret_key,
-                $user->alpaca_account_id,
-                $user->alpaca_is_paper
-            );
-        }
+        // Configure Alpaca service with user credentials
+        $this->tradingService = new \App\Services\AlpacaService(
+            $user->alpaca_key_id ?? '',
+            $user->alpaca_secret_key ?? '',
+            $user->alpaca_account_id,
+            $user->alpaca_is_paper ?? true
+        );
 
         // Load bot strategy and limit parameters from the user's settings, falling back to env/defaults
         $this->buyThresholdPercent = (float)($user->bot_buy_threshold ?? -1.5);

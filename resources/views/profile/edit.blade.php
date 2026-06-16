@@ -25,6 +25,12 @@
         @include('profile.partials.update-alpaca-credentials-form')
     </div>
 
+    <!-- Bot Strategy Configuration Block -->
+    <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl">
+        @include('profile.partials.update-bot-strategy-form')
+    </div>
+
+
     <!-- Password Update Block -->
     <div class="glass-panel rounded-2xl p-6 sm:p-8 shadow-xl">
         @include('profile.partials.update-password-form')

@@ -20,7 +20,12 @@ use Illuminate\Notifications\Notifiable;
     'alpaca_key_id',
     'alpaca_secret_key',
     'alpaca_account_id',
-    'alpaca_is_paper'
+    'alpaca_is_paper',
+    'bot_buy_threshold',
+    'bot_take_profit',
+    'bot_stop_loss',
+    'bot_order_size',
+    'bot_max_investment'
 ])]
 #[Hidden(['password', 'remember_token', 'alpaca_secret_key'])]
 class User extends Authenticatable
@@ -43,8 +48,14 @@ class User extends Authenticatable
             'alpaca_is_paper' => 'boolean',
             'daily_spend_limit' => 'float',
             'weekly_spend_limit' => 'float',
+            'bot_buy_threshold' => 'float',
+            'bot_take_profit' => 'float',
+            'bot_stop_loss' => 'float',
+            'bot_order_size' => 'float',
+            'bot_max_investment' => 'float',
         ];
     }
+
 
     public function watchlists()
     {

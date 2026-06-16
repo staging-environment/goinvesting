@@ -81,4 +81,31 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'alpaca-updated');
     }
+
+    /**
+     * Update the user's bot trading strategy settings.
+     */
+    public function updateBotStrategy(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'bot_buy_threshold' => 'required|numeric',
+            'bot_take_profit' => 'required|numeric|min:0',
+            'bot_stop_loss' => 'required|numeric|max:0',
+            'bot_order_size' => 'required|numeric|min:1',
+            'bot_max_investment' => 'required|numeric|min:1',
+        ]);
+
+        $user = $request->user();
+        
+        $user->update([
+            'bot_buy_threshold' => $request->input('bot_buy_threshold'),
+            'bot_take_profit' => $request->input('bot_take_profit'),
+            'bot_stop_loss' => $request->input('bot_stop_loss'),
+            'bot_order_size' => $request->input('bot_order_size'),
+            'bot_max_investment' => $request->input('bot_max_investment'),
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'bot-strategy-updated');
+    }
 }
+

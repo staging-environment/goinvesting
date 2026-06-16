@@ -110,6 +110,14 @@ class TradingBotCommand extends Command
             );
         }
 
+        // Load bot strategy and limit parameters from the user's settings, falling back to env/defaults
+        $this->buyThresholdPercent = (float)($user->bot_buy_threshold ?? -1.5);
+        $this->takeProfitPercent = (float)($user->bot_take_profit ?? 2.0);
+        $this->stopLossPercent = (float)($user->bot_stop_loss ?? -3.0);
+        $this->orderSize = (float)($user->bot_order_size ?? env('BOT_ORDER_SIZE', 500.0));
+        $this->maxInvestmentLimit = (float)($user->bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0));
+
+
         // Create BotExecution record
         $execution = \App\Models\BotExecution::create([
             'user_id' => $user->id,

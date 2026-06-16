@@ -171,10 +171,8 @@
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
                         </span>
-                        Bot de Trading Automático
-                    </h2>
                     <p class="text-xs text-slate-400">
-                        Estrategia: <strong class="text-indigo-400 font-bold">Momentum / Caída Diaria</strong> (Compra caída diaria &le; -1.5%, TP: +2.0%, SL: -3.0%). Límite inversión: <strong class="text-slate-300 font-bold">$5,400 (5,000 &euro;)</strong>.
+                        Estrategia: <strong class="text-indigo-400 font-bold">Momentum / Caída Diaria</strong> (Compra caída diaria &le; {{ Auth::user()->bot_buy_threshold ?? -1.5 }}%, TP: +{{ Auth::user()->bot_take_profit ?? 2.0 }}%, SL: {{ Auth::user()->bot_stop_loss ?? -3.0 }}%). Tamaño Orden: <strong class="text-slate-350 font-semibold">${{ number_format(Auth::user()->bot_order_size ?? 500, 2) }}</strong> | Límite Inversión: <strong class="text-slate-300 font-bold">${{ number_format(Auth::user()->bot_max_investment ?? 500000, 2) }}</strong>.
                     </p>
                 </div>
                 <div class="flex items-center gap-3">
@@ -286,14 +284,49 @@
                     <table class="w-full text-left border-collapse min-w-[700px]">
                         <thead>
                             <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
-                                <th class="py-4 px-5">Símbolo</th>
+                                <th class="py-4 px-5">
+                                    <span class="flex items-center gap-1 cursor-help" title="Código abreviado del activo en la bolsa de valores (ej: AAPL para Apple).">
+                                        Símbolo
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
                                 <th class="py-4 px-5">Nombre</th>
-                                <th class="py-4 px-5 text-right">Cantidad</th>
-                                <th class="py-4 px-5 text-right">Precio Medio</th>
-                                <th class="py-4 px-5 text-right">Precio Actual</th>
-                                <th class="py-4 px-5 text-right">Costo Total</th>
-                                <th class="py-4 px-5 text-right">Valor actual</th>
-                                <th class="py-4 px-5 text-right">G/P no realizado</th>
+                                <th class="py-4 px-5 text-right">
+                                    <span class="flex items-center justify-end gap-1 cursor-help" title="Número total de unidades/acciones que posees en cartera.">
+                                        Cantidad
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
+                                <th class="py-4 px-5 text-right">
+                                    <span class="flex items-center justify-end gap-1 cursor-help" title="Precio promedio de compra de las acciones que posees.">
+                                        Precio Medio
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
+                                <th class="py-4 px-5 text-right">
+                                    <span class="flex items-center justify-end gap-1 cursor-help" title="Precio de cotización del activo hoy en el mercado.">
+                                        Precio Actual
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
+                                <th class="py-4 px-5 text-right">
+                                    <span class="flex items-center justify-end gap-1 cursor-help" title="Total del capital invertido en esta posición (Cantidad × Precio Medio).">
+                                        Costo Total
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
+                                <th class="py-4 px-5 text-right">
+                                    <span class="flex items-center justify-end gap-1 cursor-help" title="Valorización actual de tu posición al precio de mercado (Cantidad × Precio Actual).">
+                                        Valor Actual
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
+                                <th class="py-4 px-5 text-right">
+                                    <span class="flex items-center justify-end gap-1 cursor-help" title="Ganancias o Pérdidas acumuladas sobre el papel (Valor Actual - Costo Total). No se consolidan hasta que vendas.">
+                                        G/P no realizado
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-550 inline"><path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" /></svg>
+                                    </span>
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-900/50">

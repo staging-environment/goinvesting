@@ -413,7 +413,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0v11.25m0 0h19.5m0 0h-2.25m-14.25-2.25h14.25m-14.25-3h14.25m-14.25-3H21" />
                         </svg>
-                        Mis Posiciones Abiertas
+                        Mis Acciones Actuales
                     </h2>
                     <p class="text-xs text-slate-400">
                         Representa las acciones o activos que posees en este momento. El bot los vigila para venderlos automáticamente cuando alcancen tus objetivos de ganancia (Take Profit) o límites de pérdida (Stop Loss).

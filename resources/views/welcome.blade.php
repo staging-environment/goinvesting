@@ -68,11 +68,16 @@
 @endphp
 <div class="space-y-8" x-data="{ activeTab: 'indices' }">
     
-    <!-- Hero / Welcome Banner -->
-    <div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-900/60 p-8 lg:p-14 shadow-2xl bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-950/40 via-slate-950 to-slate-950">
+    <div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-900/60 p-8 lg:p-14 shadow-2xl">
+        <!-- Background Image with Blend/Overlay -->
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 mix-blend-screen" style="background-image: url('{{ asset('images/trading_banner_bg.png') }}');"></div>
+        <!-- Gradient Overlay to merge with theme and ensure contrast -->
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-indigo-950/40"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+        
         <!-- Animated glowing mesh background orbs -->
-        <div class="absolute top-0 right-0 w-[450px] h-[450px] bg-gradient-to-br from-indigo-500/10 to-violet-500/10 rounded-full blur-3xl -mr-32 -mt-32 animate-pulse duration-[6000ms]"></div>
-        <div class="absolute bottom-0 left-1/3 w-[300px] h-[300px] bg-violet-600/5 rounded-full blur-3xl animate-pulse duration-[8000ms]"></div>
+        <div class="absolute top-0 right-0 w-[450px] h-[450px] bg-gradient-to-br from-indigo-500/15 to-violet-500/15 rounded-full blur-3xl -mr-32 -mt-32 animate-pulse duration-[6000ms]"></div>
+        <div class="absolute bottom-0 left-1/3 w-[300px] h-[300px] bg-violet-600/10 rounded-full blur-3xl animate-pulse duration-[8000ms]"></div>
         
         <!-- Subtle Grid Pattern -->
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-[0.15]"></div>

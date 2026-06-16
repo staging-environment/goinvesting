@@ -68,12 +68,12 @@
 @endphp
 <div class="space-y-8" x-data="{ activeTab: 'indices' }">
     
-    <div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-900/60 p-8 lg:p-14 shadow-2xl">
+    <div class="relative overflow-hidden rounded-3xl bg-slate-950 border border-slate-800/80 p-8 lg:p-14 shadow-2xl">
         <!-- Background Image with Blend/Overlay -->
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-25 mix-blend-screen" style="background-image: url('{{ asset('images/trading_banner_bg.png') }}');"></div>
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-55" style="background-image: url('{{ asset('images/trading_banner_bg.png') }}');"></div>
         <!-- Gradient Overlay to merge with theme and ensure contrast -->
-        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-indigo-950/40"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/70 to-indigo-950/30"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
         
         <!-- Animated glowing mesh background orbs -->
         <div class="absolute top-0 right-0 w-[450px] h-[450px] bg-gradient-to-br from-indigo-500/15 to-violet-500/15 rounded-full blur-3xl -mr-32 -mt-32 animate-pulse duration-[6000ms]"></div>

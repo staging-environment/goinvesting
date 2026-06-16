@@ -22,6 +22,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/portfolio', [TradingController::class, 'portfolio'])->name('portfolio');
     Route::post('/api/trade', [TradingController::class, 'executeOrder'])->name('trade.execute');
     Route::post('/portfolio/run-bot', [TradingController::class, 'runBot'])->name('portfolio.run-bot');
+    
+    // Admin Routes
+    Route::get('/admin/dashboard', [\App\Http\Controllers\AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/admin/user/{id}/update-role', [\App\Http\Controllers\AdminController::class, 'updateRole'])->name('admin.update-role');
+    Route::post('/admin/user/{id}/update-limits', [\App\Http\Controllers\AdminController::class, 'updateLimits'])->name('admin.update-limits');
+
+    // Profile Alpaca Config Route
+    Route::post('/profile/alpaca', [ProfileController::class, 'updateAlpaca'])->name('profile.update-alpaca');
 });
 
 Route::get('/dashboard', function () {

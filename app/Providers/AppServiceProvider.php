@@ -11,12 +11,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(\App\Services\TradingProviderInterface::class, function ($app) {
+        $this->app->bind(\App\Services\TradingProviderInterface::class, function ($app) {
             $provider = env('TRADING_PROVIDER', 'alpaca');
             if ($provider === 'lemon') {
                 return $app->make(\App\Services\LemonMarketsService::class);
             }
-            return $app->make(\App\Services\AlpacaService::class);
+            
+            $user = auth()->user();
+            if ($user && $user->alpaca_key_id && $user->alpaca_secret_key) {
+                return new \App\Services\AlpacaService(
+                    $user->alpaca_key_id,
+                    $user->alpaca_secret_key,
+                    $user->alpaca_account_id,
+                    $user->alpaca_is_paper
+                );
+            }
+            
+            return new \App\Services\AlpacaService(
+                config('services.alpaca.key_id'),
+                config('services.alpaca.secret_key'),
+                config('services.alpaca.account_id'),
+                config('services.alpaca.is_paper', true)
+            );
         });
     }
 

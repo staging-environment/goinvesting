@@ -10,13 +10,17 @@ class AlpacaService implements TradingProviderInterface
     protected ?string $accountId;
     protected bool $isBroker = false;
 
-    public function __construct()
-    {
-        $this->keyId = config('services.alpaca.key_id') ?? '';
-        $this->secretKey = config('services.alpaca.secret_key') ?? '';
-        $this->accountId = config('services.alpaca.account_id');
+    public function __construct(
+        ?string $keyId = null,
+        ?string $secretKey = null,
+        ?string $accountId = null,
+        ?bool $isPaper = null
+    ) {
+        $this->keyId = $keyId ?? config('services.alpaca.key_id') ?? '';
+        $this->secretKey = $secretKey ?? config('services.alpaca.secret_key') ?? '';
+        $this->accountId = $accountId ?? config('services.alpaca.account_id');
         
-        $isPaper = config('services.alpaca.is_paper', true);
+        $isPaper = $isPaper ?? config('services.alpaca.is_paper', true);
         
         if ($this->accountId) {
             $this->isBroker = true;

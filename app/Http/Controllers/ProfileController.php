@@ -57,4 +57,28 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    /**
+     * Update the user's Alpaca credentials.
+     */
+    public function updateAlpaca(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'alpaca_key_id' => 'nullable|string|max:255',
+            'alpaca_secret_key' => 'nullable|string|max:255',
+            'alpaca_account_id' => 'nullable|string|max:255',
+            'alpaca_is_paper' => 'nullable|boolean'
+        ]);
+
+        $user = $request->user();
+        
+        $user->update([
+            'alpaca_key_id' => $request->input('alpaca_key_id'),
+            'alpaca_secret_key' => $request->input('alpaca_secret_key'),
+            'alpaca_account_id' => $request->input('alpaca_account_id'),
+            'alpaca_is_paper' => $request->has('alpaca_is_paper') ? (bool)$request->input('alpaca_is_paper') : false
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'alpaca-updated');
+    }
 }

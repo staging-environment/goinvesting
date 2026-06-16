@@ -21,11 +21,37 @@ class TradingController extends Controller
     /**
      * Renders the user's portfolio with open positions and balances.
      */
+    /**
+     * Renders the user's portfolio with open positions and balances.
+     */
     public function portfolio()
     {
+        $user = auth()->user();
+        
+        $lastExecution = \App\Models\BotExecution::where('user_id', $user->id)
+            ->with('trades')
+            ->orderBy('started_at', 'desc')
+            ->first();
+            
+        $recentTrades = \App\Models\Trade::where('user_id', $user->id)
+            ->orderBy('created_at', 'desc')
+            ->take(15)
+            ->get();
+            
+        $dailySpent = $user->getDailySpent();
+        $weeklySpent = $user->getWeeklySpent();
+        $dailyLimit = $user->daily_spend_limit;
+        $weeklyLimit = $user->weekly_spend_limit;
+
         if (!$this->tradingService->isConfigured()) {
             return view('portfolio', [
-                'error' => 'El proveedor de trading actual no está configurado. Por favor, añade tus credenciales en el archivo .env.'
+                'error' => 'No has configurado tus credenciales personales de Alpaca o el proveedor actual no está configurado. Por favor, añade tus credenciales en tu Perfil.',
+                'lastExecution' => $lastExecution,
+                'recentTrades' => $recentTrades,
+                'dailySpent' => $dailySpent,
+                'weeklySpent' => $weeklySpent,
+                'dailyLimit' => $dailyLimit,
+                'weeklyLimit' => $weeklyLimit,
             ]);
         }
 
@@ -60,7 +86,16 @@ class TradingController extends Controller
             }
         }
 
-        return view('portfolio', compact('account', 'positions'));
+        return view('portfolio', compact(
+            'account', 
+            'positions', 
+            'lastExecution', 
+            'recentTrades',
+            'dailySpent',
+            'weeklySpent',
+            'dailyLimit',
+            'weeklyLimit'
+        ));
     }
 
     /**
@@ -82,9 +117,41 @@ class TradingController extends Controller
         $type = $request->input('type');
         $limitPrice = $request->has('limit_price') ? (float)$request->input('limit_price') : null;
 
+        $user = auth()->user();
+        
+        // Respect spending limits for manual buys as well
+        if ($side === 'buy') {
+            // Get approximate cost
+            $marketQuotes = $this->yahooService->getSparkQuotes([$symbol]);
+            $currentPrice = isset($marketQuotes[$symbol]) ? (float)$marketQuotes[$symbol]['price'] : ($limitPrice ?? 0.0);
+            $estimatedCost = $qty * $currentPrice;
+            
+            if ($user->hasExceededDailyLimit($estimatedCost)) {
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite diario de gasto (\${$user->daily_spend_limit}, gastado hoy: \${$user->getDailySpent()})."]);
+            }
+            if ($user->hasExceededWeeklyLimit($estimatedCost)) {
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})."]);
+            }
+        }
+
         $result = $this->tradingService->placeOrder($symbol, $qty, $side, $type, $limitPrice);
 
         if ($result['success']) {
+            // Record manual trade
+            $marketQuotes = $this->yahooService->getSparkQuotes([$symbol]);
+            $price = isset($marketQuotes[$symbol]) ? (float)$marketQuotes[$symbol]['price'] : ($limitPrice ?? 0.0);
+            
+            \App\Models\Trade::create([
+                'user_id' => $user->id,
+                'bot_execution_id' => null,
+                'symbol' => $symbol,
+                'qty' => $qty,
+                'price' => $price,
+                'side' => $side,
+                'status' => 'filled',
+                'is_dry_run' => false
+            ]);
+
             $msg = "Orden de " . ($side === 'buy' ? 'Compra' : 'Venta') . " enviada correctamente. ID de Orden: " . $result['order']['id'];
             return redirect()->back()->with('success', $msg);
         } else {
@@ -98,12 +165,14 @@ class TradingController extends Controller
     public function runBot(Request $request)
     {
         $dryRun = $request->has('dry_run');
+        $user = auth()->user();
         
         $output = '';
         try {
             // Run Artisan command programmatically
             \Illuminate\Support\Facades\Artisan::call('app:trading-bot', [
-                '--dry-run' => $dryRun
+                '--dry-run' => $dryRun,
+                '--user-id' => $user->id
             ]);
             $output = \Illuminate\Support\Facades\Artisan::output();
         } catch (\Exception $e) {

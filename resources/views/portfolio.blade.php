@@ -897,6 +897,9 @@
                                         $isPositive = $pos['unrealized_pl'] >= 0;
                                         $colorClass = $isPositive ? 'text-green-400' : 'text-red-400';
                                         $bgColorClass = $isPositive ? 'bg-green-500/10' : 'bg-red-500/10';
+                                        
+                                        $venderColorClass = $isPositive ? 'text-emerald-400' : 'text-rose-400';
+                                        $venderBgClass = $isPositive ? 'bg-emerald-500/5' : 'bg-rose-500/5';
                                     @endphp
                                     <tr class="hover:bg-slate-950/40 transition duration-150 group cursor-pointer" onclick="window.location.href='{{ route('assets.show', $pos['symbol']) }}'">
                                         <td class="py-4.5 px-5">
@@ -927,7 +930,7 @@
                                         <td class="py-4.5 px-5 text-right font-bold text-indigo-300 text-sm font-mono bg-indigo-500/5">
                                             ${{ number_format($pos['cost_basis'], 2) }}
                                         </td>
-                                        <td class="py-4.5 px-5 text-right font-black text-emerald-400 text-sm font-mono bg-emerald-500/5">
+                                        <td class="py-4.5 px-5 text-right font-black {{ $venderColorClass }} text-sm font-mono {{ $venderBgClass }}">
                                             ${{ number_format($pos['market_value'], 2) }}
                                         </td>
                                         <td class="py-4.5 px-5 text-right">
@@ -969,7 +972,12 @@
                                     <td class="py-4.5 px-5 text-right text-slate-300 text-sm font-extrabold font-mono bg-indigo-500/5">
                                         ${{ number_format($totalCostBasis, 2) }}
                                     </td>
-                                    <td class="py-4.5 px-5 text-right text-emerald-400 text-sm font-extrabold font-mono bg-emerald-500/5">
+                                    @php
+                                        $totalIsPositive = $totalUnrealizedPL >= 0;
+                                        $totalVenderColor = $totalIsPositive ? 'text-emerald-400' : 'text-rose-400';
+                                        $totalVenderBg = $totalIsPositive ? 'bg-emerald-500/5' : 'bg-rose-500/5';
+                                    @endphp
+                                    <td class="py-4.5 px-5 text-right {{ $totalVenderColor }} text-sm font-extrabold font-mono {{ $totalVenderBg }}">
                                         ${{ number_format($totalMarketValue, 2) }}
                                     </td>
                                     <td class="py-4.5 px-5 text-right">

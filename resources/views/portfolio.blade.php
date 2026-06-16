@@ -73,9 +73,13 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 translate-y-1"
-                             style="display: none;"
-                             class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 z-50 shadow-2xl leading-normal">
-                            Es la suma de tu dinero en efectivo más el valor actual de mercado de todas tus acciones y criptomonedas abiertas.
+                             style="display: none; width: 256px; max-width: 85vw;"
+                             class="absolute bottom-full right-0 mb-2.5 z-50">
+                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[11px] p-3 rounded-xl border border-slate-800/80 shadow-2xl leading-normal">
+                                Es la suma de tu dinero en efectivo más el valor actual de mercado de todas tus acciones y criptomonedas abiertas.
+                                <!-- Caret (Triangle) -->
+                                <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -103,9 +107,13 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 translate-y-1"
-                             style="display: none;"
-                             class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 z-50 shadow-2xl leading-normal">
-                            Es el saldo líquido en tu cuenta que no está invertido. Puedes usarlo inmediatamente para abrir nuevas operaciones.
+                             style="display: none; width: 256px; max-width: 85vw;"
+                             class="absolute bottom-full right-0 mb-2.5 z-50">
+                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[11px] p-3 rounded-xl border border-slate-800/80 shadow-2xl leading-normal">
+                                Es el saldo líquido en tu cuenta que no está invertido. Puedes usarlo inmediatamente para abrir nuevas operaciones.
+                                <!-- Caret (Triangle) -->
+                                <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,9 +136,13 @@
                              x-transition:leave="transition ease-in duration-150"
                              x-transition:leave-start="opacity-100 translate-y-0"
                              x-transition:leave-end="opacity-0 translate-y-1"
-                             style="display: none;"
-                             class="absolute bottom-full right-0 mb-2 w-64 bg-slate-950 text-slate-300 text-[11px] p-2.5 rounded-lg border border-slate-800 z-50 shadow-2xl leading-normal">
-                            Es el límite máximo de capital que puedes emplear para comprar activos, incluyendo el margen de apalancamiento que te otorga el broker.
+                             style="display: none; width: 256px; max-width: 85vw;"
+                             class="absolute bottom-full right-0 mb-2.5 z-50">
+                            <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[11px] p-3 rounded-xl border border-slate-800/80 shadow-2xl leading-normal">
+                                Es el límite máximo de capital que puedes emplear para comprar activos, incluyendo el margen de apalancamiento que te otorga el broker.
+                                <!-- Caret (Triangle) -->
+                                <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

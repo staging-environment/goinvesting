@@ -380,6 +380,7 @@
                                    name="limit_price" 
                                    x-model.number="limitPrice" 
                                    step="0.01" 
+                                   :required="tradeType === 'limit'"
                                    placeholder="Ej: {{ number_format($assetData['price'] ?? 0, 2, '.', '') }}" 
                                    class="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
                             <p class="text-[10px] text-slate-500 leading-normal">

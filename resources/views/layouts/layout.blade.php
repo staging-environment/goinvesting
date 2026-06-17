@@ -113,6 +113,14 @@
 
             <!-- Navigation Links -->
             <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
+                @auth
+                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-indigo-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
+                        </svg>
+                        Mi Portafolio
+                    </a>
+                @endauth
                 <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-300 hover:text-white transition">Quiénes Somos</a>
                 <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-300 hover:text-white transition">Contacto</a>
             </div>
@@ -144,12 +152,7 @@
                         </form>
                     </div>
 
-                    <a href="{{ route('portfolio') }}" class="text-xs font-bold text-slate-300 hover:text-white px-3 py-1.5 rounded-xl border border-slate-800 hover:bg-slate-900/40 transition duration-150 flex items-center gap-1.5">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
-                        </svg>
-                        Mi Portafolio
-                    </a>
+
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition duration-200">
                             <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white uppercase">

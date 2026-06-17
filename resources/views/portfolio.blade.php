@@ -596,6 +596,9 @@
                                                 </div>
                                             </div>
                                         </th>
+                                        <th class="py-4 px-5 text-right text-slate-500 font-bold uppercase tracking-wider">
+                                            Fecha Compra
+                                        </th>
                                         <th class="py-4 px-5 text-right">
                                             <div class="flex items-center justify-end gap-1.5">
                                                 <span class="text-slate-500">Cantidad</span>
@@ -769,6 +772,18 @@
                                                         </div>
                                                     </div>
                                                 </td>
+                                                <td class="py-4.5 px-5 text-right font-medium text-slate-400 text-xs">
+                                                    @if(isset($pos['purchase_date']) && $pos['purchase_date'])
+                                                        <div class="font-semibold text-slate-350">
+                                                            {{ $pos['purchase_date']->timezone('Europe/Madrid')->format('d/m/Y') }}
+                                                        </div>
+                                                        <div class="text-[10px] text-slate-500 mt-0.5">
+                                                            {{ $pos['purchase_date']->timezone('Europe/Madrid')->format('H:i') }}
+                                                        </div>
+                                                    @else
+                                                        <span class="text-slate-600 font-medium">-</span>
+                                                    @endif
+                                                </td>
                                                 <td class="py-4.5 px-5 text-right font-semibold text-slate-200 text-sm">
                                                     <div class="flex flex-col items-end">
                                                         <span class="font-mono text-slate-200">{{ number_format($pos['qty'], 4) }}</span>
@@ -828,6 +843,9 @@
                                         <tr class="bg-slate-950/65 font-bold border-t-2 border-indigo-500/25">
                                             <td class="py-4.5 px-5 text-indigo-400 font-extrabold text-xs uppercase tracking-wider">
                                                 Total Cartera
+                                            </td>
+                                            <td class="py-4.5 px-5 text-right text-slate-500 text-xs font-normal">
+                                                -
                                             </td>
                                             <td class="py-4.5 px-5 text-right text-slate-400 text-xs font-bold font-mono">
                                                 {{ count($positions) }} ACTIVOS
@@ -910,7 +928,32 @@
                                             @endphp
                                             <tr class="hover:bg-slate-950/20 transition">
                                                 <td class="py-3.5 px-5 text-xs text-slate-400 font-medium">
-                                                    {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
+                                                    @if($isBuy)
+                                                        <div class="font-semibold text-slate-300">
+                                                            {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
+                                                        </div>
+                                                        <div class="text-[9px] text-slate-500">Fecha de Compra</div>
+                                                    @else
+                                                        <div class="font-semibold text-slate-300">
+                                                            {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
+                                                        </div>
+                                                        @php
+                                                            $purchaseTrade = \App\Models\Trade::where('user_id', $trade->user_id)
+                                                                ->where('symbol', $trade->symbol)
+                                                                ->where('side', 'buy')
+                                                                ->where('status', 'filled')
+                                                                ->where('created_at', '<', $trade->created_at)
+                                                                ->latest()
+                                                                ->first();
+                                                        @endphp
+                                                        <div class="text-[9px] text-slate-500 mt-0.5">
+                                                            @if($purchaseTrade)
+                                                                Compra: {{ $purchaseTrade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
+                                                            @else
+                                                                Compra: N/D
+                                                            @endif
+                                                        </div>
+                                                    @endif
                                                 </td>
                                                 <td class="py-3.5 px-5">
                                                     <span class="text-[10px] px-2 py-0.5 rounded font-extrabold uppercase {{ $isBuy ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">

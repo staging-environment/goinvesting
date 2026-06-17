@@ -142,6 +142,15 @@ class TradingController extends Controller
                 $quote = $marketQuotes[$symbol] ?? null;
                 $pendingQty = (float)($pendingSells[$symbol] ?? 0.0);
 
+                // Fetch latest filled buy trade for purchase date
+                $lastBuyTrade = \App\Models\Trade::where('user_id', $user->id)
+                    ->where('symbol', $symbol)
+                    ->where('side', 'buy')
+                    ->where('status', 'filled')
+                    ->latest()
+                    ->first();
+                $purchaseDate = $lastBuyTrade ? $lastBuyTrade->created_at : null;
+
                 $positions[] = [
                     'symbol' => $symbol,
                     'name' => $pos['name'] ?? ($quote['shortName'] ?? $symbol),
@@ -157,7 +166,8 @@ class TradingController extends Controller
                         : (float)($pos['unrealized_pl'] ?? 0.0),
                     'unrealized_plpc' => $quote 
                         ? ((((float)$quote['price'] * (float)$pos['qty']) - (float)$pos['cost_basis']) / (float)$pos['cost_basis']) * 100 
-                        : (($pos['cost_basis'] > 0) ? (($pos['market_value'] - $pos['cost_basis']) / $pos['cost_basis']) * 100 : 0.0)
+                        : (($pos['cost_basis'] > 0) ? (($pos['market_value'] - $pos['cost_basis']) / $pos['cost_basis']) * 100 : 0.0),
+                    'purchase_date' => $purchaseDate
                 ];
             }
         }

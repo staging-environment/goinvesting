@@ -96,25 +96,24 @@
                     <span class="bg-gradient-to-r from-indigo-300 to-violet-400 bg-clip-text text-transparent">Investing</span>
                 </span>
             </a>
-
             <!-- Autocomplete Search Bar -->
-            <div class="relative flex-1 max-w-md mx-4 hidden md:block">
+            <div class="relative w-40 xl:w-56 mx-2 hidden lg:block shrink-0">
                 <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-indigo-400">
+                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-indigo-400">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
                             <path stroke-linecap="round" stroke-linejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
                         </svg>
                     </span>
-                    <input type="text" id="global-search" placeholder="Buscar acciones, índices, criptomonedas..." class="w-full bg-[#070913]/60 border border-indigo-500/30 rounded-xl py-2 pl-10 pr-4 text-sm text-slate-200 placeholder-indigo-300/40 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/50 transition duration-200" autocomplete="off">
+                    <input type="text" id="global-search" placeholder="Buscar activos..." class="w-full bg-[#070913]/60 border border-indigo-500/30 rounded-xl py-1.5 pl-9 pr-3 text-xs text-slate-200 placeholder-indigo-300/40 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/50 transition duration-200" autocomplete="off">
                 </div>
                 <!-- Search Floating Dropdown -->
                 <div id="search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl hidden max-h-80 overflow-y-auto z-50"></div>
             </div>
 
             <!-- Navigation Links -->
-            <div class="hidden md:flex items-center gap-4 text-[13px] font-semibold">
+            <div class="hidden md:flex items-center gap-3.5 text-[12px] font-bold">
                 @auth
-                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none">
+                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
                         </svg>
@@ -123,9 +122,9 @@
                     @php
                         $notConfigured = !Auth::user()->alpaca_key_id && !Auth::user()->alpaca_live_key_id;
                     @endphp
-                    <a href="{{ route('getting-started') }}" class="transition flex items-center gap-1.5 {{ $notConfigured ? 'px-3 py-1.5 rounded-xl text-xs bg-amber-500/10 text-amber-400 border border-amber-500/35 font-extrabold animate-pulse hover:bg-amber-500/20 hover:text-amber-300' : 'text-slate-350 hover:text-white' }}">
+                    <a href="{{ route('getting-started') }}" class="transition flex items-center gap-1 {{ $notConfigured ? 'px-2 py-1 rounded-lg text-[11px] bg-amber-500/10 text-amber-400 border border-amber-500/35 font-extrabold animate-pulse hover:bg-amber-500/20 hover:text-amber-300' : 'text-slate-350 hover:text-white' }}">
                         @if($notConfigured)
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-amber-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3 h-3 text-amber-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                             </svg>
                         @endif
@@ -138,18 +137,18 @@
             </div>
 
             <!-- Auth Actions -->
-            <div class="flex items-center gap-3 shrink-0">
+            <div class="flex items-center gap-2.5 shrink-0">
                 @auth
                     <!-- Selector de Modo de Trading Prominente -->
-                    <div class="flex items-center gap-1 p-1 bg-slate-950/90 border border-slate-800/80 rounded-2xl shadow-xl select-none scale-90 sm:scale-100">
+                    <div class="flex items-center gap-0.5 p-0.5 bg-slate-950/90 border border-slate-800/80 rounded-xl shadow-xl select-none scale-90 sm:scale-100">
                         <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
                             @csrf
                             <input type="hidden" name="mode" value="paper">
                             <button type="submit" 
                                     @if(Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650/30 border border-indigo-500/40 text-indigo-400 shadow-md shadow-indigo-600/5 cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
-                                <span class="w-2 h-2 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
-                                Ficticio (Demo)
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650/30 border border-indigo-500/40 text-indigo-400 shadow-md shadow-indigo-600/5 cursor-default' : 'text-slate-500 hover:text-slate-350 border border-transparent cursor-pointer' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
+                                Demo
                             </button>
                         </form>
                         <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
@@ -157,9 +156,9 @@
                             <input type="hidden" name="mode" value="live">
                             <button type="submit" 
                                     @if(!Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-extrabold uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600/20 border border-emerald-500/35 text-emerald-450 shadow-md shadow-emerald-600/5 cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
-                                <span class="w-2 h-2 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
-                                Real (En Vivo)
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600/20 border border-emerald-500/35 text-emerald-450 shadow-md shadow-emerald-600/5 cursor-default' : 'text-slate-500 hover:text-slate-350 border border-transparent cursor-pointer' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
+                                Real
                             </button>
                         </form>
                     </div>

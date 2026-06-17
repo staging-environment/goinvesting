@@ -53,6 +53,7 @@ Route::middleware('auth')->group(function () {
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 Route::post('/contacto', function (Request $request) {
     $request->validate([
@@ -78,7 +79,8 @@ Route::post('/contacto', function (Request $request) {
         });
         return back()->with('success', '¡Gracias por contactar con nosotros! Hemos recibido tu mensaje.');
     } catch (\Exception $e) {
-        return back()->with('error', 'Hubo un problema al enviar el correo: ' . $e->getMessage());
+        Log::error("Fallo al enviar correo de contacto. Mensaje de: {$data['name']} ({$data['email']}). Mensaje: {$data['bodyMessage']}. Error: " . $e->getMessage());
+        return back()->with('error', '¡Mensaje recibido! Hemos registrado tu consulta en nuestro sistema y nos pondremos en contacto contigo a la brevedad. (Nota técnica: El envío de la notificación por correo falló temporalmente).');
     }
 })->name('contact.send');
 

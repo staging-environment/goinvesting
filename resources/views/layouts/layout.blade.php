@@ -112,18 +112,29 @@
             </div>
 
             <!-- Navigation Links -->
-            <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
+            <div class="hidden md:flex items-center gap-4 text-[13px] font-semibold">
                 @auth
-                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4 text-indigo-400">
+                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[11px] font-black uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
                         </svg>
                         Mi Portafolio
                     </a>
+                    @php
+                        $notConfigured = !Auth::user()->alpaca_key_id && !Auth::user()->alpaca_live_key_id;
+                    @endphp
+                    <a href="{{ route('getting-started') }}" class="transition flex items-center gap-1.5 {{ $notConfigured ? 'px-3 py-1.5 rounded-xl text-xs bg-amber-500/10 text-amber-400 border border-amber-500/35 font-extrabold animate-pulse hover:bg-amber-500/20 hover:text-amber-300' : 'text-slate-350 hover:text-white' }}">
+                        @if($notConfigured)
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-amber-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                            </svg>
+                        @endif
+                        Cómo Empezar
+                    </a>
                 @endauth
-                <a href="{{ Route::is('home') ? '#como-funcionamos' : route('home') . '#como-funcionamos' }}" class="text-slate-300 hover:text-white transition">Cómo Funcionamos</a>
-                <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-300 hover:text-white transition">Quiénes Somos</a>
-                <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-300 hover:text-white transition">Contacto</a>
+                <a href="{{ Route::is('home') ? '#como-funcionamos' : route('home') . '#como-funcionamos' }}" class="text-slate-355 hover:text-white transition">Cómo Funcionamos</a>
+                <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-355 hover:text-white transition">Quiénes Somos</a>
+                <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-355 hover:text-white transition">Contacto</a>
             </div>
 
             <!-- Auth Actions -->

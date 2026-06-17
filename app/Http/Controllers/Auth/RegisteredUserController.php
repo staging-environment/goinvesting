@@ -66,6 +66,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('portfolio', absolute: false));
+        return redirect(route('getting-started', absolute: false));
     }
 }

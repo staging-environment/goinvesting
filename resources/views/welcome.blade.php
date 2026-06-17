@@ -482,6 +482,92 @@
     </div>
 
 
+
+    <!-- Cómo Funcionamos Section -->
+    <div id="como-funcionamos" class="scroll-mt-20 pt-8 border-t border-slate-900/60 space-y-8">
+        <div class="max-w-3xl space-y-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                Tecnología y Flujo
+            </span>
+            <h2 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">
+                Cómo Funcionamos: Automatización de Extremo a Extremo
+            </h2>
+            <p class="text-xs text-slate-500">
+                Descubre cómo GoInvesting integra datos, lógica inteligente y brókers para ejecutar tus operaciones de forma infalible.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <!-- Paso 1 -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden space-y-4 hover:border-indigo-500/35 transition-all duration-300 group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-500/[0.02] rounded-full blur-xl pointer-events-none"></div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-650/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                    </svg>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Paso 1</span>
+                    <h3 class="text-sm font-extrabold text-white">Datos en Tiempo Real</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed font-medium">
+                    Conectamos con la API de <strong>Yahoo Finance</strong> para monitorizar cotizaciones y porcentajes de cambio diario de activos globales cada pocos segundos.
+                </p>
+            </div>
+
+            <!-- Paso 2 -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden space-y-4 hover:border-indigo-500/35 transition-all duration-300 group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-500/[0.02] rounded-full blur-xl pointer-events-none"></div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-650/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.43l-1.003.828c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.43l1.004-.827c.292-.24.437-.613.43-.991a6.936 6.936 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.645-.869L9.594 3.94ZM12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+                    </svg>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Paso 2</span>
+                    <h3 class="text-sm font-extrabold text-white">Reglas y Parámetros</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed font-medium">
+                    El bot procesa las órdenes basándose en tu estrategia: umbrales de caída para comprar y límites diarios, semanales o mensuales.
+                </p>
+            </div>
+
+            <!-- Paso 3 -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden space-y-4 hover:border-indigo-500/35 transition-all duration-300 group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-500/[0.02] rounded-full blur-xl pointer-events-none"></div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-650/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                    </svg>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Paso 3</span>
+                    <h3 class="text-sm font-extrabold text-white">Ejecución Segura</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed font-medium">
+                    Las órdenes de compra/venta se ejecutan directamente en tu bróker de <strong>Alpaca</strong>, aplicando límites estrictos para evitar pérdidas.
+                </p>
+            </div>
+
+            <!-- Paso 4 -->
+            <div class="glass-panel rounded-2xl p-6 relative overflow-hidden space-y-4 hover:border-indigo-500/35 transition-all duration-300 group">
+                <div class="absolute right-0 top-0 w-24 h-24 bg-indigo-500/[0.02] rounded-full blur-xl pointer-events-none"></div>
+                <div class="w-10 h-10 rounded-xl bg-indigo-650/15 border border-indigo-500/30 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 10.136 11.6 10.09 10.222 9.022c-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0 .88.66.88 1.885 0 2.544" />
+                    </svg>
+                </div>
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Paso 4</span>
+                    <h3 class="text-sm font-extrabold text-white">Simulado o Real</h3>
+                </div>
+                <p class="text-xs text-slate-400 leading-relaxed font-medium">
+                    Prueba y depura tus estrategias en modo <strong>Ficticio (Paper)</strong> sin arriesgar capital, o cámbiate a <strong>Real (Live)</strong> cuando estés listo.
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Quiénes Somos Section -->
     <div id="quienes-somos" class="scroll-mt-20 pt-8 border-t border-slate-900/60 space-y-4">
         <div class="glass-panel rounded-3xl p-8 lg:p-12 bg-gradient-to-br from-slate-900 to-indigo-950/20 relative overflow-hidden shadow-2xl">

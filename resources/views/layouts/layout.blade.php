@@ -121,6 +121,7 @@
                         Mi Portafolio
                     </a>
                 @endauth
+                <a href="{{ Route::is('home') ? '#como-funcionamos' : route('home') . '#como-funcionamos' }}" class="text-slate-300 hover:text-white transition">Cómo Funcionamos</a>
                 <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-300 hover:text-white transition">Quiénes Somos</a>
                 <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-300 hover:text-white transition">Contacto</a>
             </div>
@@ -287,6 +288,9 @@
                 <div class="space-y-4">
                     <h4 class="text-xs font-bold text-white uppercase tracking-widest">Enlaces</h4>
                     <ul class="space-y-2">
+                        <li>
+                            <a href="/#como-funcionamos" class="text-slate-400 hover:text-indigo-400 transition duration-150">Cómo Funcionamos</a>
+                        </li>
                         <li>
                             <a href="/#quienes-somos" class="text-slate-400 hover:text-indigo-400 transition duration-150">Quiénes Somos</a>
                         </li>

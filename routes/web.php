@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/user/create', [\App\Http\Controllers\AdminController::class, 'createUser'])->name('admin.user.create');
     Route::get('/admin/user/{id}/edit', [\App\Http\Controllers\AdminController::class, 'editUserForm'])->name('admin.user.edit-form');
     Route::post('/admin/user/{id}/update', [\App\Http\Controllers\AdminController::class, 'updateUser'])->name('admin.user.update');
+    Route::delete('/admin/user/{id}/delete', [\App\Http\Controllers\AdminController::class, 'deleteUser'])->name('admin.user.delete');
 
 
     // Profile Alpaca Config Route

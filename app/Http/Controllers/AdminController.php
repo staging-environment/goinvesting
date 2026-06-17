@@ -172,5 +172,27 @@ class AdminController extends Controller
 
         return redirect()->route('admin.dashboard')->with('success', "Usuario {$user->name} actualizado correctamente.");
     }
+
+    /**
+     * Delete user and all associated records.
+     */
+    public function deleteUser($id)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403);
+        }
+
+        $user = User::findOrFail($id);
+
+        // Prevent self-deletion
+        if ($user->id === auth()->id()) {
+            return redirect()->back()->withErrors(['error' => 'No puedes eliminar tu propia cuenta de administrador desde aquí.']);
+        }
+
+        $name = $user->name;
+        $user->delete(); // Database cascade deletes trades, watchlists, and bot_executions
+
+        return redirect()->route('admin.dashboard')->with('success', "Usuario {$name} eliminado correctamente.");
+    }
 }
 

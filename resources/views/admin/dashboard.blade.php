@@ -88,11 +88,21 @@
                                 </td>
                                 <td class="py-4 px-5 font-semibold text-slate-200 text-sm">
                                     ${{ number_format($user->weekly_spend_limit ?? 0, 2) }}
-                                </td>
                                 <td class="py-4 px-5 text-right">
-                                    <a href="{{ route('admin.user.edit-form', $user->id) }}" class="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-indigo-650 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-md transition">
-                                        Editar
-                                    </a>
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.user.edit-form', $user->id) }}" class="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs shadow-md transition">
+                                            Editar
+                                        </a>
+                                        @if($user->id !== Auth::id())
+                                            <form action="{{ route('admin.user.delete', $user->id) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que deseas eliminar permanentemente al usuario {{ $user->name }} y todos sus datos relacionados (watchlist, trades)?');" class="inline m-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center px-3.5 py-1.5 rounded-lg bg-red-600/80 hover:bg-red-500 text-white font-extrabold text-xs shadow-md transition">
+                                                    Eliminar
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @endforeach

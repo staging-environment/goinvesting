@@ -481,7 +481,7 @@
         </div>
     </div>
 
-    @guest
+
     <!-- Quiénes Somos Section -->
     <div id="quienes-somos" class="scroll-mt-20 pt-8 border-t border-slate-900/60 space-y-4">
         <div class="glass-panel rounded-3xl p-8 lg:p-12 bg-gradient-to-br from-slate-900 to-indigo-950/20 relative overflow-hidden shadow-2xl">
@@ -543,7 +543,7 @@
             </form>
         </div>
     </div>
-    @endguest
+
 </div>
 
 <script>

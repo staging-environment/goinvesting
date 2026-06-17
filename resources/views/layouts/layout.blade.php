@@ -111,13 +111,11 @@
                 <div id="search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl hidden max-h-80 overflow-y-auto z-50"></div>
             </div>
 
-            <!-- Navigation Links for Guest Users -->
-            @guest
-                <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
-                    <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-300 hover:text-white transition">Quiénes Somos</a>
-                    <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-300 hover:text-white transition">Contacto</a>
-                </div>
-            @endguest
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center gap-6 text-sm font-semibold">
+                <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-300 hover:text-white transition">Quiénes Somos</a>
+                <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-300 hover:text-white transition">Contacto</a>
+            </div>
 
             <!-- Auth Actions -->
             <div class="flex items-center gap-3 shrink-0">

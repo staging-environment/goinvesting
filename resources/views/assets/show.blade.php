@@ -87,12 +87,12 @@
             <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-900 pb-4">
                 
                 <!-- Timeframes -->
-                <div class="flex items-center bg-slate-950/60 border border-slate-900 p-1 rounded-xl">
-                    @foreach(['1d' => '1D', '5d' => '5D', '1mo' => '1M', '6mo' => '6M', '1y' => '1Y', '5y' => '5Y', 'max' => 'MAX'] as $r => $label)
+                <div class="flex flex-wrap items-center bg-slate-950/60 border border-slate-900 p-1 rounded-xl gap-0.5">
+                    @foreach(['1d' => '1 día', '5d' => '5 días', '1mo' => '1 mes', '6mo' => '6 meses', '1y' => '1 año', '5y' => '5 años', 'max' => 'Máx'] as $r => $label)
                         <button 
                             @click="changeRange('{{ $r }}')" 
                             :class="range === '{{ $r }}' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'" 
-                            class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition duration-200 cursor-pointer"
+                            class="px-3 py-1.5 text-xs font-bold rounded-lg transition duration-200 cursor-pointer"
                         >
                             {{ $label }}
                         </button>

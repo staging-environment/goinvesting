@@ -1134,6 +1134,40 @@
 
                 <!-- Automated Trading Bot Panel -->
                 <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-6 bg-gradient-to-br from-indigo-950/20 via-slate-900 to-slate-900/50 border border-indigo-500/10">
+                    
+                    @if(!$isPaper)
+                        <div class="p-4 rounded-xl {{ Auth::user()->alpaca_live_consent ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300' : 'border-amber-500/20 bg-amber-500/5 text-amber-300' }} border text-xs leading-relaxed flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                            <div class="flex gap-3 items-start">
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 {{ Auth::user()->alpaca_live_consent ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400' }}">
+                                    @if(Auth::user()->alpaca_live_consent)
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                                        </svg>
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                        </svg>
+                                    @endif
+                                </div>
+                                <div>
+                                    @if(Auth::user()->alpaca_live_consent)
+                                        <strong class="text-white block mb-0.5 font-bold uppercase tracking-wide">Operación en Vivo Autorizada ✅</strong>
+                                        Has otorgado tu consentimiento expreso para que el bot opere automáticamente con dinero real. Puedes revocar este consentimiento en cualquier momento.
+                                    @else
+                                        <strong class="text-white block mb-0.5 font-bold uppercase tracking-wide">Consentimiento de Dinero Real Requerido ⚠️</strong>
+                                        El bot está configurado en modo Real (Live). Por tu seguridad, las operaciones automatizadas están deshabilitadas hasta que otorgues tu consentimiento expreso para invertir dinero real.
+                                    @endif
+                                </div>
+                            </div>
+                            <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="shrink-0 m-0">
+                                @csrf
+                                <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-650/10' }}">
+                                    {{ Auth::user()->alpaca_live_consent ? 'Revocar Autorización' : 'Autorizar Inversión Real' }}
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
@@ -1159,7 +1193,9 @@
                             <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
                                 @csrf
                                 <input type="hidden" name="active_tab" value="bot">
-                                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer">
+                                <button type="submit" 
+                                        @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar la inversión real primero" @endif
+                                        class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
                                     Ejecutar Bot Ahora
                                 </button>
                             </form>

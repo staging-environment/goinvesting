@@ -417,6 +417,24 @@ class TradingController extends Controller
     }
 
     /**
+     * Toggles the user's consent to operate the bot with real money in Live mode.
+     */
+    public function toggleLiveConsent(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Toggle the consent state
+        $user->alpaca_live_consent = !$user->alpaca_live_consent;
+        $user->save();
+
+        $message = $user->alpaca_live_consent 
+            ? '¡Consentimiento concedido! El bot de trading automático ahora tiene autorización para operar con dinero real en modo Live.' 
+            : 'Consentimiento revocado. Las operaciones del bot de trading automático con dinero real en modo Live han sido desactivadas.';
+
+        return redirect()->back()->with('success', $message)->with('active_tab', 'bot');
+    }
+
+    /**
      * Translates Alpaca API error messages to user-friendly Spanish.
      */
     protected function translateErrorMessage(string $message): string

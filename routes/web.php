@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/trade/execute', [TradingController::class, 'executeOrder'])->name('trade.execute');
     Route::post('/portfolio/run-bot', [TradingController::class, 'runBot'])->name('portfolio.run-bot');
     Route::post('/portfolio/toggle-paper', [TradingController::class, 'togglePaper'])->name('portfolio.toggle-paper');
+    Route::post('/portfolio/toggle-live-consent', [TradingController::class, 'toggleLiveConsent'])->name('portfolio.toggle-live-consent');
     Route::post('/portfolio/complete-wizard', [TradingController::class, 'completeWizard'])->name('portfolio.complete-wizard');
     Route::get('/como-empezar', function () {
         return view('getting-started');

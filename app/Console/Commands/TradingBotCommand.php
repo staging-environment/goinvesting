@@ -116,6 +116,19 @@ class TradingBotCommand extends Command
 
             // Configure Alpaca service with user credentials
             $isPaper = (bool)($user->alpaca_is_paper ?? true);
+
+            // Block automated trading bot operations in Live mode if express consent has not been granted
+            if (!$isPaper && !$user->alpaca_live_consent) {
+                $warnMsg = "El usuario {$user->name} (ID: {$user->id}) tiene el modo Real (Live) activo pero no ha otorgado su consentimiento expreso para operar el bot con dinero real. Saltando para evitar operaciones no autorizadas.";
+                $this->logLine($warnMsg, 'warn');
+                Log::warning("Bot de Trading: " . $warnMsg);
+                if ($userId) {
+                    $this->error("Error: " . $warnMsg);
+                    return Command::FAILURE;
+                }
+                continue;
+            }
+
             $keyId = $isPaper ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
             $secretKey = $isPaper ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
             $accountId = $isPaper ? $user->alpaca_account_id : $user->alpaca_live_account_id;

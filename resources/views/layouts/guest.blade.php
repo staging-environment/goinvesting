@@ -20,20 +20,50 @@
             body {
                 font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
                 background-color: #070913;
+                background-image: url('{{ asset('images/auth_bg.png') }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
                 color: #f8fafc;
                 overflow-x: hidden;
             }
             
+            body::before {
+                content: '';
+                position: fixed;
+                inset: 0;
+                background: radial-gradient(circle at 50% 50%, rgba(7, 9, 25, 0.45) 0%, rgba(5, 6, 15, 0.88) 100%), linear-gradient(180deg, rgba(13, 11, 30, 0.2) 0%, rgba(7, 9, 19, 0.85) 100%);
+                z-index: -1;
+                pointer-events: none;
+            }
+            
             .glass-panel {
-                background: rgba(15, 23, 42, 0.45);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                border: 1px solid rgba(255, 255, 255, 0.06);
+                background: rgba(11, 13, 28, 0.55);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                border: 1px solid rgba(99, 102, 241, 0.2);
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4),
+                            0 0 40px rgba(99, 102, 241, 0.05),
+                            inset 0 0 12px rgba(255, 255, 255, 0.02);
+                position: relative;
+                transition: border-color 0.3s, box-shadow 0.3s;
+            }
+
+            .glass-panel:hover {
+                border-color: rgba(139, 92, 246, 0.4);
+                box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5),
+                            0 0 50px rgba(139, 92, 246, 0.15),
+                            inset 0 0 16px rgba(255, 255, 255, 0.03);
             }
         </style>
     </head>
     <body class="font-sans antialiased text-slate-100 bg-[#070913]">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 px-4">
+        <!-- Decorative Glow Orbs -->
+        <div class="fixed top-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-indigo-500/10 blur-[120px] pointer-events-none animate-[pulse_8s_infinite]"></div>
+        <div class="fixed bottom-[-20%] right-[-10%] w-[500px] h-[500px] rounded-full bg-purple-500/10 blur-[120px] pointer-events-none animate-[pulse_10s_infinite_1s]"></div>
+
+        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 px-4 relative z-10">
             <div class="mb-6">
                 <!-- Logo GoInvesting -->
                 <a href="/" class="flex items-center gap-2.5 select-none shrink-0 group">
@@ -50,6 +80,9 @@
             </div>
 
             <div class="w-full sm:max-w-md mt-2 px-8 py-8 glass-panel shadow-2xl rounded-2xl overflow-hidden">
+                <!-- Top Accent Line -->
+                <div class="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"></div>
+                
                 {{ $slot }}
             </div>
         </div>

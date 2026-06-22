@@ -182,7 +182,7 @@
     </div>
 
     <!-- Compact Real Bot Status Bar -->
-    @if(isset($account))
+    @if(isset($account) && !$isPaper)
         <div class="glass-panel rounded-2xl p-4 bg-[#060e15]/20 border border-slate-900/60 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-4">
                 <!-- Consent Status & Action Button -->

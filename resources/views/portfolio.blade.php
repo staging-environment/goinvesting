@@ -942,6 +942,7 @@
                                                                 ->where('symbol', $trade->symbol)
                                                                 ->where('side', 'buy')
                                                                 ->where('status', 'filled')
+                                                                ->where('is_dry_run', $trade->is_dry_run)
                                                                 ->where('created_at', '<', $trade->created_at)
                                                                 ->latest()
                                                                 ->first();

@@ -34,6 +34,7 @@ class TradingController extends Controller
             ->first();
             
         $recentTrades = \App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', (bool)$user->alpaca_is_paper)
             ->orderBy('created_at', 'desc')
             ->take(15)
             ->get();
@@ -125,6 +126,7 @@ class TradingController extends Controller
         }
 
         $pendingSells = \App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', (bool)$user->alpaca_is_paper)
             ->where('side', 'sell')
             ->whereNotIn('status', ['filled', 'rejected', 'canceled', 'expired'])
             ->get()
@@ -147,6 +149,7 @@ class TradingController extends Controller
                     ->where('symbol', $symbol)
                     ->where('side', 'buy')
                     ->where('status', 'filled')
+                    ->where('is_dry_run', (bool)$user->alpaca_is_paper)
                     ->latest()
                     ->first();
                 $purchaseDate = $lastBuyTrade ? $lastBuyTrade->created_at : null;
@@ -235,6 +238,7 @@ class TradingController extends Controller
                 if ($positionInfo) {
                     $totalQty = (float)($positionInfo['qty'] ?? 0.0);
                     $pendingQty = (float)\App\Models\Trade::where('user_id', $user->id)
+                        ->where('is_dry_run', (bool)$user->alpaca_is_paper)
                         ->where('symbol', $symbol)
                         ->where('side', 'sell')
                         ->whereNotIn('status', ['filled', 'rejected', 'canceled', 'expired'])

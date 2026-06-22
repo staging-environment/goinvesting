@@ -294,11 +294,11 @@
                 <!-- Valor de mi cartera -->
                 <button @click="activeTab = 'portfolio_value'; sessionStorage.setItem('portfolio_active_tab', 'portfolio_value')" 
                         :class="activeTab === 'portfolio_value' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
                     </svg>
-                    <div class="flex flex-col items-start text-left leading-tight">
+                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
                         <span class="text-[9px] font-bold tracking-wider opacity-85">VALOR DE</span>
                         <span class="text-xs font-black tracking-wide">MI CARTERA</span>
                     </div>
@@ -307,11 +307,11 @@
                 <!-- Resumen General -->
                 <button @click="activeTab = 'overview'; sessionStorage.setItem('portfolio_active_tab', 'overview')" 
                         :class="activeTab === 'overview' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                     </svg>
-                    <div class="flex flex-col items-start text-left leading-tight">
+                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
                         <span class="text-[9px] font-bold tracking-wider opacity-85">RESUMEN</span>
                         <span class="text-xs font-black tracking-wide">GENERAL</span>
                     </div>
@@ -320,11 +320,11 @@
                 <!-- Mis Acciones -->
                 <button @click="activeTab = 'positions'; sessionStorage.setItem('portfolio_active_tab', 'positions')" 
                         :class="activeTab === 'positions' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                     </svg>
-                    <div class="flex flex-col items-start text-left leading-tight">
+                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
                         <span class="text-[9px] font-bold tracking-wider opacity-85">MIS</span>
                         <span class="text-xs font-black tracking-wide">ACCIONES</span>
                     </div>
@@ -333,11 +333,11 @@
                 <!-- Bot de Trading -->
                 <button @click="activeTab = 'bot'; sessionStorage.setItem('portfolio_active_tab', 'bot')" 
                         :class="activeTab === 'bot' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
                     </svg>
-                    <div class="flex flex-col items-start text-left leading-tight">
+                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
                         <span class="text-[9px] font-bold tracking-wider opacity-85">BOT DE</span>
                         <span class="text-xs font-black tracking-wide">TRADING</span>
                     </div>
@@ -346,11 +346,11 @@
                 <!-- Mercados en Vivo -->
                 <button @click="activeTab = 'markets'; sessionStorage.setItem('portfolio_active_tab', 'markets')" 
                         :class="activeTab === 'markets' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                     </svg>
-                    <div class="flex flex-col items-start text-left leading-tight">
+                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
                         <span class="text-[9px] font-bold tracking-wider opacity-85">MERCADOS</span>
                         <span class="text-xs font-black tracking-wide">EN VIVO</span>
                     </div>

@@ -1481,11 +1481,11 @@
                                         <span class="text-slate-300 font-extrabold">-3.0%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Take Profit:</span>
+                                        <span class="text-slate-500">Toma de Beneficios (Take Profit):</span>
                                         <span class="text-slate-300 font-extrabold">+1.2%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Stop Loss:</span>
+                                        <span class="text-slate-500">Detener Pérdidas (Stop Loss):</span>
                                         <span class="text-slate-300 font-extrabold">-1.5%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
@@ -1537,11 +1537,11 @@
                                         <span class="text-indigo-400 font-extrabold">{{ Auth::user()->live_bot_buy_threshold }}%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Take Profit:</span>
+                                        <span class="text-slate-500">Toma de Beneficios (Take Profit):</span>
                                         <span class="text-indigo-400 font-extrabold">+{{ Auth::user()->live_bot_take_profit }}%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Stop Loss:</span>
+                                        <span class="text-slate-500">Detener Pérdidas (Stop Loss):</span>
                                         <span class="text-indigo-400 font-extrabold">{{ Auth::user()->live_bot_stop_loss }}%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
@@ -1587,11 +1587,11 @@
                                         <span class="text-slate-300 font-extrabold">-0.5%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Take Profit:</span>
+                                        <span class="text-slate-500">Toma de Beneficios (Take Profit):</span>
                                         <span class="text-slate-300 font-extrabold">+10.0%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Stop Loss:</span>
+                                        <span class="text-slate-500">Detener Pérdidas (Stop Loss):</span>
                                         <span class="text-slate-300 font-extrabold">-8.0%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">

@@ -112,178 +112,166 @@ class TradingBotCommand extends Command
         $anyFailed = false;
 
         foreach ($users as $user) {
-            $this->outputBuffer = ''; // Reset buffer for this user
-
-            // Configure Alpaca service with user credentials
-            $isPaper = (bool)($user->alpaca_is_paper ?? true);
-
-            // Block automated trading bot operations in Live mode if express consent has not been granted
-            if (!$isPaper && !$user->alpaca_live_consent) {
-                $warnMsg = "El usuario {$user->name} (ID: {$user->id}) tiene el modo Real (Live) activo pero no ha otorgado su consentimiento expreso para operar el bot con dinero real. Saltando para evitar operaciones no autorizadas.";
-                $this->logLine($warnMsg, 'warn');
-                Log::warning("Bot de Trading: " . $warnMsg);
-                if ($userId) {
-                    $this->error("Error: " . $warnMsg);
-                    return Command::FAILURE;
-                }
-                continue;
+            // Determine which modes we should run for this user
+            $modesToRun = [];
+            
+            // Check if Paper credentials are configured
+            if ($user->alpaca_key_id && $user->alpaca_secret_key) {
+                $modesToRun[] = true; // Paper mode
+            }
+            
+            // Check if Live credentials are configured
+            if ($user->alpaca_live_key_id && $user->alpaca_live_secret_key) {
+                $modesToRun[] = false; // Live mode
+            }
+            
+            // Fallback to active UI mode if no modes were explicitly added
+            if (empty($modesToRun)) {
+                $modesToRun[] = (bool)($user->alpaca_is_paper ?? true);
             }
 
-            $keyId = $isPaper ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
-            $secretKey = $isPaper ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
-            $accountId = $isPaper ? $user->alpaca_account_id : $user->alpaca_live_account_id;
+            foreach ($modesToRun as $isPaper) {
+                $this->outputBuffer = ''; // Reset buffer for this execution mode
 
-            $tradingService = new \App\Services\AlpacaService(
-                $keyId,
-                $secretKey,
-                $accountId,
-                $isPaper
-            );
-
-            if (!$tradingService->isConfigured()) {
-                if ($userId) {
-                    $this->error("Error: El bróker de trading actual no está configurado para el usuario {$user->name}.");
-                    return Command::FAILURE;
-                }
-                // When running for all, skip users that don't have configured credentials
-                continue;
-            }
-
-            // Load bot strategy and limit parameters from the user's settings, falling back to env/defaults
-            $isPaper = (bool)($user->alpaca_is_paper ?? true);
-            $buyThreshold = $isPaper ? (float)($user->bot_buy_threshold ?? -1.5) : (float)($user->live_bot_buy_threshold ?? -1.5);
-            $takeProfit = $isPaper ? (float)($user->bot_take_profit ?? 2.0) : (float)($user->live_bot_take_profit ?? 2.0);
-            $stopLoss = $isPaper ? (float)($user->bot_stop_loss ?? -3.0) : (float)($user->live_bot_stop_loss ?? -3.0);
-            $orderSize = $isPaper ? (float)($user->bot_order_size ?? env('BOT_ORDER_SIZE', 500.0)) : (float)($user->live_bot_order_size ?? env('BOT_ORDER_SIZE', 500.0));
-            $maxInvestment = $isPaper ? (float)($user->bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0)) : (float)($user->live_bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0));
-
-            // Create BotExecution record
-            $execution = \App\Models\BotExecution::create([
-                'user_id' => $user->id,
-                'started_at' => \Carbon\Carbon::now(),
-                'status' => 'running',
-                'is_dry_run' => $dryRun,
-                'is_paper' => $isPaper,
-                'output' => ''
-            ]);
-
-            $this->logLine("=== Iniciando Bot de Trading Automático ===");
-            $this->logLine("Usuario: {$user->name} (ID: {$user->id})");
-            Log::info("Bot de Trading: Iniciando ejecución para usuario ID {$user->id}.");
-
-            if ($dryRun) {
-                $this->logLine("MODO DE SIMULACIÓN (DRY-RUN) ACTIVO. No se ejecutarán operaciones reales.", 'warn');
-            }
-
-            // 1. Fetch Account Info
-            $account = $tradingService->getAccountInfo();
-            if (!$account) {
-                $errorMsg = "Error: No se pudo obtener la información de la cuenta.";
-                $this->logLine($errorMsg, 'error');
-                $execution->update([
-                    'finished_at' => \Carbon\Carbon::now(),
-                    'status' => 'failed',
-                    'output' => $this->outputBuffer
-                ]);
-                $anyFailed = true;
-                continue;
-            }
-
-            $cash = (float)$account['cash'];
-            $portfolioValue = (float)$account['portfolio_value'];
-            $buyingPower = (float)($account['buying_power'] ?? 0.0);
-            $this->logLine("Balance de cuenta (Efectivo): \${$cash}");
-            $this->logLine("Valor total del Portafolio: \${$portfolioValue}");
-            $this->logLine("Poder de Compra (Buying Power): \${$buyingPower}");
-
-            // 2. Fetch Open Positions
-            $rawPositions = $tradingService->getPositions();
-            $positions = [];
-            $totalInvested = 0.0;
-
-            foreach ($rawPositions as $pos) {
-                $symbol = strtoupper($pos['symbol']);
-                // Normalize Alpaca symbol (e.g. BTCUSD -> BTC/USD)
-                if ($symbol === 'BTCUSD') $symbol = 'BTC/USD';
-                if ($symbol === 'ETHUSD') $symbol = 'ETH/USD';
-
-                $costBasis = (float)$pos['cost_basis'];
-                $positions[$symbol] = [
-                    'qty' => (float)$pos['qty'],
-                    'avg_entry_price' => (float)$pos['avg_entry_price'],
-                    'cost_basis' => $costBasis,
-                    'market_value' => (float)$pos['market_value'],
-                ];
-                $totalInvested += $costBasis;
-            }
-
-            $this->logLine("Total invertido actualmente: \${$totalInvested} (Límite máximo de inversión: \${$maxInvestment})");
-            $dailyLimit = $isPaper ? $user->daily_spend_limit : $user->live_daily_spend_limit;
-            $weeklyLimit = $isPaper ? $user->weekly_spend_limit : $user->live_weekly_spend_limit;
-            $monthlyLimit = $isPaper ? $user->monthly_spend_limit : $user->live_monthly_spend_limit;
-
-            $this->logLine("Límite diario del usuario: " . ($dailyLimit ? "\${$dailyLimit}" : "Sin límite") . " | Gastado hoy: \${$user->getDailySpent($isPaper)}");
-            $this->logLine("Límite semanal del usuario: " . ($weeklyLimit ? "\${$weeklyLimit}" : "Sin límite") . " | Gastado esta semana: \${$user->getWeeklySpent($isPaper)}");
-            $this->logLine("Límite mensual del usuario: " . ($monthlyLimit ? "\${$monthlyLimit}" : "Sin límite") . " | Gastado este mes: \${$user->getMonthlySpent($isPaper)}");
-
-            // 4. Process Monitored Assets
-            foreach ($this->monitoredAssets as $yahooSymbol => $tradingSymbol) {
-                if (!isset($marketQuotes[$yahooSymbol])) {
-                    $this->logLine("No hay cotizaciones disponibles para {$yahooSymbol}.", 'warn');
+                // Block automated trading bot operations in Live mode if express consent has not been granted
+                if (!$isPaper && !$user->alpaca_live_consent) {
+                    $warnMsg = "El usuario {$user->name} (ID: {$user->id}) tiene configuradas las llaves de Real (Live) pero no ha otorgado su consentimiento expreso para operar el bot con dinero real. Saltando ejecución en modo Real.";
+                    $this->logLine($warnMsg, 'warn');
+                    Log::warning("Bot de Trading: " . $warnMsg);
                     continue;
                 }
 
-                $quote = $marketQuotes[$yahooSymbol];
-                $currentPrice = (float)$quote['price'];
-                $dailyChangePercent = (float)$quote['changePercent'];
+                $keyId = $isPaper ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
+                $secretKey = $isPaper ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
+                $accountId = $isPaper ? $user->alpaca_account_id : $user->alpaca_live_account_id;
 
-                $this->logLine("Analizando {$tradingSymbol} | Precio: \${$currentPrice} | Cambio Hoy: " . number_format($dailyChangePercent, 2) . "%");
+                $tradingService = new \App\Services\AlpacaService(
+                    $keyId,
+                    $secretKey,
+                    $accountId,
+                    $isPaper
+                );
 
-                // Check if we hold a position
-                if (isset($positions[$tradingSymbol])) {
-                    // Sell logic (Take Profit / Stop Loss)
-                    $pos = $positions[$tradingSymbol];
-                    $avgEntry = $pos['avg_entry_price'];
-                    $returnPercent = (($currentPrice - $avgEntry) / $avgEntry) * 100;
+                if (!$tradingService->isConfigured()) {
+                    continue;
+                }
 
-                    $this->logLine("-> Tienes posición: {$pos['qty']} unidades. Rendimiento: " . number_format($returnPercent, 2) . "%");
+                // Load bot strategy and limit parameters from the user's settings, falling back to env/defaults
+                $buyThreshold = $isPaper ? (float)($user->bot_buy_threshold ?? -1.5) : (float)($user->live_bot_buy_threshold ?? -1.5);
+                $takeProfit = $isPaper ? (float)($user->bot_take_profit ?? 2.0) : (float)($user->live_bot_take_profit ?? 2.0);
+                $stopLoss = $isPaper ? (float)($user->bot_stop_loss ?? -3.0) : (float)($user->live_bot_stop_loss ?? -3.0);
+                $orderSize = $isPaper ? (float)($user->bot_order_size ?? env('BOT_ORDER_SIZE', 500.0)) : (float)($user->live_bot_order_size ?? env('BOT_ORDER_SIZE', 500.0));
+                $maxInvestment = $isPaper ? (float)($user->bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0)) : (float)($user->live_bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0));
 
-                    $shouldSell = false;
-                    $reason = "";
+                // Create BotExecution record
+                $execution = \App\Models\BotExecution::create([
+                    'user_id' => $user->id,
+                    'started_at' => \Carbon\Carbon::now(),
+                    'status' => 'running',
+                    'is_dry_run' => $dryRun,
+                    'is_paper' => $isPaper,
+                    'output' => ''
+                ]);
 
-                    if ($returnPercent >= $takeProfit) {
-                        $shouldSell = true;
-                        $reason = "Take Profit alcanzado (+{$takeProfit}%)";
-                    } elseif ($returnPercent <= $stopLoss) {
-                        $shouldSell = true;
-                        $reason = "Stop Loss alcanzado ({$stopLoss}%)";
+                $this->logLine("=== Iniciando Bot de Trading Automático ===");
+                $this->logLine("Usuario: {$user->name} (ID: {$user->id}) | Modo: " . ($isPaper ? 'Simulación (Paper)' : 'Real (Live)'));
+                Log::info("Bot de Trading: Iniciando ejecución para usuario ID {$user->id} (" . ($isPaper ? 'Paper' : 'Live') . ").");
+
+                if ($dryRun) {
+                    $this->logLine("MODO DE SIMULACIÓN (DRY-RUN) ACTIVO. No se ejecutarán operaciones reales.", 'warn');
+                }
+
+                // 1. Fetch Account Info
+                $account = $tradingService->getAccountInfo();
+                if (!$account) {
+                    $errorMsg = "Error: No se pudo obtener la información de la cuenta.";
+                    $this->logLine($errorMsg, 'error');
+                    $execution->update([
+                        'finished_at' => \Carbon\Carbon::now(),
+                        'status' => 'failed',
+                        'output' => $this->outputBuffer
+                    ]);
+                    $anyFailed = true;
+                    continue;
+                }
+
+                $cash = (float)$account['cash'];
+                $portfolioValue = (float)$account['portfolio_value'];
+                $buyingPower = (float)($account['buying_power'] ?? 0.0);
+                $this->logLine("Balance de cuenta (Efectivo): \${$cash}");
+                $this->logLine("Valor total del Portafolio: \${$portfolioValue}");
+                $this->logLine("Poder de Compra (Buying Power): \${$buyingPower}");
+
+                // 2. Fetch Open Positions
+                $rawPositions = $tradingService->getPositions();
+                $positions = [];
+                $totalInvested = 0.0;
+
+                foreach ($rawPositions as $pos) {
+                    $symbol = strtoupper($pos['symbol']);
+                    if ($symbol === 'BTCUSD') $symbol = 'BTC/USD';
+                    if ($symbol === 'ETHUSD') $symbol = 'ETH/USD';
+
+                    $costBasis = (float)$pos['cost_basis'];
+                    $positions[$symbol] = [
+                        'qty' => (float)$pos['qty'],
+                        'avg_entry_price' => (float)$pos['avg_entry_price'],
+                        'cost_basis' => $costBasis,
+                        'market_value' => (float)$pos['market_value'],
+                    ];
+                    $totalInvested += $costBasis;
+                }
+
+                $this->logLine("Total invertido actualmente: \${$totalInvested} (Límite máximo de inversión: \${$maxInvestment})");
+                $dailyLimit = $isPaper ? $user->daily_spend_limit : $user->live_daily_spend_limit;
+                $weeklyLimit = $isPaper ? $user->weekly_spend_limit : $user->live_weekly_spend_limit;
+                $monthlyLimit = $isPaper ? $user->monthly_spend_limit : $user->live_monthly_spend_limit;
+
+                $this->logLine("Límite diario del usuario: " . ($dailyLimit ? "\${$dailyLimit}" : "Sin límite") . " | Gastado hoy: \${$user->getDailySpent($isPaper)}");
+                $this->logLine("Límite semanal del usuario: " . ($weeklyLimit ? "\${$weeklyLimit}" : "Sin límite") . " | Gastado esta semana: \${$user->getWeeklySpent($isPaper)}");
+                $this->logLine("Límite mensual del usuario: " . ($monthlyLimit ? "\${$monthlyLimit}" : "Sin límite") . " | Gastado este mes: \${$user->getMonthlySpent($isPaper)}");
+
+                // 4. Process Monitored Assets
+                foreach ($this->monitoredAssets as $yahooSymbol => $tradingSymbol) {
+                    if (!isset($marketQuotes[$yahooSymbol])) {
+                        $this->logLine("No hay cotizaciones disponibles para {$yahooSymbol}.", 'warn');
+                        continue;
                     }
 
-                    if ($shouldSell) {
-                        $this->logLine("-> ALERTA DE VENTA para {$tradingSymbol}: {$reason}", 'warn');
-                        Log::info("Bot de Trading: Venta recomendada para {$tradingSymbol} ({$reason}). Rendimiento: {$returnPercent}%");
+                    $quote = $marketQuotes[$yahooSymbol];
+                    $currentPrice = (float)$quote['price'];
+                    $dailyChangePercent = (float)$quote['changePercent'];
 
-                        $pnlValue = ($currentPrice - $avgEntry) * $pos['qty'];
+                    $this->logLine("Analizando {$tradingSymbol} | Precio: \${$currentPrice} | Cambio Hoy: " . number_format($dailyChangePercent, 2) . "%");
 
-                        if ($dryRun) {
-                            $this->logLine("-> [Simulación] Orden de venta enviada para {$pos['qty']} unidades de {$tradingSymbol}");
-                            
-                            \App\Models\Trade::create([
-                                'user_id' => $user->id,
-                                'bot_execution_id' => $execution->id,
-                                'symbol' => $tradingSymbol,
-                                'qty' => $pos['qty'],
-                                'price' => $currentPrice,
-                                'side' => 'sell',
-                                'status' => 'filled',
-                                'is_dry_run' => true,
-                                'pnl' => $pnlValue
-                            ]);
-                        } else {
-                            $res = $tradingService->placeOrder($tradingSymbol, $pos['qty'], 'sell', 'market');
-                            if ($res['success']) {
-                                $this->logLine("-> [EJECUTADO] Venta completada. Orden ID: " . $res['order']['id'], 'success');
-                                Log::info("Bot de Trading: Venta ejecutada de {$pos['qty']} unidades de {$tradingSymbol} con éxito.");
+                    // Check if we hold a position
+                    if (isset($positions[$tradingSymbol])) {
+                        // Sell logic (Take Profit / Stop Loss)
+                        $pos = $positions[$tradingSymbol];
+                        $avgEntry = $pos['avg_entry_price'];
+                        $returnPercent = (($currentPrice - $avgEntry) / $avgEntry) * 100;
+
+                        $this->logLine("-> Tienes posición: {$pos['qty']} unidades. Rendimiento: " . number_format($returnPercent, 2) . "%");
+
+                        $shouldSell = false;
+                        $reason = "";
+
+                        if ($returnPercent >= $takeProfit) {
+                            $shouldSell = true;
+                            $reason = "Take Profit alcanzado (+{$takeProfit}%)";
+                        } elseif ($returnPercent <= $stopLoss) {
+                            $shouldSell = true;
+                            $reason = "Stop Loss alcanzado ({$stopLoss}%)";
+                        }
+
+                        if ($shouldSell) {
+                            $this->logLine("-> ALERTA DE VENTA para {$tradingSymbol}: {$reason}", 'warn');
+                            Log::info("Bot de Trading: Venta recomendada para {$tradingSymbol} ({$reason}). Rendimiento: {$returnPercent}%");
+
+                            $pnlValue = ($currentPrice - $avgEntry) * $pos['qty'];
+
+                            if ($dryRun) {
+                                $this->logLine("-> [Simulación] Orden de venta enviada para {$pos['qty']} unidades de {$tradingSymbol}");
                                 
                                 \App\Models\Trade::create([
                                     'user_id' => $user->id,
@@ -293,77 +281,74 @@ class TradingBotCommand extends Command
                                     'price' => $currentPrice,
                                     'side' => 'sell',
                                     'status' => 'filled',
-                                    'is_dry_run' => (bool)$isPaper,
+                                    'is_dry_run' => $isPaper,
                                     'pnl' => $pnlValue
                                 ]);
                             } else {
-                                $this->logLine("-> [FALLÓ] Error al vender {$tradingSymbol}: " . $res['message'], 'error');
+                                $res = $tradingService->placeOrder($tradingSymbol, $pos['qty'], 'sell', 'market');
+                                if ($res['success']) {
+                                    $this->logLine("-> [EJECUTADO] Venta completada. Orden ID: " . $res['order']['id'], 'success');
+                                    Log::info("Bot de Trading: Venta ejecutada de {$pos['qty']} unidades de {$tradingSymbol} con éxito.");
+                                    
+                                    \App\Models\Trade::create([
+                                        'user_id' => $user->id,
+                                        'bot_execution_id' => $execution->id,
+                                        'symbol' => $tradingSymbol,
+                                        'qty' => $pos['qty'],
+                                        'price' => $currentPrice,
+                                        'side' => 'sell',
+                                        'status' => 'filled',
+                                        'is_dry_run' => (bool)$isPaper,
+                                        'pnl' => $pnlValue
+                                    ]);
+                                } else {
+                                    $this->logLine("-> [FALLÓ] Error al vender {$tradingSymbol}: " . $res['message'], 'error');
+                                }
                             }
                         }
-                    }
-                } else {
-                    // Buy logic (Negative Daily Change and under budget limits)
-                    if ($dailyChangePercent <= $buyThreshold) {
-                        $this->logLine("-> ALERTA DE COMPRA para {$tradingSymbol}: Cambio diario de " . number_format($dailyChangePercent, 2) . "% por debajo del umbral de {$buyThreshold}%");
+                    } else {
+                        // Buy logic (Negative Daily Change and under budget limits)
+                        if ($dailyChangePercent <= $buyThreshold) {
+                            $this->logLine("-> ALERTA DE COMPRA para {$tradingSymbol}: Cambio diario de " . number_format($dailyChangePercent, 2) . "% por debajo del umbral de {$buyThreshold}%");
 
-                        // Check budget limits
-                        if ($totalInvested + $orderSize > $maxInvestment) {
-                            $this->logLine("-> Compra cancelada: Supera el límite máximo de inversión de \${$maxInvestment}", 'warn');
-                            continue;
-                        }
+                            // Check budget limits
+                            if ($totalInvested + $orderSize > $maxInvestment) {
+                                $this->logLine("-> Compra cancelada: Supera el límite máximo de inversión de \${$maxInvestment}", 'warn');
+                                continue;
+                            }
 
-                        if ($buyingPower < $orderSize) {
-                            $this->logLine("-> Compra cancelada: Poder de compra (\${$buyingPower}) insuficiente para la orden de \${$orderSize}", 'warn');
-                            continue;
-                        }
+                            if ($buyingPower < $orderSize) {
+                                $this->logLine("-> Compra cancelada: Poder de compra (\${$buyingPower}) insuficiente para la orden de \${$orderSize}", 'warn');
+                                continue;
+                            }
 
-                        // Check user spending limits
-                        if ($user->hasExceededDailyLimit($orderSize, $isPaper)) {
-                            $this->logLine("-> Compra cancelada: Supera el límite diario de gasto del usuario (\${$dailyLimit}, gastado hoy: \${$user->getDailySpent($isPaper)})", 'warn');
-                            continue;
-                        }
+                            // Check user spending limits
+                            if ($user->hasExceededDailyLimit($orderSize, $isPaper)) {
+                                $this->logLine("-> Compra cancelada: Supera el límite diario de gasto del usuario (\${$dailyLimit}, gastado hoy: \${$user->getDailySpent($isPaper)})", 'warn');
+                                continue;
+                            }
 
-                        if ($user->hasExceededWeeklyLimit($orderSize, $isPaper)) {
-                            $this->logLine("-> Compra cancelada: Supera el límite semanal de gasto del usuario (\${$weeklyLimit}, gastado esta semana: \${$user->getWeeklySpent($isPaper)})", 'warn');
-                            continue;
-                        }
+                            if ($user->hasExceededWeeklyLimit($orderSize, $isPaper)) {
+                                $this->logLine("-> Compra cancelada: Supera el límite semanal de gasto del usuario (\${$weeklyLimit}, gastado esta semana: \${$user->getWeeklySpent($isPaper)})", 'warn');
+                                continue;
+                            }
 
-                        if ($user->hasExceededMonthlyLimit($orderSize, $isPaper)) {
-                            $this->logLine("-> Compra cancelada: Supera el límite mensual de gasto del usuario (\${$monthlyLimit}, gastado este mes: \${$user->getMonthlySpent($isPaper)})", 'warn');
-                            continue;
-                        }
+                            if ($user->hasExceededMonthlyLimit($orderSize, $isPaper)) {
+                                $this->logLine("-> Compra cancelada: Supera el límite mensual de gasto del usuario (\${$monthlyLimit}, gastado este mes: \${$user->getMonthlySpent($isPaper)})", 'warn');
+                                continue;
+                            }
 
-                        $qtyToBuy = round($orderSize / $currentPrice, 4);
-                        if ($qtyToBuy <= 0) {
-                            $this->logLine("-> Compra cancelada: Cantidad a comprar es 0 debido al alto precio del activo.", 'warn');
-                            continue;
-                        }
+                            $qtyToBuy = round($orderSize / $currentPrice, 4);
+                            if ($qtyToBuy <= 0) {
+                                $this->logLine("-> Compra cancelada: Cantidad a comprar es 0 debido al alto precio del activo.", 'warn');
+                                continue;
+                            }
 
-                        $this->logLine("-> Iniciando compra de {$qtyToBuy} unidades de {$tradingSymbol} (\${$orderSize})", 'warn');
-                        Log::info("Bot de Trading: Intento de compra para {$tradingSymbol} (precio: \${$currentPrice}, cantidad: {$qtyToBuy})");
+                            $this->logLine("-> Iniciando compra de {$qtyToBuy} unidades de {$tradingSymbol} (\${$orderSize})", 'warn');
+                            Log::info("Bot de Trading: Intento de compra para {$tradingSymbol} (precio: \${$currentPrice}, cantidad: {$qtyToBuy})");
 
-                        if ($dryRun) {
-                            $this->logLine("-> [Simulación] Orden de compra enviada para {$qtyToBuy} unidades de {$tradingSymbol}");
-                            
-                            \App\Models\Trade::create([
-                                'user_id' => $user->id,
-                                'bot_execution_id' => $execution->id,
-                                'symbol' => $tradingSymbol,
-                                'qty' => $qtyToBuy,
-                                'price' => $currentPrice,
-                                'side' => 'buy',
-                                'status' => 'filled',
-                                'is_dry_run' => true
-                            ]);
-                            // Update values for consecutive orders in this run
-                            $totalInvested += $orderSize;
-                            $cash -= $orderSize;
-                            $buyingPower -= $orderSize;
-                        } else {
-                            $res = $tradingService->placeOrder($tradingSymbol, $qtyToBuy, 'buy', 'market');
-                            if ($res['success']) {
-                                $this->logLine("-> [EJECUTADO] Compra completada. Orden ID: " . $res['order']['id'], 'success');
-                                Log::info("Bot de Trading: Compra ejecutada de {$qtyToBuy} unidades de {$tradingSymbol} con éxito.");
+                            if ($dryRun) {
+                                $this->logLine("-> [Simulación] Orden de compra enviada para {$qtyToBuy} unidades de {$tradingSymbol}");
                                 
                                 \App\Models\Trade::create([
                                     'user_id' => $user->id,
@@ -373,28 +358,47 @@ class TradingBotCommand extends Command
                                     'price' => $currentPrice,
                                     'side' => 'buy',
                                     'status' => 'filled',
-                                    'is_dry_run' => (bool)$isPaper
+                                    'is_dry_run' => $isPaper
                                 ]);
-                                // Update values for consecutive orders in this run
                                 $totalInvested += $orderSize;
                                 $cash -= $orderSize;
                                 $buyingPower -= $orderSize;
                             } else {
-                                $this->logLine("-> [FALLÓ] Error al comprar {$tradingSymbol}: " . $res['message'], 'error');
+                                $res = $tradingService->placeOrder($tradingSymbol, $qtyToBuy, 'buy', 'market');
+                                if ($res['success']) {
+                                    $this->logLine("-> [EJECUTADO] Compra completada. Orden ID: " . $res['order']['id'], 'success');
+                                    Log::info("Bot de Trading: Compra ejecutada de {$qtyToBuy} unidades de {$tradingSymbol} con éxito.");
+                                    
+                                    \App\Models\Trade::create([
+                                        'user_id' => $user->id,
+                                        'bot_execution_id' => $execution->id,
+                                        'symbol' => $tradingSymbol,
+                                        'qty' => $qtyToBuy,
+                                        'price' => $currentPrice,
+                                        'side' => 'buy',
+                                        'status' => 'filled',
+                                        'is_dry_run' => (bool)$isPaper
+                                    ]);
+                                    $totalInvested += $orderSize;
+                                    $cash -= $orderSize;
+                                    $buyingPower -= $orderSize;
+                                } else {
+                                    $this->logLine("-> [FALLÓ] Error al comprar {$tradingSymbol}: " . $res['message'], 'error');
+                                }
                             }
                         }
                     }
                 }
+
+                $this->logLine("=== Ejecución del Bot de Trading Finalizada ===");
+                Log::info("Bot de Trading: Ejecución finalizada correctamente para usuario ID {$user->id} (" . ($isPaper ? 'Paper' : 'Live') . ").");
+
+                $execution->update([
+                    'finished_at' => \Carbon\Carbon::now(),
+                    'status' => 'success',
+                    'output' => $this->outputBuffer
+                ]);
             }
-
-            $this->logLine("=== Ejecución del Bot de Trading Finalizada ===");
-            Log::info("Bot de Trading: Ejecución finalizada correctamente para usuario ID {$user->id}.");
-
-            $execution->update([
-                'finished_at' => \Carbon\Carbon::now(),
-                'status' => 'success',
-                'output' => $this->outputBuffer
-            ]);
         }
 
         return $anyFailed ? Command::FAILURE : Command::SUCCESS;

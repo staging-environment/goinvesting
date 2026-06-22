@@ -284,188 +284,292 @@
         @endphp
 
         <div x-data="{ 
-            activeTab: '{{ session('active_tab', request()->get('tab')) }}' || sessionStorage.getItem('portfolio_active_tab') || 'overview' 
+            activeTab: '{{ session('active_tab', request()->get('tab')) }}' || sessionStorage.getItem('portfolio_active_tab') || 'portfolio_value' 
         }" 
         x-init="sessionStorage.setItem('portfolio_active_tab', activeTab)"
         class="space-y-6">
-            <!-- Tabs Menu (Primary Navigation - More prominent) -->
-            <div class="flex p-1.5 rounded-2xl bg-slate-950/80 border border-slate-900 shadow-2xl overflow-x-auto pb-1.5 scrollbar-none gap-2 mb-2">
+            <!-- Tabs Menu (Primary Navigation - Redesigned to match image) -->
+            <div class="flex p-2 rounded-2xl bg-slate-950/80 border border-slate-900/60 shadow-2xl overflow-x-auto pb-2 scrollbar-none gap-3 mb-4">
+                
+                <!-- Valor de mi cartera -->
+                <button @click="activeTab = 'portfolio_value'; sessionStorage.setItem('portfolio_active_tab', 'portfolio_value')" 
+                        :class="activeTab === 'portfolio_value' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
+                    </svg>
+                    <div class="flex flex-col items-start text-left leading-tight">
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">VALOR DE</span>
+                        <span class="text-xs font-black tracking-wide">MI CARTERA</span>
+                    </div>
+                </button>
+
+                <!-- Resumen General -->
                 <button @click="activeTab = 'overview'; sessionStorage.setItem('portfolio_active_tab', 'overview')" 
                         :class="activeTab === 'overview' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2.5 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4.5 h-4.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
                     </svg>
-                    Resumen General
+                    <div class="flex flex-col items-start text-left leading-tight">
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">RESUMEN</span>
+                        <span class="text-xs font-black tracking-wide">GENERAL</span>
+                    </div>
                 </button>
+
+                <!-- Mis Acciones -->
                 <button @click="activeTab = 'positions'; sessionStorage.setItem('portfolio_active_tab', 'positions')" 
                         :class="activeTab === 'positions' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2.5 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4.5 h-4.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" />
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z" />
                     </svg>
-                    Mis Acciones
+                    <div class="flex flex-col items-start text-left leading-tight">
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">MIS</span>
+                        <span class="text-xs font-black tracking-wide">ACCIONES</span>
+                    </div>
                 </button>
+
+                <!-- Bot de Trading -->
                 <button @click="activeTab = 'bot'; sessionStorage.setItem('portfolio_active_tab', 'bot')" 
                         :class="activeTab === 'bot' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2.5 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4.5 h-4.5">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
                     </svg>
-                    Bot de Trading
+                    <div class="flex flex-col items-start text-left leading-tight">
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">BOT DE</span>
+                        <span class="text-xs font-black tracking-wide">TRADING</span>
+                    </div>
                 </button>
+
+                <!-- Mercados en Vivo -->
                 <button @click="activeTab = 'markets'; sessionStorage.setItem('portfolio_active_tab', 'markets')" 
                         :class="activeTab === 'markets' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3.5 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-2.5 shrink-0 cursor-pointer">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4.5 h-4.5">
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-5.5 h-5.5 shrink-0">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
                     </svg>
-                    Mercados en Vivo
+                    <div class="flex flex-col items-start text-left leading-tight">
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">MERCADOS</span>
+                        <span class="text-xs font-black tracking-wide">EN VIVO</span>
+                    </div>
                 </button>
             </div>
 
-            <!-- TOP GLOBAL SUMMARY BAR (Visible on all tabs) -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-900/10 p-1.5 rounded-2xl border border-slate-900/40">
-                <!-- Valor de Cartera -->
-                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera</span>
-                        <span class="text-lg font-mono font-extrabold text-white">${{ number_format($portfolioValue, 2) }}</span>
-                    </div>
-                    <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Efectivo Disponible -->
-                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo en Alpaca</span>
-                        <span class="text-lg font-mono font-extrabold text-emerald-400">${{ number_format($cash, 2) }}</span>
-                    </div>
-                    <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.879c1.46.177 2.122-.177 2.122-1.005 0-1.112-.879-1.217-2.122-1.286-1.19-.035-2.125-.136-2.125-1.378 0-1.144.902-1.353 2.125-1.387m.879-.879V6M9 14.182c0-.188.016-.368.046-.543M15 11.182c0 .188-.016.368-.046.543M12 18V6" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Poder de Compra -->
-                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
-                    <div>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra</span>
-                        <span class="text-lg font-mono font-extrabold text-indigo-300">${{ number_format($buyingPower, 2) }}</span>
-                    </div>
-                    <div class="p-2.5 bg-indigo-500/10 text-indigo-300 rounded-xl">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Resumen del Bot (Último Run) -->
-                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between cursor-pointer hover:bg-slate-900 transition group" @click="activeTab = 'bot'">
-                    <div>
-                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estado del Bot (Último Run)</span>
-                        @if($lastExecution)
-                            <span class="text-xs font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'text-green-400' : 'text-red-400' }}">
-                                {{ $lastExecution->status === 'success' ? 'Activo / OK' : 'Fallo' }}
-                            </span>
-                            <span class="text-[9px] text-slate-500 block group-hover:text-indigo-400 transition-colors">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
+            <!-- TAB 0: PORTFOLIO VALUE (VALOR DE MI CARTERA) -->
+            <div x-show="activeTab === 'portfolio_value'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                <!-- Win/Loss Beautiful Banner -->
+                <div class="mb-2">
+                    @if($hasPositions)
+                        @if($isWinning)
+                            <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-emerald-950/20 via-slate-900 to-indigo-950/20 border-emerald-500/20 shadow-lg relative overflow-hidden">
+                                <div class="absolute right-0 top-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                                <div class="flex items-start gap-4">
+                                    <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400 shrink-0 shadow-inner">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 14.102-14.102M3.75 18h16.5" />
+                                        </svg>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="relative flex h-2 w-2">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                                            </span>
+                                            <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">¡Tu portafolio está en verde! 🚀</h3>
+                                        </div>
+                                        <p class="text-xs text-slate-350 leading-relaxed font-medium">
+                                            Actualmente estás ganando un total acumulado de <strong class="text-emerald-400 font-bold">${{ number_format($totalUnrealizedPL, 2) }}</strong> en tus posiciones abiertas. El bot de trading automático está gestionando tu capital con éxito.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         @else
-                            <span class="text-xs text-slate-500 font-bold">Nunca Ejecutado</span>
-                            <span class="text-[9px] text-slate-650 block">Pulsa para ver</span>
+                            <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-rose-950/20 via-slate-900 to-indigo-950/20 border-rose-500/20 shadow-lg relative overflow-hidden">
+                                <div class="absolute right-0 top-0 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                                <div class="flex items-start gap-4">
+                                    <div class="p-3 bg-rose-500/10 rounded-xl border border-rose-500/20 text-rose-400 shrink-0 shadow-inner">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6 9 12.75l4.306-4.306A11.95 11.95 0 0 1 15 21.75M3.75 6h16.5" />
+                                        </svg>
+                                    </div>
+                                    <div class="space-y-1">
+                                        <div class="flex items-center gap-2">
+                                            <span class="relative flex h-2 w-2">
+                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                                            </span>
+                                            <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Tu portafolio registra un ajuste temporal 📉</h3>
+                                        </div>
+                                        <p class="text-xs text-slate-350 leading-relaxed font-medium">
+                                            Tus posiciones actuales reflejan una variación de <strong class="text-rose-400 font-bold">${{ number_format($totalUnrealizedPL, 2) }}</strong>. La estrategia opera a mediano plazo y tus límites de pérdidas están activos para resguardar tu inversión.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
-                    </div>
-                    <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl group-hover:bg-indigo-650/20 transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GLOBAL BOT CONTROL & CRON STATUS BAR -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-slate-900/20 p-4 rounded-2xl border border-slate-900/60 shadow-lg">
-                <!-- Bot Execution Status & Cron Info -->
-                <div class="flex items-start gap-3 text-left">
-                    <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
-                        </svg>
-                    </div>
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <h4 class="text-xs font-extrabold text-white uppercase tracking-wider">Cron de Trading Automático</h4>
-                            <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-green-500/15 text-green-400 border border-green-500/25">
-                                ACTIVO (10 min)
-                            </span>
-                            @if($lastExecution)
-                                <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold {{ $lastExecution->status === 'success' ? 'bg-indigo-500/15 text-indigo-400' : 'bg-red-500/15 text-red-400' }}">
-                                    ÚLTIMO RUN: {{ $lastExecution->status === 'success' ? 'OK' : 'ERROR' }}
-                                </span>
-                            @endif
+                    @else
+                        <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-blue-950/20 via-slate-900 to-indigo-950/20 border-blue-500/20 shadow-lg relative overflow-hidden">
+                            <div class="absolute right-0 top-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
+                            <div class="flex items-start gap-4">
+                                <div class="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400 shrink-0 shadow-inner">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
+                                    </svg>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="flex items-center gap-2">
+                                        <span class="relative flex h-2 w-2">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                        </span>
+                                        <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Sin posiciones activas en cartera 📊</h3>
+                                    </div>
+                                    <p class="text-xs text-slate-350 leading-relaxed font-medium">
+                                        Tu saldo líquido está disponible. Puedes configurar tu estrategia de trading automático en tu perfil y presionar "Ejecutar Bot" para iniciar operaciones.
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <p class="text-[11px] text-slate-400 leading-normal">
-                            @if($lastExecution)
-                                Última ejecución del bot: <strong class="text-slate-200">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m/Y H:i') }}</strong> (hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}).
-                            @else
-                                El bot automático en modo {{ $isPaper ? 'Demo' : 'Real' }} nunca se ha ejecutado.
-                            @endif
-                            <span class="text-indigo-300 font-medium">Ejecuta de forma continua en segundo plano y analiza precios de Yahoo Finance y Alpaca.</span>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Bot Authorization Consent Controls & Instant Run -->
-                <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-900 pt-3 md:border-t-0 md:pt-0">
-                    <!-- Instant Run Button -->
-                    <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline m-0">
-                        @csrf
-                        <input type="hidden" name="active_tab" value="bot">
-                        <button type="submit" 
-                                @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar la inversión real primero" @endif
-                                class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z" />
-                            </svg>
-                            Ejecutar Bot Ahora
-                        </button>
-                    </form>
-
-                    @if(!$isPaper)
-                        <!-- Live Consent Button -->
-                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="inline m-0"
-                              @if(Auth::user()->alpaca_live_consent)
-                                  onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')"
-                              @else
-                                  onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')"
-                              @endif>
-                            @csrf
-                            <button type="submit" 
-                                    class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all duration-150 cursor-pointer shadow-md flex items-center gap-1.5 {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10' }}">
-                                @if(Auth::user()->alpaca_live_consent)
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
-                                    </svg>
-                                    Revocar Autorización Real
-                                @else
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                                    </svg>
-                                    Autorizar Inversión Real
-                                @endif
-                            </button>
-                        </form>
                     @endif
                 </div>
+
+                <!-- 4 Cards Summary Block -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-900/10 p-1.5 rounded-2xl border border-slate-900/40">
+                    <!-- Valor de Cartera -->
+                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera</span>
+                            <span class="text-lg font-mono font-extrabold text-white">${{ number_format($portfolioValue, 2) }}</span>
+                        </div>
+                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Efectivo Disponible -->
+                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo en Alpaca</span>
+                            <span class="text-lg font-mono font-extrabold text-emerald-400">${{ number_format($cash, 2) }}</span>
+                        </div>
+                        <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.879c1.46.177 2.122-.177 2.122-1.005 0-1.112-.879-1.217-2.122-1.286-1.19-.035-2.125-.136-2.125-1.378 0-1.144.902-1.353 2.125-1.387m.879-.879V6M9 14.182c0-.188.016-.368.046-.543M15 11.182c0 .188-.016.368-.046.543M12 18V6" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Poder de Compra -->
+                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra</span>
+                            <span class="text-lg font-mono font-extrabold text-indigo-300">${{ number_format($buyingPower, 2) }}</span>
+                        </div>
+                        <div class="p-2.5 bg-indigo-500/10 text-indigo-300 rounded-xl">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del Bot (Último Run) -->
+                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between cursor-pointer hover:bg-slate-900 transition group" @click="activeTab = 'bot'">
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estado del Bot (Último Run)</span>
+                            @if($lastExecution)
+                                <span class="text-xs font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'text-green-400' : 'text-red-400' }}">
+                                    {{ $lastExecution->status === 'success' ? 'Activo / OK' : 'Fallo' }}
+                                </span>
+                                <span class="text-[9px] text-slate-500 block group-hover:text-indigo-400 transition-colors">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
+                            @else
+                                <span class="text-xs text-slate-500 font-bold">Nunca Ejecutado</span>
+                                <span class="text-[9px] text-slate-650 block">Pulsa para ver</span>
+                            @endif
+                        </div>
+                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl group-hover:bg-indigo-650/20 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Limits Progress Bars inside Portfolio Value Tab -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Daily Limit -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-400 uppercase">Gasto Diario Controlado</span>
+                            <span class="font-extrabold text-slate-200">
+                                ${{ number_format($dailySpent, 2) }} / 
+                                {{ $dailyLimit ? '$' . number_format($dailyLimit, 2) : 'Sin Límite' }}
+                            </span>
+                        </div>
+                        @php
+                            $dailyPercent = $dailyLimit > 0 ? min(($dailySpent / $dailyLimit) * 100, 100) : 0;
+                            $dailyBarColor = $dailyPercent >= 90 ? 'bg-red-500' : ($dailyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
+                        @endphp
+                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
+                            <div class="h-full {{ $dailyBarColor }} transition-all duration-500" style="width: {{ $dailyPercent }}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 flex justify-between">
+                            <span>Límite diario establecido para evitar pérdidas excesivas en un solo día.</span>
+                            <span class="font-bold text-slate-400">{{ round($dailyPercent, 1) }}%</span>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Limit -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-400 uppercase">Gasto Semanal Controlado</span>
+                            <span class="font-extrabold text-slate-200">
+                                ${{ number_format($weeklySpent, 2) }} / 
+                                {{ $weeklyLimit ? '$' . number_format($weeklyLimit, 2) : 'Sin Límite' }}
+                            </span>
+                        </div>
+                        @php
+                            $weeklyPercent = $weeklyLimit > 0 ? min(($weeklySpent / $weeklyLimit) * 100, 100) : 0;
+                            $weeklyBarColor = $weeklyPercent >= 90 ? 'bg-red-500' : ($weeklyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
+                        @endphp
+                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
+                            <div class="h-full {{ $weeklyBarColor }} transition-all duration-500" style="width: {{ $weeklyPercent }}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 flex justify-between">
+                            <span>Límite semanal establecido para controlar el presupuesto de compra acumulado.</span>
+                            <span class="font-bold text-slate-400">{{ round($weeklyPercent, 1) }}%</span>
+                        </div>
+                    </div>
+
+                    <!-- Monthly Limit -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-slate-400 uppercase">Gasto Mensual Controlado</span>
+                            <span class="font-extrabold text-slate-200">
+                                ${{ number_format($monthlySpent, 2) }} / 
+                                {{ $monthlyLimit ? '$' . number_format($monthlyLimit, 2) : 'Sin Límite' }}
+                            </span>
+                        </div>
+                        @php
+                            $monthlyPercent = $monthlyLimit > 0 ? min(($monthlySpent / $monthlyLimit) * 100, 100) : 0;
+                            $monthlyBarColor = $monthlyPercent >= 90 ? 'bg-red-500' : ($monthlyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
+                        @endphp
+                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
+                            <div class="h-full {{ $monthlyBarColor }} transition-all duration-500" style="width: {{ $monthlyPercent }}%"></div>
+                        </div>
+                        <div class="text-[10px] text-slate-500 flex justify-between">
+                            <span>Límite mensual establecido para controlar el presupuesto acumulado a largo plazo.</span>
+                            <span class="font-bold text-slate-400">{{ round($monthlyPercent, 1) }}%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-
             <!-- TAB 1: OVERVIEW -->
-            <div x-show="activeTab === 'overview'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+            <div x-show="activeTab === 'overview'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <!-- Win/Loss Beautiful Banner -->
                 <div class="mb-2">
                     @if($hasPositions)
@@ -1263,6 +1367,82 @@
 
             <!-- TAB 3: BOT -->
             <div x-show="activeTab === 'bot'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <!-- GLOBAL BOT CONTROL & CRON STATUS BAR -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-slate-900/20 p-4 rounded-2xl border border-slate-900/60 shadow-lg">
+                    <!-- Bot Execution Status & Cron Info -->
+                    <div class="flex items-start gap-3 text-left">
+                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
+                            </svg>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h4 class="text-xs font-extrabold text-white uppercase tracking-wider">Cron de Trading Automático</h4>
+                                <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-green-500/15 text-green-400 border border-green-500/25">
+                                    ACTIVO (10 min)
+                                </span>
+                                @if($lastExecution)
+                                    <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold {{ $lastExecution->status === 'success' ? 'bg-indigo-500/15 text-indigo-400' : 'bg-red-500/15 text-red-400' }}">
+                                        ÚLTIMO RUN: {{ $lastExecution->status === 'success' ? 'OK' : 'ERROR' }}
+                                    </span>
+                                @endif
+                            </div>
+                            <p class="text-[11px] text-slate-400 leading-normal">
+                                @if($lastExecution)
+                                    Última ejecución del bot: <strong class="text-slate-200">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m/Y H:i') }}</strong> (hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}).
+                                @else
+                                    El bot automático en modo {{ $isPaper ? 'Demo' : 'Real' }} nunca se ha ejecutado.
+                                @endif
+                                <span class="text-indigo-300 font-medium">Ejecuta de forma continua en segundo plano y analiza precios de Yahoo Finance y Alpaca.</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Bot Authorization Consent Controls & Instant Run -->
+                    <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-900 pt-3 md:border-t-0 md:pt-0">
+                        <!-- Instant Run Button -->
+                        <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline m-0">
+                            @csrf
+                            <input type="hidden" name="active_tab" value="bot">
+                            <button type="submit" 
+                                    @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar la inversión real primero" @endif
+                                    class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z" />
+                                </svg>
+                                Ejecutar Bot Ahora
+                            </button>
+                        </form>
+
+                        @if(!$isPaper)
+                            <!-- Live Consent Button -->
+                            <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="inline m-0"
+                                  @if(Auth::user()->alpaca_live_consent)
+                                      onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')"
+                                  @else
+                                      onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')"
+                                  @endif>
+                                @csrf
+                                <button type="submit" 
+                                        class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all duration-150 cursor-pointer shadow-md flex items-center gap-1.5 {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10' }}">
+                                    @if(Auth::user()->alpaca_live_consent)
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+                                        </svg>
+                                        Revocar Autorización Real
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                                        </svg>
+                                        Autorizar Inversión Real
+                                    @endif
+                                </button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+
                 <!-- Last Run of Bot / Strategy Card -->
                 <div class="glass-panel rounded-2xl p-5.5 bg-gradient-to-r from-[#0d1222]/95 via-[#1e1b4b]/15 to-[#0d1222]/95 border-indigo-500/15 shadow-xl relative overflow-hidden">
                     <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>

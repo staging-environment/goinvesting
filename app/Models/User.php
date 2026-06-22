@@ -106,6 +106,7 @@ class User extends Authenticatable
             ->whereDate('created_at', \Carbon\Carbon::today())
             ->where('is_dry_run', $isPaper)
             ->where('side', 'buy')
+            ->whereNotIn('status', ['canceled', 'rejected', 'expired'])
             ->sum(\DB::raw('qty * price'));
     }
 
@@ -119,6 +120,7 @@ class User extends Authenticatable
             ])
             ->where('is_dry_run', $isPaper)
             ->where('side', 'buy')
+            ->whereNotIn('status', ['canceled', 'rejected', 'expired'])
             ->sum(\DB::raw('qty * price'));
     }
 
@@ -132,6 +134,7 @@ class User extends Authenticatable
             ])
             ->where('is_dry_run', $isPaper)
             ->where('side', 'buy')
+            ->whereNotIn('status', ['canceled', 'rejected', 'expired'])
             ->sum(\DB::raw('qty * price'));
     }
 

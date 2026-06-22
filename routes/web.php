@@ -44,6 +44,7 @@ Route::middleware('auth')->group(function () {
     // Profile Alpaca Config Route
     Route::post('/profile/alpaca', [ProfileController::class, 'updateAlpaca'])->name('profile.update-alpaca');
     Route::post('/profile/bot-strategy', [ProfileController::class, 'updateBotStrategy'])->name('profile.update-bot-strategy');
+    Route::post('/profile/update-risk-profile', [ProfileController::class, 'updateRiskProfile'])->name('profile.update-risk-profile');
 });
 
 

@@ -198,4 +198,39 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('status', 'bot-strategy-updated');
     }
+
+    /**
+     * Update user risk profile dynamically.
+     */
+    public function updateRiskProfile(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'risk_profile' => 'required|in:conservative,risky'
+        ]);
+
+        $user = $request->user();
+        $profile = $request->input('risk_profile');
+
+        if ($profile === 'conservative') {
+            $user->update([
+                'live_bot_buy_threshold' => -3.0,
+                'live_bot_take_profit' => 1.2,
+                'live_bot_stop_loss' => -1.5,
+                'live_bot_order_size' => 100.0,
+                'live_daily_spend_limit' => 200.0
+            ]);
+            return back()->with('success', 'Perfil de riesgo **Conservador** aplicado con éxito. Los límites han sido moderados para minimizar ganancias y pérdidas.');
+        } elseif ($profile === 'risky') {
+            $user->update([
+                'live_bot_buy_threshold' => -0.5,
+                'live_bot_take_profit' => 10.0,
+                'live_bot_stop_loss' => -8.0,
+                'live_bot_order_size' => 1000.0,
+                'live_daily_spend_limit' => 3000.0
+            ]);
+            return back()->with('success', 'Perfil de riesgo **Arriesgado** aplicado con éxito. Ten en cuenta los riesgos de alta volatilidad asociados.');
+        }
+
+        return back();
+    }
 }

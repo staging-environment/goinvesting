@@ -206,13 +206,29 @@
                 </div>
                 <div class="border-l border-slate-900 h-8 mx-1"></div>
                 @if(Auth::user()->alpaca_live_consent)
-                    <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/20 px-2.5 py-1.5 rounded-xl border border-emerald-500/25 animate-pulse uppercase tracking-wider">
-                        ● Bot Real Autorizado
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/20 px-2.5 py-1.5 rounded-xl border border-emerald-500/25 animate-pulse uppercase tracking-wider">
+                            ● Bot Real Autorizado
+                        </span>
+                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')">
+                            @csrf
+                            <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-rose-950/40 text-red-400 border border-rose-500/30 hover:bg-rose-500/20">
+                                Revocar
+                            </button>
+                        </form>
+                    </div>
                 @else
-                    <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
-                        ○ Bot Real Sin Autorización
-                    </span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
+                            ○ Bot Real Sin Autorización
+                        </span>
+                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0" onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')">
+                            @csrf
+                            <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10">
+                                Autorizar
+                            </button>
+                        </form>
+                    </div>
                 @endif
             </div>
         </div>
@@ -513,20 +529,20 @@
                     </div>
 
                     <!-- Resumen del Bot (Último Run) -->
-                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between cursor-pointer hover:bg-slate-900 transition group" @click="activeTab = 'bot'">
+                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between group">
                         <div>
                             <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estado del Bot (Último Run)</span>
                             @if($lastExecution)
                                 <span class="text-xs font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'text-green-400' : 'text-red-400' }}">
                                     {{ $lastExecution->status === 'success' ? 'Activo / OK' : 'Fallo' }}
                                 </span>
-                                <span class="text-[9px] text-slate-500 block group-hover:text-indigo-400 transition-colors">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
+                                <span class="text-[9px] text-slate-500 block">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
                             @else
                                 <span class="text-xs text-slate-500 font-bold">Nunca Ejecutado</span>
-                                <span class="text-[9px] text-slate-650 block">Pulsa para ver</span>
+                                <span class="text-[9px] text-slate-650 block">No ejecutado aún</span>
                             @endif
                         </div>
-                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl group-hover:bg-indigo-650/20 transition-colors">
+                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
@@ -1091,7 +1107,7 @@
                                              <td colspan="8" class="py-8 px-5 text-center">
                                                  <div class="text-sm text-slate-400 mb-2">No tienes posiciones abiertas en este momento.</div>
                                                  <div class="text-[11px] text-slate-500 max-w-2xl mx-auto bg-slate-950/40 border border-slate-900 p-3.5 rounded-xl leading-relaxed">
-                                                     💡 <strong>¿Por qué no se han comprado acciones en modo Real?</strong> El bot automático analiza los activos y compra únicamente si experimentan una caída diaria superior al umbral configurado de <strong class="text-indigo-400">{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>. Como ningún activo ha caído por debajo de ese límite, y para proteger tu dinero, no se han emitido órdenes. Puedes cambiar tus parámetros de compra en tu perfil o ver los registros completos de análisis en la pestaña <a href="#" @click.prevent="activeTab = 'bot'" class="text-indigo-400 underline font-bold hover:text-indigo-300">Bot de Trading</a>.
+                                                     💡 <strong>¿Por qué no se han comprado acciones en modo Real?</strong> El bot automático analiza los activos y compra únicamente si experimentan una caída diaria superior al umbral configurado de <strong class="text-indigo-400">{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>. Como ningún activo ha caído por debajo de ese límite, y para proteger tu dinero, no se han emitido órdenes. Puedes cambiar tus parámetros de compra o el nivel de riesgo sugerido en las opciones de configuración.
                                                  </div>
                                              </td>
                                         </tr>

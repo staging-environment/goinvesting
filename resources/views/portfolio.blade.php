@@ -181,116 +181,61 @@
         </div>
     </div>
 
-    <!-- Real Trading Operations Quick Console -->
-    <div class="glass-panel rounded-2xl p-5 border-emerald-500/10 bg-[#060e15]/40 shadow-xl relative overflow-hidden">
-        <div class="absolute right-0 top-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-900/60 pb-3.5 mb-4">
-            <div class="space-y-1">
-                <h3 class="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-                    <span class="relative flex h-2 w-2">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                    Consola de Control de Operaciones Reales (En Vivo)
-                </h3>
-                <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
-                    Resumen rápido del balance de ganancias y pérdidas acumuladas del bot automático con dinero real.
-                </p>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="text-right">
-                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">G/P Real Realizada Acumulada</span>
-                    <span class="text-base font-mono font-extrabold {{ $totalRealRealizedPL >= 0 ? 'text-emerald-400' : 'text-rose-400' }}">
-                        {{ $totalRealRealizedPL >= 0 ? '+' : '' }}${{ number_format($totalRealRealizedPL, 2) }}
-                    </span>
-                </div>
-                <div class="border-l border-slate-900 h-8 mx-1"></div>
-                @if(Auth::user()->alpaca_live_consent)
-                    <div class="flex items-center gap-2">
+    <!-- Compact Real Bot Status Bar -->
+    @if(isset($account))
+        <div class="glass-panel rounded-2xl p-4 bg-[#060e15]/20 border border-slate-900/60 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-4">
+                <!-- Consent Status & Action Button -->
+                <div class="flex items-center gap-2">
+                    @if(Auth::user()->alpaca_live_consent)
                         <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/20 px-2.5 py-1.5 rounded-xl border border-emerald-500/25 animate-pulse uppercase tracking-wider">
                             ● Bot Real Autorizado
                         </span>
-                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0" onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')">
+                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')">
                             @csrf
                             <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-rose-950/40 text-red-400 border border-rose-500/30 hover:bg-rose-500/20">
                                 Revocar
                             </button>
                         </form>
-                    </div>
-                @else
-                    <div class="flex items-center gap-2">
+                    @else
                         <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
                             ○ Bot Real Sin Autorización
                         </span>
-                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0" onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')">
+                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')">
                             @csrf
                             <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10">
                                 Autorizar
                             </button>
                         </form>
+                    @endif
+                </div>
+
+                <div class="hidden lg:block border-l border-slate-900 h-6"></div>
+
+                <!-- Last Execution Info -->
+                @if(isset($lastExecution))
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 rounded-full {{ $lastExecution->status === 'success' ? 'bg-emerald-500' : 'bg-rose-500' }} animate-pulse"></span>
+                        <span class="text-xs text-slate-400 font-semibold">
+                            Último ciclo: <span class="text-slate-200 font-bold">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m H:i:s') }}</span>
+                        </span>
+                        <span class="text-xs text-slate-500">|</span>
+                        <span class="text-xs italic text-indigo-300 font-semibold truncate max-w-[280px] xl:max-w-[400px]" title="{{ $executionSummary }}">
+                            {{ $executionSummary }}
+                        </span>
                     </div>
                 @endif
             </div>
+
+            <!-- G/P Realizada -->
+            <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">G/P Real Realizada:</span>
+                <span class="text-sm font-mono font-extrabold {{ $totalRealRealizedPL >= 0 ? 'text-emerald-400 bg-emerald-950/10' : 'text-rose-400 bg-rose-950/10' }} px-2 py-0.5 rounded border {{ $totalRealRealizedPL >= 0 ? 'border-emerald-500/10' : 'border-rose-500/10' }}">
+                    {{ $totalRealRealizedPL >= 0 ? '+' : '' }}${{ number_format($totalRealRealizedPL, 2) }}
+                </span>
+            </div>
         </div>
-
-        @if(isset($lastExecution))
-            <div class="mb-4 p-3.5 bg-slate-950/50 rounded-xl border border-slate-900/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                <div class="flex items-center gap-2.5">
-                    <div class="px-2.5 py-1 {{ $lastExecution->status === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' }} rounded-lg text-[10px] font-black uppercase tracking-wider shrink-0">
-                        {{ $lastExecution->status === 'success' ? 'Ejecución OK' : 'Fallo' }}
-                    </div>
-                    <div class="text-xs">
-                        <span class="text-slate-400 font-bold block">Último ciclo del Bot: <span class="text-white">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m/Y H:i:s') }}</span> ({{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }})</span>
-                    </div>
-                </div>
-                <div class="text-xs text-slate-350 leading-relaxed md:text-right">
-                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Acción Ejecutada</span>
-                    <span class="italic text-indigo-300 font-bold">{{ $executionSummary }}</span>
-                </div>
-            </div>
-        @endif
-
-        @if($recentRealSells->isEmpty())
-            <div class="text-center py-4 text-xs text-slate-500 font-medium">
-                No se han registrado cierres de operaciones reales (ventas) para calcular el balance de G/P todavía.
-            </div>
-        @else
-            <div class="space-y-2">
-                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Últimos Cierres y Retornos de Inversión (G/P Realizada)</div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-                    @foreach($recentRealSells as $rSell)
-                        @php
-                            $rPnl = (float)$rSell->pnl;
-                            $rIsPositive = $rPnl >= 0;
-                            $rPnlColor = $rIsPositive ? 'text-emerald-400 bg-emerald-950/20 border-emerald-500/10' : 'text-rose-400 bg-rose-950/20 border-rose-500/10';
-                            $rTradeTotal = $rSell->qty * $rSell->price;
-                            $rCostBasis = $rTradeTotal - $rPnl;
-                            $rReturnPercent = $rCostBasis > 0 ? ($rPnl / $rCostBasis) * 100 : 0;
-                        @endphp
-                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-900 flex flex-col justify-between gap-1.5 relative group/card">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-red-500/10 text-red-400 border border-red-500/15">
-                                    VENTA (CIERRE)
-                                </span>
-                                <span class="text-[9px] text-slate-500 font-bold">{{ $rSell->created_at->timezone('Europe/Madrid')->format('d/m H:i') }}</span>
-                            </div>
-                            <div>
-                                <span class="font-extrabold text-sm text-white block group-hover/card:text-indigo-400 transition">{{ $friendlyNames[$rSell->symbol] ?? $rSell->symbol }}</span>
-                                <span class="text-[10px] text-slate-400 block mt-0.5">{{ $rSell->qty }} uds a ${{ number_format($rSell->price, 2) }}</span>
-                            </div>
-                            <div class="border-t border-slate-900/60 pt-2 mt-0.5 flex items-center justify-between">
-                                <span class="text-[9px] text-slate-500 font-semibold">Balance G/P:</span>
-                                <span class="text-xs font-mono font-extrabold px-1.5 py-0.2 rounded border {{ $rPnlColor }}">
-                                    {{ $rIsPositive ? '+' : '' }}${{ number_format($rPnl, 2) }}
-                                    <span class="text-[9px] opacity-85">({{ $rIsPositive ? '+' : '' }}{{ number_format($rReturnPercent, 1) }}%)</span>
-                                </span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
-    </div>
+    @endif
 
     @if(isset($error) && !isset($account))
         <!-- Error / Config State -->
@@ -1234,6 +1179,48 @@
                         </div>
                     </div>
                 </div>
+
+                @if(!$recentRealSells->isEmpty())
+                    <div class="space-y-3 mt-8">
+                        <h2 class="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-emerald-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                            </svg>
+                            Últimos Cierres y Retornos (G/P Realizada)
+                        </h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                            @foreach($recentRealSells as $rSell)
+                                @php
+                                    $rPnl = (float)$rSell->pnl;
+                                    $rIsPositive = $rPnl >= 0;
+                                    $rPnlColor = $rIsPositive ? 'text-emerald-400 bg-emerald-950/20 border-emerald-500/10' : 'text-rose-400 bg-rose-950/20 border-rose-500/10';
+                                    $rTradeTotal = $rSell->qty * $rSell->price;
+                                    $rCostBasis = $rTradeTotal - $rPnl;
+                                    $rReturnPercent = $rCostBasis > 0 ? ($rPnl / $rCostBasis) * 100 : 0;
+                                @endphp
+                                <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-900 flex flex-col justify-between gap-1.5 relative group/card">
+                                    <div class="flex items-center justify-between">
+                                        <span class="text-[9px] px-1.5 py-0.5 rounded font-extrabold uppercase bg-red-500/10 text-red-400 border border-red-500/15">
+                                            VENTA (CIERRE)
+                                        </span>
+                                        <span class="text-[9px] text-slate-500 font-bold">{{ $rSell->created_at->timezone('Europe/Madrid')->format('d/m H:i') }}</span>
+                                    </div>
+                                    <div>
+                                        <span class="font-extrabold text-sm text-white block group-hover/card:text-indigo-400 transition">{{ $friendlyNames[$rSell->symbol] ?? $rSell->symbol }}</span>
+                                        <span class="text-[10px] text-slate-400 block mt-0.5">{{ $rSell->qty }} uds a ${{ number_format($rSell->price, 2) }}</span>
+                                    </div>
+                                    <div class="border-t border-slate-900/60 pt-2 mt-0.5 flex items-center justify-between">
+                                        <span class="text-[9px] text-slate-500 font-semibold">Balance G/P:</span>
+                                        <span class="text-xs font-mono font-extrabold px-1.5 py-0.5 rounded border {{ $rPnlColor }}">
+                                            {{ $rIsPositive ? '+' : '' }}${{ number_format($rPnl, 2) }}
+                                            <span class="text-[9px] opacity-85">({{ $rIsPositive ? '+' : '' }}{{ number_format($rReturnPercent, 1) }}%)</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
             </div>
 
             <!-- TAB 3: BOT -->\n<!-- TAB: SUGGESTED RISK LEVEL -->

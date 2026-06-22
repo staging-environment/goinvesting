@@ -104,7 +104,20 @@
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
             <div class="flex flex-col sm:flex-row sm:items-center gap-4">
-                <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Mi Portafolio</h1>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <h1 class="text-2xl lg:text-3xl font-extrabold text-white tracking-tight">Mi Portafolio</h1>
+                    @if(isset($lastExecution))
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-950/80 border border-slate-900/60 text-slate-400">
+                            <span class="flex h-2 w-2 relative">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full {{ $lastExecution->status === 'success' ? 'bg-emerald-400' : 'bg-rose-400' }} opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 {{ $lastExecution->status === 'success' ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
+                            </span>
+                            <span>
+                                Bot ejecutado hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}
+                            </span>
+                        </div>
+                    @endif
+                </div>
                 @if(isset($account))
                     <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="inline-block">
                         @csrf
@@ -178,6 +191,23 @@
                 @endif
             </div>
         </div>
+
+        @if(isset($lastExecution))
+            <div class="mb-4 p-3.5 bg-slate-950/50 rounded-xl border border-slate-900/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="px-2.5 py-1 {{ $lastExecution->status === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' }} rounded-lg text-[10px] font-black uppercase tracking-wider shrink-0">
+                        {{ $lastExecution->status === 'success' ? 'Ejecución OK' : 'Fallo' }}
+                    </div>
+                    <div class="text-xs">
+                        <span class="text-slate-400 font-bold block">Último ciclo del Bot: <span class="text-white">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m/Y H:i:s') }}</span> ({{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }})</span>
+                    </div>
+                </div>
+                <div class="text-xs text-slate-350 leading-relaxed md:text-right">
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mb-0.5">Acción Ejecutada</span>
+                    <span class="italic text-indigo-300 font-bold">{{ $executionSummary }}</span>
+                </div>
+            </div>
+        @endif
 
         @if($recentRealSells->isEmpty())
             <div class="text-center py-4 text-xs text-slate-500 font-medium">

@@ -210,6 +210,69 @@
         }" 
         x-init="sessionStorage.setItem('portfolio_active_tab', activeTab)"
         class="space-y-6">
+            <!-- TOP GLOBAL SUMMARY BAR (Visible on all tabs) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-900/10 p-1.5 rounded-2xl border border-slate-900/40">
+                <!-- Valor de Cartera -->
+                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera</span>
+                        <span class="text-lg font-mono font-extrabold text-white">${{ number_format($portfolioValue, 2) }}</span>
+                    </div>
+                    <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Efectivo Disponible -->
+                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo en Alpaca</span>
+                        <span class="text-lg font-mono font-extrabold text-emerald-400">${{ number_format($cash, 2) }}</span>
+                    </div>
+                    <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.879c1.46.177 2.122-.177 2.122-1.005 0-1.112-.879-1.217-2.122-1.286-1.19-.035-2.125-.136-2.125-1.378 0-1.144.902-1.353 2.125-1.387m.879-.879V6M9 14.182c0-.188.016-.368.046-.543M15 11.182c0 .188-.016.368-.046.543M12 18V6" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Poder de Compra -->
+                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra</span>
+                        <span class="text-lg font-mono font-extrabold text-indigo-300">${{ number_format($buyingPower, 2) }}</span>
+                    </div>
+                    <div class="p-2.5 bg-indigo-500/10 text-indigo-300 rounded-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Resumen del Bot (Último Run) -->
+                <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between cursor-pointer hover:bg-slate-900 transition group" @click="activeTab = 'bot'">
+                    <div>
+                        <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estado del Bot (Último Run)</span>
+                        @if($lastExecution)
+                            <span class="text-xs font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'text-green-400' : 'text-red-400' }}">
+                                {{ $lastExecution->status === 'success' ? 'Activo / OK' : 'Fallo' }}
+                            </span>
+                            <span class="text-[9px] text-slate-500 block group-hover:text-indigo-400 transition-colors">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
+                        @else
+                            <span class="text-xs text-slate-500 font-bold">Nunca Ejecutado</span>
+                            <span class="text-[9px] text-slate-650 block">Pulsa para ver</span>
+                        @endif
+                    </div>
+                    <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl group-hover:bg-indigo-650/20 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
             <!-- Tabs Horizontal Menu -->
             <div class="flex border-b border-slate-900 overflow-x-auto pb-px scrollbar-none gap-1">
                 <button @click="activeTab = 'overview'; sessionStorage.setItem('portfolio_active_tab', 'overview')" 
@@ -730,7 +793,12 @@
                                 <tbody class="divide-y divide-slate-900/50">
                                     @if(empty($positions))
                                         <tr>
-                                             <td colspan="8" class="py-8 text-center text-sm text-slate-500">No tienes posiciones abiertas en este momento.</td>
+                                             <td colspan="8" class="py-8 px-5 text-center">
+                                                 <div class="text-sm text-slate-400 mb-2">No tienes posiciones abiertas en este momento.</div>
+                                                 <div class="text-[11px] text-slate-500 max-w-2xl mx-auto bg-slate-950/40 border border-slate-900 p-3.5 rounded-xl leading-relaxed">
+                                                     💡 <strong>¿Por qué no se han comprado acciones en modo Real?</strong> El bot automático analiza los activos y compra únicamente si experimentan una caída diaria superior al umbral configurado de <strong class="text-indigo-400">{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>. Como ningún activo ha caído por debajo de ese límite, y para proteger tu dinero, no se han emitido órdenes. Puedes cambiar tus parámetros de compra en tu perfil o ver los registros completos de análisis en la pestaña <a href="#" @click.prevent="activeTab = 'bot'" class="text-indigo-400 underline font-bold hover:text-indigo-300">Bot de Trading</a>.
+                                                 </div>
+                                             </td>
                                         </tr>
                                     @else
                                         @foreach($positions as $pos)

@@ -1057,7 +1057,8 @@
                                     @endif
                                 </div>
                                 <p class="text-xs text-slate-450 mt-0.5">
-                                    Estrategia de inversión activa: <strong class="text-indigo-400">Momentum / Caída Diaria</strong> (Compra caídas de mercado y liquida posiciones automáticamente)
+                                    Estrategia de inversión activa: <strong class="text-indigo-400">Momentum / Caída Diaria</strong> (Compra caídas de mercado y liquida posiciones automáticamente).
+                                    <span class="text-indigo-300 font-bold block sm:inline mt-1 sm:mt-0">⏱️ Frecuencia: El bot se ejecuta automáticamente cada 10 minutos (vía Cron).</span>
                                 </p>
                             </div>
                         </div>
@@ -1065,16 +1066,16 @@
                         <!-- Strategy Config Summary (Pills) -->
                         <div class="flex flex-wrap gap-1.5 text-[10px] font-bold text-slate-350">
                             <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Condición de Compra">
-                                Compra: <strong class="text-indigo-400">&le; {{ Auth::user()->bot_buy_threshold ?? -1.5 }}%</strong>
+                                Compra: <strong class="text-indigo-400">&le; {{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>
                             </span>
                             <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Objetivo de Ganancia">
-                                Take Profit: <strong class="text-emerald-400">+{{ Auth::user()->bot_take_profit ?? 2.0 }}%</strong>
+                                Take Profit: <strong class="text-emerald-400">+{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}%</strong>
                             </span>
                             <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Límite de Pérdida">
-                                Stop Loss: <strong class="text-rose-400">{{ Auth::user()->bot_stop_loss ?? -3.0 }}%</strong>
+                                Stop Loss: <strong class="text-rose-400">{{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}%</strong>
                             </span>
                             <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Tamaño por Operación">
-                                Orden: <strong class="text-slate-200">${{ number_format(Auth::user()->bot_order_size ?? 500, 2) }}</strong>
+                                Orden: <strong class="text-slate-200">${{ number_format(($isPaper ? Auth::user()->bot_order_size : Auth::user()->live_bot_order_size) ?? 500, 2) }}</strong>
                             </span>
                         </div>
                     </div>
@@ -1095,15 +1096,15 @@
                                 @if($lastExecution)
                                     @if($lastExecution->trades->isEmpty())
                                         <span class="text-slate-350">
-                                            ℹ️ <strong>Detalle de Análisis:</strong> El bot inspeccionó tu lista de activos utilizando las reglas activas de tu perfil. <strong class="text-slate-200">No se ejecutó ninguna compra ni venta</strong> en esta ocasión debido a que ningún activo experimentó una caída diaria superior al <strong>{{ Auth::user()->bot_buy_threshold ?? -1.5 }}%</strong> o los límites controlados de presupuesto mensual/semanal ya estaban al límite.
+                                            ℹ️ <strong>Detalle de Análisis:</strong> El bot inspeccionó tu lista de activos utilizando las reglas activas de tu perfil. <strong class="text-slate-200">No se ejecutó ninguna compra ni venta</strong> en esta ocasión debido a que ningún activo experimentó una caída diaria superior al <strong>{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong> o los límites controlados de presupuesto diario/semanal/mensual ya estaban al límite de su capacidad.
                                         </span>
                                     @else
                                         <span class="text-emerald-400 font-bold">
-                                            🚀 <strong>Detalle de Análisis:</strong> Se cumplieron los criterios de tu perfil y el bot procedió a abrir/cerrar posiciones de manera automática.
+                                            🚀 <strong>Detalle de Análisis:</strong> Se cumplieron los criterios de tu perfil en modo {{ $isPaper ? 'Simulación' : 'Real' }} y el bot procedió a abrir/cerrar posiciones de manera automática.
                                         </span>
                                     @endif
                                 @else
-                                    El bot analizará los activos de tu lista de seguimiento y comprará si su cambio de precio diario baja del <strong>{{ Auth::user()->bot_buy_threshold ?? -1.5 }}%</strong>. Venderá si alcanzan el objetivo de beneficio de <strong>+{{ Auth::user()->bot_take_profit ?? 2.0 }}%</strong> o tocan el límite de pérdidas de <strong>{{ Auth::user()->bot_stop_loss ?? -3.0 }}%</strong>.
+                                    El bot analizará los activos de tu lista de seguimiento y comprará si su cambio de precio diario baja del <strong>{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>. Venderá si alcanzan el objetivo de beneficio de <strong>+{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}%</strong> o tocan el límite de pérdidas de <strong>{{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}%</strong>.
                                 @endif
                             </p>
                         </div>
@@ -1179,7 +1180,8 @@
                                 Panel de Ejecución del Bot
                             </h2>
                             <p class="text-xs text-slate-400">
-                                Estrategia: <strong class="text-indigo-400 font-bold">Momentum / Caída Diaria</strong> (Compra caída diaria &le; {{ Auth::user()->bot_buy_threshold ?? -1.5 }}%, TP: +{{ Auth::user()->bot_take_profit ?? 2.0 }}%, SL: {{ Auth::user()->bot_stop_loss ?? -3.0 }}%). Tamaño Orden: <strong class="text-slate-350 font-semibold">${{ number_format(Auth::user()->bot_order_size ?? 500, 2) }}</strong> | Límite Inversión: <strong class="text-slate-300 font-bold">${{ number_format(Auth::user()->bot_max_investment ?? 500000, 2) }}</strong>.
+                                Estrategia: <strong class="text-indigo-400 font-bold">Momentum / Caída Diaria</strong> (Compra caída diaria &le; {{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%, TP: +{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}%, SL: {{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}%). Tamaño Orden: <strong class="text-slate-350 font-semibold">${{ number_format(($isPaper ? Auth::user()->bot_order_size : Auth::user()->live_bot_order_size) ?? 500, 2) }}</strong> | Límite Inversión: <strong class="text-slate-300 font-bold">${{ number_format(($isPaper ? Auth::user()->bot_max_investment : Auth::user()->live_bot_max_investment) ?? 500000, 2) }}</strong>.
+                                <span class="text-indigo-300 font-semibold ml-1 block sm:inline">⏱️ Cron: Ejecución automática programada cada 10 minutos con Yahoo Finance y Alpaca.</span>
                             </p>
                         </div>
                         <div class="flex items-center gap-3">

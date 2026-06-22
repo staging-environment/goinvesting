@@ -150,11 +150,12 @@ class TradingBotCommand extends Command
             }
 
             // Load bot strategy and limit parameters from the user's settings, falling back to env/defaults
-            $buyThreshold = (float)($user->bot_buy_threshold ?? -1.5);
-            $takeProfit = (float)($user->bot_take_profit ?? 2.0);
-            $stopLoss = (float)($user->bot_stop_loss ?? -3.0);
-            $orderSize = (float)($user->bot_order_size ?? env('BOT_ORDER_SIZE', 500.0));
-            $maxInvestment = (float)($user->bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0));
+            $isPaper = (bool)($user->alpaca_is_paper ?? true);
+            $buyThreshold = $isPaper ? (float)($user->bot_buy_threshold ?? -1.5) : (float)($user->live_bot_buy_threshold ?? -1.5);
+            $takeProfit = $isPaper ? (float)($user->bot_take_profit ?? 2.0) : (float)($user->live_bot_take_profit ?? 2.0);
+            $stopLoss = $isPaper ? (float)($user->bot_stop_loss ?? -3.0) : (float)($user->live_bot_stop_loss ?? -3.0);
+            $orderSize = $isPaper ? (float)($user->bot_order_size ?? env('BOT_ORDER_SIZE', 500.0)) : (float)($user->live_bot_order_size ?? env('BOT_ORDER_SIZE', 500.0));
+            $maxInvestment = $isPaper ? (float)($user->bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0)) : (float)($user->live_bot_max_investment ?? env('BOT_MAX_INVESTMENT_LIMIT', 500000.0));
 
             // Create BotExecution record
             $execution = \App\Models\BotExecution::create([
@@ -162,6 +163,7 @@ class TradingBotCommand extends Command
                 'started_at' => \Carbon\Carbon::now(),
                 'status' => 'running',
                 'is_dry_run' => $dryRun,
+                'is_paper' => $isPaper,
                 'output' => ''
             ]);
 
@@ -216,9 +218,13 @@ class TradingBotCommand extends Command
             }
 
             $this->logLine("Total invertido actualmente: \${$totalInvested} (Límite máximo de inversión: \${$maxInvestment})");
-            $this->logLine("Límite diario del usuario: " . ($user->daily_spend_limit ? "\${$user->daily_spend_limit}" : "Sin límite") . " | Gastado hoy: \${$user->getDailySpent()}");
-            $this->logLine("Límite semanal del usuario: " . ($user->weekly_spend_limit ? "\${$user->weekly_spend_limit}" : "Sin límite") . " | Gastado esta semana: \${$user->getWeeklySpent()}");
-            $this->logLine("Límite mensual del usuario: " . ($user->monthly_spend_limit ? "\${$user->monthly_spend_limit}" : "Sin límite") . " | Gastado este mes: \${$user->getMonthlySpent()}");
+            $dailyLimit = $isPaper ? $user->daily_spend_limit : $user->live_daily_spend_limit;
+            $weeklyLimit = $isPaper ? $user->weekly_spend_limit : $user->live_weekly_spend_limit;
+            $monthlyLimit = $isPaper ? $user->monthly_spend_limit : $user->live_monthly_spend_limit;
+
+            $this->logLine("Límite diario del usuario: " . ($dailyLimit ? "\${$dailyLimit}" : "Sin límite") . " | Gastado hoy: \${$user->getDailySpent($isPaper)}");
+            $this->logLine("Límite semanal del usuario: " . ($weeklyLimit ? "\${$weeklyLimit}" : "Sin límite") . " | Gastado esta semana: \${$user->getWeeklySpent($isPaper)}");
+            $this->logLine("Límite mensual del usuario: " . ($monthlyLimit ? "\${$monthlyLimit}" : "Sin límite") . " | Gastado este mes: \${$user->getMonthlySpent($isPaper)}");
 
             // 4. Process Monitored Assets
             foreach ($this->monitoredAssets as $yahooSymbol => $tradingSymbol) {
@@ -312,18 +318,18 @@ class TradingBotCommand extends Command
                         }
 
                         // Check user spending limits
-                        if ($user->hasExceededDailyLimit($orderSize)) {
-                            $this->logLine("-> Compra cancelada: Supera el límite diario de gasto del usuario (\${$user->daily_spend_limit}, gastado hoy: \${$user->getDailySpent()})", 'warn');
+                        if ($user->hasExceededDailyLimit($orderSize, $isPaper)) {
+                            $this->logLine("-> Compra cancelada: Supera el límite diario de gasto del usuario (\${$dailyLimit}, gastado hoy: \${$user->getDailySpent($isPaper)})", 'warn');
                             continue;
                         }
 
-                        if ($user->hasExceededWeeklyLimit($orderSize)) {
-                            $this->logLine("-> Compra cancelada: Supera el límite semanal de gasto del usuario (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})", 'warn');
+                        if ($user->hasExceededWeeklyLimit($orderSize, $isPaper)) {
+                            $this->logLine("-> Compra cancelada: Supera el límite semanal de gasto del usuario (\${$weeklyLimit}, gastado esta semana: \${$user->getWeeklySpent($isPaper)})", 'warn');
                             continue;
                         }
 
-                        if ($user->hasExceededMonthlyLimit($orderSize)) {
-                            $this->logLine("-> Compra cancelada: Supera el límite mensual de gasto del usuario (\${$user->monthly_spend_limit}, gastado este mes: \${$user->getMonthlySpent()})", 'warn');
+                        if ($user->hasExceededMonthlyLimit($orderSize, $isPaper)) {
+                            $this->logLine("-> Compra cancelada: Supera el límite mensual de gasto del usuario (\${$monthlyLimit}, gastado este mes: \${$user->getMonthlySpent($isPaper)})", 'warn');
                             continue;
                         }
 

@@ -31,7 +31,15 @@ use Illuminate\Notifications\Notifiable;
     'bot_take_profit',
     'bot_stop_loss',
     'bot_order_size',
-    'bot_max_investment'
+    'bot_max_investment',
+    'live_bot_buy_threshold',
+    'live_bot_take_profit',
+    'live_bot_stop_loss',
+    'live_bot_order_size',
+    'live_bot_max_investment',
+    'live_daily_spend_limit',
+    'live_weekly_spend_limit',
+    'live_monthly_spend_limit'
 ])]
 #[Hidden(['password', 'remember_token', 'alpaca_secret_key', 'alpaca_live_secret_key'])]
 class User extends Authenticatable
@@ -64,6 +72,14 @@ class User extends Authenticatable
             'bot_stop_loss' => 'float',
             'bot_order_size' => 'float',
             'bot_max_investment' => 'float',
+            'live_bot_buy_threshold' => 'float',
+            'live_bot_take_profit' => 'float',
+            'live_bot_stop_loss' => 'float',
+            'live_bot_order_size' => 'float',
+            'live_bot_max_investment' => 'float',
+            'live_daily_spend_limit' => 'float',
+            'live_weekly_spend_limit' => 'float',
+            'live_monthly_spend_limit' => 'float',
         ];
     }
 
@@ -83,55 +99,64 @@ class User extends Authenticatable
         return $this->hasMany(Trade::class);
     }
 
-    public function getDailySpent(): float
+    public function getDailySpent(bool $isPaper = null): float
     {
+        $isPaper = $isPaper ?? (bool)$this->alpaca_is_paper;
         return (float) $this->trades()
             ->whereDate('created_at', \Carbon\Carbon::today())
-            ->where('is_dry_run', false)
+            ->where('is_dry_run', $isPaper)
             ->where('side', 'buy')
             ->sum(\DB::raw('qty * price'));
     }
 
-    public function getWeeklySpent(): float
+    public function getWeeklySpent(bool $isPaper = null): float
     {
+        $isPaper = $isPaper ?? (bool)$this->alpaca_is_paper;
         return (float) $this->trades()
             ->whereBetween('created_at', [
                 \Carbon\Carbon::now()->startOfWeek(),
                 \Carbon\Carbon::now()->endOfWeek()
             ])
-            ->where('is_dry_run', false)
+            ->where('is_dry_run', $isPaper)
             ->where('side', 'buy')
             ->sum(\DB::raw('qty * price'));
     }
 
-    public function getMonthlySpent(): float
+    public function getMonthlySpent(bool $isPaper = null): float
     {
+        $isPaper = $isPaper ?? (bool)$this->alpaca_is_paper;
         return (float) $this->trades()
             ->whereBetween('created_at', [
                 \Carbon\Carbon::now()->startOfMonth(),
                 \Carbon\Carbon::now()->endOfMonth()
             ])
-            ->where('is_dry_run', false)
+            ->where('is_dry_run', $isPaper)
             ->where('side', 'buy')
             ->sum(\DB::raw('qty * price'));
     }
 
-    public function hasExceededDailyLimit(float $amountToAdd = 0.0): bool
+    public function hasExceededDailyLimit(float $amountToAdd = 0.0, bool $isPaper = null): bool
     {
-        if (is_null($this->daily_spend_limit)) return false;
-        return ($this->getDailySpent() + $amountToAdd) > (float)$this->daily_spend_limit;
+        $isPaper = $isPaper ?? (bool)$this->alpaca_is_paper;
+        $limit = $isPaper ? $this->daily_spend_limit : $this->live_daily_spend_limit;
+        if (is_null($limit)) return false;
+        return ($this->getDailySpent($isPaper) + $amountToAdd) > (float)$limit;
     }
 
-    public function hasExceededWeeklyLimit(float $amountToAdd = 0.0): bool
+    public function hasExceededWeeklyLimit(float $amountToAdd = 0.0, bool $isPaper = null): bool
     {
-        if (is_null($this->weekly_spend_limit)) return false;
-        return ($this->getWeeklySpent() + $amountToAdd) > (float)$this->weekly_spend_limit;
+        $isPaper = $isPaper ?? (bool)$this->alpaca_is_paper;
+        $limit = $isPaper ? $this->weekly_spend_limit : $this->live_weekly_spend_limit;
+        if (is_null($limit)) return false;
+        return ($this->getWeeklySpent($isPaper) + $amountToAdd) > (float)$limit;
     }
 
-    public function hasExceededMonthlyLimit(float $amountToAdd = 0.0): bool
+    public function hasExceededMonthlyLimit(float $amountToAdd = 0.0, bool $isPaper = null): bool
     {
-        if (is_null($this->monthly_spend_limit)) return false;
-        return ($this->getMonthlySpent() + $amountToAdd) > (float)$this->monthly_spend_limit;
+        $isPaper = $isPaper ?? (bool)$this->alpaca_is_paper;
+        $limit = $isPaper ? $this->monthly_spend_limit : $this->live_monthly_spend_limit;
+        if (is_null($limit)) return false;
+        return ($this->getMonthlySpent($isPaper) + $amountToAdd) > (float)$limit;
     }
 
     public function isAdmin(): bool

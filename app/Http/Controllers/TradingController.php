@@ -27,24 +27,26 @@ class TradingController extends Controller
     public function portfolio()
     {
         $user = auth()->user();
+        $isPaper = (bool)($user->alpaca_is_paper ?? true);
         
         $lastExecution = \App\Models\BotExecution::where('user_id', $user->id)
+            ->where('is_paper', $isPaper)
             ->with('trades')
             ->orderBy('started_at', 'desc')
             ->first();
             
         $recentTrades = \App\Models\Trade::where('user_id', $user->id)
-            ->where('is_dry_run', (bool)$user->alpaca_is_paper)
+            ->where('is_dry_run', $isPaper)
             ->orderBy('created_at', 'desc')
             ->take(15)
             ->get();
             
-        $dailySpent = $user->getDailySpent();
-        $weeklySpent = $user->getWeeklySpent();
-        $monthlySpent = $user->getMonthlySpent();
-        $dailyLimit = $user->daily_spend_limit;
-        $weeklyLimit = $user->weekly_spend_limit;
-        $monthlyLimit = $user->monthly_spend_limit;
+        $dailySpent = $user->getDailySpent($isPaper);
+        $weeklySpent = $user->getWeeklySpent($isPaper);
+        $monthlySpent = $user->getMonthlySpent($isPaper);
+        $dailyLimit = $isPaper ? $user->daily_spend_limit : $user->live_daily_spend_limit;
+        $weeklyLimit = $isPaper ? $user->weekly_spend_limit : $user->live_weekly_spend_limit;
+        $monthlyLimit = $isPaper ? $user->monthly_spend_limit : $user->live_monthly_spend_limit;
 
         // Cache connection status check for both modes to avoid slowing down page loads
         $statusPaper = cache()->remember("alpaca_conn_status_paper_{$user->id}", 600, function() use ($user) {

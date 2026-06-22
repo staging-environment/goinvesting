@@ -273,6 +273,77 @@
                 </div>
             </div>
 
+            <!-- GLOBAL BOT CONTROL & CRON STATUS BAR -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-slate-900/20 p-4 rounded-2xl border border-slate-900/60 shadow-lg">
+                <!-- Bot Execution Status & Cron Info -->
+                <div class="flex items-start gap-3 text-left">
+                    <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
+                        </svg>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <h4 class="text-xs font-extrabold text-white uppercase tracking-wider">Cron de Trading Automático</h4>
+                            <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-green-500/15 text-green-400 border border-green-500/25">
+                                ACTIVO (10 min)
+                            </span>
+                            @if($lastExecution)
+                                <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold {{ $lastExecution->status === 'success' ? 'bg-indigo-500/15 text-indigo-400' : 'bg-red-500/15 text-red-400' }}">
+                                    ÚLTIMO RUN: {{ $lastExecution->status === 'success' ? 'OK' : 'ERROR' }}
+                                </span>
+                            @endif
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-normal">
+                            @if($lastExecution)
+                                Última ejecución del bot: <strong class="text-slate-200">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m/Y H:i') }}</strong> (hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}).
+                            @else
+                                El bot automático en modo {{ $isPaper ? 'Demo' : 'Real' }} nunca se ha ejecutado.
+                            @endif
+                            <span class="text-indigo-300 font-medium">Ejecuta de forma continua en segundo plano y analiza precios de Yahoo Finance y Alpaca.</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bot Authorization Consent Controls & Instant Run -->
+                <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-900 pt-3 md:border-t-0 md:pt-0">
+                    <!-- Instant Run Button -->
+                    <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline m-0">
+                        @csrf
+                        <input type="hidden" name="active_tab" value="bot">
+                        <button type="submit" 
+                                @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar la inversión real primero" @endif
+                                class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z" />
+                            </svg>
+                            Ejecutar Bot Ahora
+                        </button>
+                    </form>
+
+                    @if(!$isPaper)
+                        <!-- Live Consent Button -->
+                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="inline m-0">
+                            @csrf
+                            <button type="submit" 
+                                    class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all duration-150 cursor-pointer shadow-md flex items-center gap-1.5 {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10' }}">
+                                @if(Auth::user()->alpaca_live_consent)
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
+                                    </svg>
+                                    Revocar Autorización Real
+                                @else
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                                    </svg>
+                                    Autorizar Inversión Real
+                                @endif
+                            </button>
+                        </form>
+                    @endif
+                </div>
+            </div>
+
             <!-- Tabs Horizontal Menu -->
             <div class="flex border-b border-slate-900 overflow-x-auto pb-px scrollbar-none gap-1">
                 <button @click="activeTab = 'overview'; sessionStorage.setItem('portfolio_active_tab', 'overview')" 

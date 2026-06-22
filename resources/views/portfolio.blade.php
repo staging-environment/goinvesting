@@ -382,18 +382,20 @@
                     </div>
                 </button>
 
-                <!-- Bot de Trading -->
-                <button @click="activeTab = 'bot'; sessionStorage.setItem('portfolio_active_tab', 'bot')" 
-                        :class="activeTab === 'bot' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
+                @if(!$isPaper)
+                <!-- Nivel de Riesgo Sugerido -->
+                <button @click="activeTab = 'risk_level'; sessionStorage.setItem('portfolio_active_tab', 'risk_level')" 
+                        :class="activeTab === 'risk_level' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
                         class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                     </svg>
                     <div class="flex flex-col items-start text-left leading-tight shrink-0">
-                        <span class="text-[9px] font-bold tracking-wider opacity-85">BOT DE</span>
-                        <span class="text-xs font-black tracking-wide">TRADING</span>
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">NIVEL DE</span>
+                        <span class="text-xs font-black tracking-wide">RIESGO</span>
                     </div>
                 </button>
+                @endif
 
                 <!-- Mercados en Vivo -->
                 <button @click="activeTab = 'markets'; sessionStorage.setItem('portfolio_active_tab', 'markets')" 

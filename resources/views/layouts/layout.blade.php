@@ -38,10 +38,29 @@
         body {
             font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
             background-color: #070913;
-            background-image: radial-gradient(circle at 50% -10%, {{ $isPaperMode ? 'rgba(99, 102, 241, 0.06)' : 'rgba(16, 185, 129, 0.06)' }} 0%, transparent 65%);
+            @if(!$isPaperMode)
+                background-image: url('{{ asset('images/live_mode_bg.png') }}');
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-attachment: fixed;
+            @else
+                background-image: radial-gradient(circle at 50% -10%, rgba(99, 102, 241, 0.06) 0%, transparent 65%);
+            @endif
             color: #f8fafc;
             overflow-x: hidden;
         }
+
+        @if(!$isPaperMode)
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(6, 21, 18, 0.78) 0%, rgba(7, 9, 19, 0.97) 100%);
+            z-index: -1;
+            pointer-events: none;
+        }
+        @endif
         
         .glass-panel {
             background: rgba(15, 23, 42, 0.45);
@@ -214,30 +233,6 @@
             <!-- Auth Actions -->
             <div class="flex items-center gap-2.5 shrink-0">
                 @auth
-                    <!-- Selector de Modo de Trading Prominente -->
-                    <div class="flex items-center gap-0.5 p-0.5 bg-slate-950/90 border border-slate-800/80 rounded-xl shadow-xl select-none scale-90 sm:scale-100">
-                        <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
-                            @csrf
-                            <input type="hidden" name="mode" value="paper">
-                            <button type="submit" 
-                                    @if(Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-600/30 border border-indigo-500/40 text-indigo-400 shadow-md shadow-indigo-650/5 cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
-                                Demo
-                            </button>
-                        </form>
-                        <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
-                            @csrf
-                            <input type="hidden" name="mode" value="live">
-                            <button type="submit" 
-                                    @if(!Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600/20 border border-emerald-500/35 text-emerald-400 shadow-md shadow-emerald-600/5 cursor-default' : 'text-slate-500 hover:text-slate-300 border border-transparent cursor-pointer' }}">
-                                <span class="w-1.5 h-1.5 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
-                                Real
-                            </button>
-                        </form>
-                    </div>
-
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition duration-200">
                             <div class="w-6 h-6 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white uppercase">

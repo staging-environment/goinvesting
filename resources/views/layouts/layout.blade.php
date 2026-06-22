@@ -110,9 +110,12 @@
             </div>
 
             <!-- Navigation Links -->
-            <div class="hidden md:flex items-center gap-2.5 lg:gap-3.5 text-[11.5px] lg:text-[12px] font-semibold tracking-wide whitespace-nowrap">
+            <div x-data="{ activeSection: window.location.hash || '' }" 
+                 @hashchange.window="activeSection = window.location.hash"
+                 @section-change.window="activeSection = $event.detail"
+                 class="hidden md:flex items-center gap-2.5 lg:gap-3.5 text-[11.5px] lg:text-[12px] font-semibold tracking-wide whitespace-nowrap h-16">
                 @auth
-                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9.5px] font-black uppercase tracking-wider bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none shrink-0">
+                    <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9.5px] font-black uppercase tracking-wider transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none shrink-0 {{ Route::is('portfolio') ? 'bg-indigo-650 text-white border border-indigo-400 shadow-md shadow-indigo-600/35' : 'bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5h16.5M5.25 7.5h13.5m-12 3h10.5m-9 3h7.5m-6 3h4.5m-3.75 3h3" />
                         </svg>
@@ -121,7 +124,7 @@
                     @php
                         $notConfigured = !Auth::user()->alpaca_key_id && !Auth::user()->alpaca_live_key_id;
                     @endphp
-                    <a href="{{ route('getting-started') }}" class="transition flex items-center gap-1 shrink-0 {{ $notConfigured ? 'px-2 py-1 rounded-lg text-[10.5px] bg-amber-500/10 text-amber-400 border border-amber-500/35 font-bold animate-pulse hover:bg-amber-500/20 hover:text-amber-300' : 'text-slate-400 hover:text-white' }}">
+                    <a href="{{ route('getting-started') }}" class="transition-all duration-150 flex items-center gap-1 shrink-0 {{ $notConfigured ? 'px-2 py-1 rounded-lg text-[10.5px] bg-amber-500/10 text-amber-400 border border-amber-500/35 font-bold animate-pulse hover:bg-amber-500/20 hover:text-amber-300' : (Route::is('getting-started') ? 'text-indigo-400 border-b-2 border-indigo-500 pb-1 mt-[2px]' : 'text-slate-400 hover:text-white border-b-2 border-transparent pb-1 mt-[2px]') }}">
                         @if($notConfigured)
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-amber-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
@@ -130,9 +133,18 @@
                         Cómo Empezar
                     </a>
                 @endauth
-                <a href="{{ Route::is('home') ? '#como-funcionamos' : route('home') . '#como-funcionamos' }}" class="text-slate-300 hover:text-white transition shrink-0">Cómo Funcionamos</a>
-                <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" class="text-slate-300 hover:text-white transition shrink-0">Quiénes Somos</a>
-                <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" class="text-slate-300 hover:text-white transition shrink-0">Contacto</a>
+                <a href="{{ Route::is('home') ? '#como-funcionamos' : route('home') . '#como-funcionamos' }}" 
+                   @click="activeSection = '#como-funcionamos'"
+                   :class="activeSection === '#como-funcionamos' ? 'text-indigo-400 border-indigo-500' : 'text-slate-300 hover:text-white border-transparent'"
+                   class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px]">Cómo Funcionamos</a>
+                <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" 
+                   @click="activeSection = '#quienes-somos'"
+                   :class="activeSection === '#quienes-somos' ? 'text-indigo-400 border-indigo-500' : 'text-slate-300 hover:text-white border-transparent'"
+                   class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px]">Quiénes Somos</a>
+                <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" 
+                   @click="activeSection = '#contacto'"
+                   :class="activeSection === '#contacto' ? 'text-indigo-400 border-indigo-500' : 'text-slate-300 hover:text-white border-transparent'"
+                   class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px]">Contacto</a>
             </div>
 
             <!-- Auth Actions -->
@@ -525,5 +537,37 @@
         </div>
     </div>
     @endauth
+
+    <!-- IntersectionObserver for Header Links ScrollSpy -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('#como-funcionamos, #quienes-somos, #contacto');
+            if (sections.length === 0) return;
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '-20% 0px -60% 0px',
+                threshold: 0
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.getAttribute('id');
+                        window.dispatchEvent(new CustomEvent('section-change', { detail: '#' + id }));
+                    }
+                });
+            }, observerOptions);
+
+            sections.forEach(section => observer.observe(section));
+
+            // Clear highlight if scrolled back to top
+            window.addEventListener('scroll', () => {
+                if (window.scrollY < 200) {
+                    window.dispatchEvent(new CustomEvent('section-change', { detail: '' }));
+                }
+            });
+        });
+    </script>
 </body>
 </html>

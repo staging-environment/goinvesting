@@ -244,23 +244,7 @@
         </div>
     @endif
 
-    <!-- General Info Alert for Beginners -->
-    <div class="glass-panel rounded-2xl p-4 bg-indigo-950/15 border-indigo-500/10 text-xs text-slate-400 leading-relaxed flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-        <div class="flex gap-3 items-start">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400 shrink-0 mt-0.5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 1 1 .513 1.293l-.042.015-1.478.492a1 1 0 0 0-.674.933V15m3.75 2.25h.008v.008H13v-.008Z" />
-            </svg>
-            <div>
-                <strong class="text-slate-200">Guía de Origen de Datos:</strong> Esta página muestra el estado en tiempo real de tu cuenta. Los saldos de capital y el poder de compra se consultan directamente de tu broker en <strong class="text-indigo-400">Alpaca API</strong>. El precio actual de tus posiciones abiertas y la valoración diaria se calculan enriqueciendo los datos con cotizaciones de <strong class="text-indigo-400">Yahoo Finance</strong> en tiempo real.
-            </div>
-        </div>
-        <button type="button" x-data @click="$dispatch('open-alpaca-support')" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-extrabold transition duration-150 shrink-0 cursor-pointer shadow-md shadow-indigo-650/10">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-300">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-3.658A8.955 8.955 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
-            </svg>
-            Asistente de Soporte Alpaca
-        </button>
-    </div>
+
 
     @if(isset($account))
         @php

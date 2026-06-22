@@ -566,6 +566,55 @@
                 </p>
             </div>
         </div>
+
+        <!-- Información de Datos y Transferencias -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+            <!-- Guía de Origen de Datos -->
+            <div class="glass-panel rounded-2xl p-6 bg-indigo-950/15 border-indigo-500/10 text-xs text-slate-400 leading-relaxed flex flex-col justify-between gap-4">
+                <div class="space-y-3">
+                    <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 1 1 .513 1.293l-.042.015-1.478.492a1 1 0 0 0-.674.933V15m3.75 2.25h.008v.008H13v-.008Z" />
+                        </svg>
+                        Guía de Origen de Datos
+                    </h4>
+                    <p>
+                        Esta página de portafolio y tu dashboard de mercados muestran el estado en tiempo real de tu cuenta. Los saldos de capital y el poder de compra se consultan directamente de tu bróker en tiempo real mediante la <strong class="text-indigo-400">API de Alpaca</strong>. El precio actual de tus posiciones abiertas y la valoración diaria se calculan enriqueciendo los datos con cotizaciones de <strong class="text-indigo-400">Yahoo Finance</strong> en tiempo real.
+                    </p>
+                </div>
+                @auth
+                    <div class="pt-2 border-t border-slate-900/60">
+                        <button type="button" x-data @click="$dispatch('open-alpaca-support')" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[11px] font-extrabold transition duration-150 cursor-pointer shadow-md shadow-indigo-650/10">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-300">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-3.658A8.955 8.955 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                            </svg>
+                            Asistente de Soporte Alpaca
+                        </button>
+                    </div>
+                @endauth
+            </div>
+
+            <!-- Guía de Transferencia de Fondos -->
+            <div class="glass-panel rounded-2xl p-6 bg-[#060e15]/40 border-emerald-500/10 text-xs text-slate-400 leading-relaxed flex flex-col justify-between gap-4">
+                <div class="space-y-3">
+                    <h4 class="text-sm font-extrabold text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-400">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 10.136 11.6 10.09 10.222 9.022c-1.172-.879-1.172-2.303 0-3.182 1.171-.879 3.07-.879 4.242 0 .88.66.88 1.885 0 2.544" />
+                        </svg>
+                        Guía de Depósito y Transferencias (Operar en Real)
+                    </h4>
+                    <p class="leading-relaxed">
+                        Para poder operar en vivo con dinero real a través de GoInvesting, necesitas fondear tu balance en el bróker:
+                    </p>
+                    <ul class="list-disc pl-4 space-y-1.5 text-slate-350">
+                        <li>Accede a tu panel personal en <a href="https://alpaca.markets" target="_blank" class="text-indigo-400 hover:text-indigo-300 font-bold underline">Alpaca Markets</a>.</li>
+                        <li>Ve a la pestaña de <strong class="text-white">"Banking"</strong> (Banca) en el menú lateral.</li>
+                        <li>Haz clic en <strong class="text-white">"Link Bank Account"</strong> para vincular tu banco (por Plaid o transferencia wire/ACH).</li>
+                        <li>Selecciona <strong class="text-white">"Deposit"</strong>, define la cantidad y confirma. Las transferencias bancarias nacionales/internacionales tardarán entre 1 y 3 días hábiles en acreditarse en tu poder de compra.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Quiénes Somos Section -->

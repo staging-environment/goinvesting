@@ -141,9 +141,6 @@
                 @endif
             </p>
         </div>
-        <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-white transition">
-            Volver a mercados
-        </a>
     </div>
 
     <!-- Real Trading Operations Quick Console -->

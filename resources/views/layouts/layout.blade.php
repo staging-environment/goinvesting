@@ -1,3 +1,11 @@
+@php
+    $isPaperMode = Auth::check() ? (bool)Auth::user()->alpaca_is_paper : true;
+    $themeColor = $isPaperMode ? 'indigo' : 'emerald';
+    $themeGlow = $isPaperMode ? 'from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_15px_rgba(99,102,241,0.6)]' : 'from-emerald-500 via-teal-500 to-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.6)]';
+    $headerBgClass = $isPaperMode 
+        ? 'from-[#0d122b] via-[#1a1f4c] to-[#0f113a] border-indigo-500/45 shadow-indigo-500/15' 
+        : 'from-[#061512] via-[#092921] to-[#051a14] border-emerald-500/45 shadow-emerald-500/15';
+@endphp
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
@@ -30,6 +38,7 @@
         body {
             font-family: 'Plus Jakarta Sans', 'Outfit', sans-serif;
             background-color: #070913;
+            background-image: radial-gradient(circle at 50% -10%, {{ $isPaperMode ? 'rgba(99, 102, 241, 0.06)' : 'rgba(16, 185, 129, 0.06)' }} 0%, transparent 65%);
             color: #f8fafc;
             overflow-x: hidden;
         }
@@ -78,35 +87,56 @@
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
 
-
+    <!-- Thin top glowing mode indicator bar -->
+    <div class="h-[3.5px] w-full bg-gradient-to-r {{ $themeGlow }} transition-all duration-300 relative z-50"></div>
 
     <!-- Main Navigation Header -->
-    <header class="sticky top-0 z-40 w-full bg-gradient-to-r from-[#0d122b] via-[#1a1f4c] to-[#0f113a] backdrop-blur-md border-b border-indigo-500/45 shadow-lg shadow-indigo-500/15">
+    <header class="sticky top-0 z-40 w-full bg-gradient-to-r {{ $headerBgClass }} backdrop-blur-md border-b shadow-lg transition-all duration-300">
         <div class="max-w-7xl mx-auto px-4 lg:px-6 h-16 flex items-center justify-between gap-4">
             
-            <!-- Logo -->
-            <a href="{{ route('home') }}" class="flex items-center gap-2.5 select-none shrink-0 group">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-500 to-violet-500 flex items-center justify-center shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition-all duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-white">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
-                    </svg>
-                </div>
-                <span class="font-extrabold text-xl tracking-tight flex items-center select-none">
-                    <span class="bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">Go</span>
-                    <span class="bg-gradient-to-r from-indigo-300 to-violet-400 bg-clip-text text-transparent">Investing</span>
-                </span>
-            </a>            <!-- Autocomplete Search Bar -->
-            <div class="relative w-40 lg:w-48 xl:w-56 mx-2 hidden lg:block shrink-0">
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-indigo-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+            <!-- Logo & Mode Badge/Selector -->
+            <div class="flex items-center gap-4 shrink-0">
+                <a href="{{ route('home') }}" class="flex items-center gap-2.5 select-none group">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-{{ $themeColor }}-500 to-{{ $isPaperMode ? 'violet' : 'teal' }}-500 flex items-center justify-center shadow-lg shadow-{{ $themeColor }}-500/30 group-hover:scale-105 transition-all duration-300">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5 text-white">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
                         </svg>
+                    </div>
+                    <span class="font-extrabold text-xl tracking-tight flex items-center select-none">
+                        <span class="bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">Go</span>
+                        <span class="bg-gradient-to-r from-{{ $themeColor }}-300 to-{{ $isPaperMode ? 'violet' : 'teal' }}-400 bg-clip-text text-transparent">Investing</span>
                     </span>
-                    <input type="text" id="global-search" placeholder="Buscar activos..." class="w-full bg-[#070913]/60 border border-indigo-500/30 rounded-xl py-1.5 pl-9 pr-3 text-xs text-slate-200 placeholder-indigo-300/40 focus:outline-none focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/50 transition duration-200" autocomplete="off">
-                </div>
-                <!-- Search Floating Dropdown -->
-                <div id="search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-xl shadow-2xl hidden max-h-80 overflow-y-auto z-50"></div>
+                </a>
+                
+                @auth
+                    <!-- Selector de Modo de Trading -->
+                    <div class="flex items-center gap-0.5 p-0.5 bg-slate-950/90 border border-slate-800/80 rounded-xl shadow-xl select-none scale-90 sm:scale-100">
+                        <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
+                            @csrf
+                            <input type="hidden" name="mode" value="paper">
+                            <button type="submit" 
+                                    @if(Auth::user()->alpaca_is_paper) disabled @endif
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650 text-white shadow-md shadow-indigo-650/15 cursor-default' : 'text-slate-550 hover:text-slate-350 border border-transparent cursor-pointer' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
+                                Demo
+                            </button>
+                        </form>
+                        <form action="{{ route('portfolio.toggle-paper') }}" method="POST" class="m-0">
+                            @csrf
+                            <input type="hidden" name="mode" value="live">
+                            <button type="submit" 
+                                    @if(!Auth::user()->alpaca_is_paper) disabled @endif
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/15 cursor-default' : 'text-slate-550 hover:text-slate-350 border border-transparent cursor-pointer' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
+                                Real
+                            </button>
+                        </form>
+                    </div>
+                @else
+                    <span class="text-[9px] font-extrabold text-indigo-455 bg-indigo-950/20 px-2.5 py-1 rounded-lg border border-indigo-500/20 uppercase tracking-wider">
+                        Modo Demo
+                    </span>
+                @endauth
             </div>
 
             <!-- Navigation Links -->
@@ -114,6 +144,10 @@
                  x-on:hashchange.window="activeSection = window.location.hash"
                  x-on:section-change.window="activeSection = $event.detail"
                  class="hidden md:flex items-center gap-2.5 lg:gap-3.5 text-[11.5px] lg:text-[12px] font-semibold tracking-wide whitespace-nowrap h-16">
+                
+                <a href="{{ route('home') }}" 
+                   class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px] {{ Route::is('home') && empty($query) ? 'text-indigo-400 border-indigo-500 font-bold' : 'text-slate-300 hover:text-white border-transparent' }}">Mercados</a>
+
                 @auth
                     <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9.5px] font-black uppercase tracking-wider transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none shrink-0 {{ Route::is('portfolio') ? 'bg-indigo-650 text-white border border-indigo-400 shadow-md shadow-indigo-600/35' : 'bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
@@ -173,7 +207,6 @@
                             </button>
                         </form>
                     </div>
-
 
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false" class="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 hover:border-slate-700 transition duration-200">

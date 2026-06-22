@@ -198,7 +198,19 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <!-- Left: Markets Tabs & Tables (Col Span 2) -->
-        <div class="lg:col-span-2 space-y-4">
+        <div class="lg:col-span-2 space-y-5">
+            
+            <!-- Búsqueda de Activos Prominente -->
+            <div class="relative w-full">
+                <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-indigo-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21-21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z" />
+                    </svg>
+                </span>
+                <input type="text" id="global-search" placeholder="Buscar activos por nombre o símbolo (ej. AAPL, BTC, Oro)..." class="w-full bg-slate-950/60 border border-slate-900 rounded-2xl py-3.5 pl-12 pr-4 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/50 transition duration-200 shadow-inner" autocomplete="off">
+                <!-- Search Floating Dropdown -->
+                <div id="search-results" class="absolute left-0 right-0 mt-2 bg-[#0d1222] border border-slate-800 rounded-2xl shadow-2xl hidden max-h-80 overflow-y-auto z-50"></div>
+            </div>
             
             <!-- Tab Controls -->
             <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-900 no-scrollbar">

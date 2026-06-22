@@ -39,6 +39,11 @@ interface TradingProviderInterface
      * - 'message' (optional string in case of failure)
      */
     public function placeOrder(string $symbol, float $qty, string $side, string $type = 'market', ?float $limitPrice = null): array;
+    
+    /**
+     * Cancel a specific order by its broker ID.
+     */
+    public function cancelOrder(string $orderId): array;
 
     /**
      * Check if the market is currently open.

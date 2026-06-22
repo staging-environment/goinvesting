@@ -262,4 +262,36 @@ class AlpacaService implements TradingProviderInterface
         }
         return false;
     }
+
+    /**
+     * Cancel a specific order by its broker ID.
+     */
+    public function cancelOrder(string $orderId): array
+    {
+        if (!$this->isConfigured()) {
+            return ['success' => false, 'message' => 'Alpaca API not configured.'];
+        }
+
+        $endpoint = $this->isBroker ? "/orders/{$orderId}" : "/v2/orders/{$orderId}";
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(10)
+                ->delete("{$this->baseUrl}{$endpoint}");
+
+            if ($response->successful()) {
+                return ['success' => true];
+            } else {
+                $errorData = $response->json();
+                return [
+                    'success' => false,
+                    'message' => $errorData['message'] ?? 'Error al cancelar la orden en Alpaca.'
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Excepción de conexión con Alpaca: ' . $e->getMessage()
+            ];
+        }
+    }
 }

@@ -10,6 +10,7 @@ class Trade extends Model
     protected $fillable = [
         'user_id',
         'bot_execution_id',
+        'broker_order_id',
         'symbol',
         'qty',
         'price',

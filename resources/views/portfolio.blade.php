@@ -1052,12 +1052,13 @@
                                         <th class="py-4 px-5 text-right">Resultado (G/P)</th>
                                         <th class="py-4 px-5 text-center">Estado</th>
                                         <th class="py-4 px-5 text-right">Modo</th>
+                                        <th class="py-4 px-5 text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-900/50">
                                     @if($recentTrades->isEmpty())
                                         <tr>
-                                            <td colspan="10" class="py-8 text-center text-sm text-slate-500">Aún no se han registrado transacciones en esta cuenta.</td>
+                                            <td colspan="11" class="py-8 text-center text-sm text-slate-500">Aún no se han registrado transacciones en esta cuenta.</td>
                                         </tr>
                                     @else
                                         @foreach($recentTrades as $trade)
@@ -1153,6 +1154,18 @@
                                                     <span class="text-[10px] px-1.5 py-0.5 rounded font-medium uppercase {{ $trade->is_dry_run ? 'bg-amber-500/10 text-amber-400' : 'bg-green-500/10 text-green-400' }}">
                                                         {{ $trade->is_dry_run ? 'Simulado' : 'Real' }}
                                                     </span>
+                                                </td>
+                                                <td class="py-3.5 px-5 text-center">
+                                                    @if(!in_array($status, ['filled', 'rejected', 'canceled', 'cancelled', 'expired']))
+                                                        <form action="{{ route('trade.cancel', $trade->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta orden pendiente en el bróker?')">
+                                                            @csrf
+                                                            <button type="submit" class="px-2.5 py-1 bg-red-950/40 border border-red-500/30 text-red-400 hover:bg-red-500/20 rounded text-[10px] font-extrabold uppercase transition cursor-pointer">
+                                                                Cancelar
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <span class="text-[10px] text-slate-600">-</span>
+                                                    @endif
                                                 </td>
                                             </tr>
                                         @endforeach

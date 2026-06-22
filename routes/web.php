@@ -21,6 +21,7 @@ Route::middleware('auth')->group(function () {
     // Trading Routes
     Route::get('/portfolio', [TradingController::class, 'portfolio'])->name('portfolio');
     Route::post('/trade/execute', [TradingController::class, 'executeOrder'])->name('trade.execute');
+    Route::post('/trade/cancel/{id}', [TradingController::class, 'cancelOrder'])->name('trade.cancel');
     Route::post('/portfolio/run-bot', [TradingController::class, 'runBot'])->name('portfolio.run-bot');
     Route::post('/portfolio/toggle-paper', [TradingController::class, 'togglePaper'])->name('portfolio.toggle-paper');
     Route::post('/portfolio/toggle-live-consent', [TradingController::class, 'toggleLiveConsent'])->name('portfolio.toggle-live-consent');

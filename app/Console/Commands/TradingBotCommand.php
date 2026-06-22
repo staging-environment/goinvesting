@@ -293,11 +293,12 @@ class TradingBotCommand extends Command
                                     \App\Models\Trade::create([
                                         'user_id' => $user->id,
                                         'bot_execution_id' => $execution->id,
+                                        'broker_order_id' => $res['order']['id'] ?? null,
                                         'symbol' => $tradingSymbol,
                                         'qty' => $pos['qty'],
                                         'price' => $currentPrice,
                                         'side' => 'sell',
-                                        'status' => 'filled',
+                                        'status' => $res['order']['status'] ?? 'filled',
                                         'is_dry_run' => (bool)$isPaper,
                                         'pnl' => $pnlValue
                                     ]);
@@ -372,11 +373,12 @@ class TradingBotCommand extends Command
                                     \App\Models\Trade::create([
                                         'user_id' => $user->id,
                                         'bot_execution_id' => $execution->id,
+                                        'broker_order_id' => $res['order']['id'] ?? null,
                                         'symbol' => $tradingSymbol,
                                         'qty' => $qtyToBuy,
                                         'price' => $currentPrice,
                                         'side' => 'buy',
-                                        'status' => 'filled',
+                                        'status' => $res['order']['status'] ?? 'filled',
                                         'is_dry_run' => (bool)$isPaper
                                     ]);
                                     $totalInvested += $orderSize;

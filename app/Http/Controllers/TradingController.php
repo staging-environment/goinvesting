@@ -281,6 +281,7 @@ class TradingController extends Controller
             \App\Models\Trade::create([
                 'user_id' => $user->id,
                 'bot_execution_id' => null,
+                'broker_order_id' => $result['order']['id'] ?? null,
                 'symbol' => $symbol,
                 'qty' => $qty,
                 'price' => $price,
@@ -438,6 +439,50 @@ class TradingController extends Controller
             : 'Consentimiento revocado. Las operaciones del bot de trading automático con dinero real en modo Live han sido desactivadas.';
 
         return redirect()->back()->with('success', $message)->with('active_tab', 'bot');
+    }
+
+    /**
+     * Cancels a pending order at the broker and updates the local trade status.
+     */
+    public function cancelOrder($id)
+    {
+        $user = auth()->user();
+        $trade = \App\Models\Trade::where('id', $id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $activeTab = $trade->side === 'sell' ? 'positions' : 'overview';
+
+        if ($trade->status === 'canceled' || $trade->status === 'cancelled') {
+            return redirect()->back()->with('success', 'La orden ya está cancelada.')->with('active_tab', $activeTab);
+        }
+
+        if ($trade->is_dry_run) {
+            // Simulated trade, just cancel it locally
+            $trade->status = 'canceled';
+            $trade->save();
+            return redirect()->back()->with('success', 'Orden de simulación cancelada correctamente.')->with('active_tab', $activeTab);
+        }
+
+        if (!$trade->broker_order_id) {
+            // If there's no broker order ID, we can't cancel it at Alpaca/Lemon, but let's try to cancel it locally
+            $trade->status = 'canceled';
+            $trade->save();
+            return redirect()->back()->with('success', 'La orden no tenía ID del bróker pero ha sido marcada como cancelada en el historial local.')->with('active_tab', $activeTab);
+        }
+
+        // Call the API to cancel the order
+        $result = $this->tradingService->cancelOrder($trade->broker_order_id);
+
+        if ($result['success']) {
+            $trade->status = 'canceled';
+            $trade->save();
+            return redirect()->back()->with('success', 'Orden cancelada con éxito en el bróker.')->with('active_tab', $activeTab);
+        } else {
+            // Even if the cancel fails on the API (e.g. order already filled or invalid ID), let's inform the user
+            $errorMsg = $this->translateErrorMessage($result['message'] ?? 'Error desconocido al cancelar la orden en el bróker.');
+            return redirect()->back()->withErrors(['error' => 'No se pudo cancelar la orden en el bróker: ' . $errorMsg])->with('active_tab', $activeTab);
+        }
     }
 
     /**

@@ -283,4 +283,35 @@ class LemonMarketsService implements TradingProviderInterface
             ];
         }
     }
+
+    /**
+     * Cancel a specific order by its broker ID.
+     */
+    public function cancelOrder(string $orderId): array
+    {
+        if (!$this->isConfigured()) {
+            return ['success' => false, 'message' => 'Lemon.markets API not configured.'];
+        }
+
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(10)
+                ->delete("{$this->baseUrl}/accounts/{$this->accountId}/orders/{$orderId}");
+
+            if ($response->successful()) {
+                return ['success' => true];
+            } else {
+                $errorData = $response->json();
+                return [
+                    'success' => false,
+                    'message' => $errorData['error_message'] ?? $errorData['message'] ?? 'Error al cancelar la orden en Lemon.markets.'
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Excepción de conexión con Lemon.markets: ' . $e->getMessage()
+            ];
+        }
+    }
 }

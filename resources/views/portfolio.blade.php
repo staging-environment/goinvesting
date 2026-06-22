@@ -111,13 +111,13 @@
                         <div class="inline-flex p-1 rounded-xl bg-slate-950/80 border border-slate-900/60 shadow-inner">
                             <button type="submit" 
                                     @if($isPaper) disabled @endif 
-                                    class="px-4 py-1.5 rounded-lg text-xs font-bold transition duration-200 flex items-center gap-1.5 cursor-pointer disabled:cursor-default {{ $isPaper ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/10' : 'text-slate-400 hover:text-slate-200' }}">
+                                    class="px-4 py-1.5 rounded-lg text-xs font-bold transition duration-200 flex items-center gap-1.5 cursor-pointer disabled:cursor-default {{ $isPaper ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/10 animate-paper-glow' : 'text-slate-400 hover:text-slate-200' }}">
                                 <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 {{ $isPaper ? 'animate-pulse' : 'opacity-40' }}"></span>
                                 Simulación (Paper)
                             </button>
                             <button type="submit" 
                                     @if(!$isPaper) disabled @endif 
-                                    class="px-4 py-1.5 rounded-lg text-xs font-bold transition duration-200 flex items-center gap-1.5 cursor-pointer disabled:cursor-default {{ !$isPaper ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/10' : 'text-slate-400 hover:text-slate-200' }}">
+                                    class="px-4 py-1.5 rounded-lg text-xs font-bold transition duration-200 flex items-center gap-1.5 cursor-pointer disabled:cursor-default {{ !$isPaper ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/10 animate-live-glow' : 'text-slate-400 hover:text-slate-200' }}">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 {{ !$isPaper ? 'animate-pulse' : 'opacity-40' }}"></span>
                                 Real (Live)
                             </button>

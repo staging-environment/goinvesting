@@ -64,6 +64,36 @@
             text-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
         }
 
+        @keyframes live-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.6);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+            }
+        }
+        .animate-live-glow {
+            animation: live-pulse 2s infinite;
+        }
+
+        @keyframes paper-pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0.6);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(99, 102, 241, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(99, 102, 241, 0);
+            }
+        }
+        .animate-paper-glow {
+            animation: paper-pulse 2.5s infinite;
+        }
+
         /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
@@ -116,7 +146,7 @@
                             <input type="hidden" name="mode" value="paper">
                             <button type="submit" 
                                     @if(Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650 text-white shadow-md shadow-indigo-650/15 cursor-default' : 'text-slate-550 hover:text-slate-350 border border-transparent cursor-pointer' }}">
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-650 text-white shadow-md shadow-indigo-650/15 cursor-default animate-paper-glow' : 'text-slate-550 hover:text-slate-350 border border-transparent cursor-pointer' }}">
                                 <span class="w-1.5 h-1.5 rounded-full {{ Auth::user()->alpaca_is_paper ? 'bg-indigo-400 shadow-sm shadow-indigo-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
                                 Demo
                             </button>
@@ -126,7 +156,7 @@
                             <input type="hidden" name="mode" value="live">
                             <button type="submit" 
                                     @if(!Auth::user()->alpaca_is_paper) disabled @endif
-                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/15 cursor-default' : 'text-slate-550 hover:text-slate-350 border border-transparent cursor-pointer' }}">
+                                    class="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/15 cursor-default animate-live-glow' : 'text-slate-550 hover:text-slate-350 border border-transparent cursor-pointer' }}">
                                 <span class="w-1.5 h-1.5 rounded-full {{ !Auth::user()->alpaca_is_paper ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50 animate-pulse' : 'bg-slate-700' }}"></span>
                                 Real
                             </button>
@@ -280,6 +310,24 @@
 
     <!-- Main Content -->
     <main class="flex-grow max-w-7xl w-full mx-auto px-4 lg:px-6 py-6 lg:py-8">
+        @if(!$isPaperMode)
+            <!-- Live Trading Active Alert -->
+            <div class="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-450 text-xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-lg shadow-emerald-950/20 animate-live-glow">
+                <div class="flex items-center gap-3">
+                    <span class="relative flex h-3 w-3 shrink-0">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-450 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <div>
+                        <strong class="text-white text-sm block">MODO REAL ACTIVO (DINERO EN VIVO)</strong>
+                        <span class="text-slate-400 font-medium">Todas las operaciones ejecutadas por el bot o manualmente se realizarán con fondos reales de tu bróker.</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-black uppercase tracking-widest bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-500/35">OPERANDO EN DIRECTO</span>
+                </div>
+            </div>
+        @endif
         @yield('content')
     </main>
 

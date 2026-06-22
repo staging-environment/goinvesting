@@ -69,6 +69,31 @@
     if (isset($account)) {
         $isPaper = str_contains($account['currency'] ?? 'USD', 'USD') && (auth()->user()->alpaca_is_paper ?? config('services.alpaca.is_paper'));
     }
+
+    $executionSummary = 'No se registraron ejecuciones recientes en este modo.';
+    if (isset($lastExecution)) {
+        $hasTrades = $lastExecution->trades && $lastExecution->trades->isNotEmpty();
+        if ($hasTrades) {
+            $tradeActions = [];
+            foreach ($lastExecution->trades as $trade) {
+                $tradeActions[] = ($trade->side === 'buy' ? 'Compró' : 'Vendió') . " {$trade->qty} uds de " . ($friendlyNames[$trade->symbol] ?? $trade->symbol) . " a $" . number_format($trade->price, 2);
+            }
+            $executionSummary = implode(', ', $tradeActions);
+        } else {
+            $logLines = explode("\n", $lastExecution->output);
+            $reason = 'No operó: los activos evaluados no cumplieron los criterios de compra (caída de precio) ni de venta (Take Profit / Stop Loss).';
+            foreach ($logLines as $line) {
+                if (str_contains($line, 'cancelada') && str_contains($line, 'gasto')) {
+                    $reason = 'No operó: Se superó el límite de gasto diario/semanal/mensual establecido.';
+                    break;
+                } elseif (str_contains($line, 'insuficiente')) {
+                    $reason = 'No operó: Poder de compra o efectivo insuficiente en el broker.';
+                    break;
+                }
+            }
+            $executionSummary = $reason;
+        }
+    }
 @endphp
 <div class="space-y-8">
     

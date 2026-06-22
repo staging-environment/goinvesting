@@ -16,6 +16,7 @@ class BotExecution extends Model
         'finished_at',
         'status',
         'is_dry_run',
+        'is_paper',
         'output'
     ];
 
@@ -23,6 +24,7 @@ class BotExecution extends Model
         'started_at' => 'datetime',
         'finished_at' => 'datetime',
         'is_dry_run' => 'boolean',
+        'is_paper' => 'boolean',
     ];
 
     public function user(): BelongsTo

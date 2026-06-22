@@ -1419,336 +1419,220 @@
                 </div>
             </div>
 
-            <!-- TAB 3: BOT -->
-            <div x-show="activeTab === 'bot'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                <!-- GLOBAL BOT CONTROL & CRON STATUS BAR -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center bg-slate-900/20 p-4 rounded-2xl border border-slate-900/60 shadow-lg">
-                    <!-- Bot Execution Status & Cron Info -->
-                    <div class="flex items-start gap-3 text-left">
-                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl shrink-0">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
-                            </svg>
-                        </div>
-                        <div class="space-y-1">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <h4 class="text-xs font-extrabold text-white uppercase tracking-wider">Cron de Trading Automático</h4>
-                                <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold bg-green-500/15 text-green-400 border border-green-500/25">
-                                    ACTIVO (10 min)
-                                </span>
-                                @if($lastExecution)
-                                    <span class="inline-flex items-center gap-1 text-[9px] px-1.5 py-0.2 rounded font-extrabold {{ $lastExecution->status === 'success' ? 'bg-indigo-500/15 text-indigo-400' : 'bg-red-500/15 text-red-400' }}">
-                                        ÚLTIMO RUN: {{ $lastExecution->status === 'success' ? 'OK' : 'ERROR' }}
-                                    </span>
-                                @endif
-                            </div>
-                            <p class="text-[11px] text-slate-400 leading-normal">
-                                @if($lastExecution)
-                                    Última ejecución del bot: <strong class="text-slate-200">{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d/m/Y H:i') }}</strong> (hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}).
-                                @else
-                                    El bot automático en modo {{ $isPaper ? 'Demo' : 'Real' }} nunca se ha ejecutado.
-                                @endif
-                                <span class="text-indigo-300 font-medium">Ejecuta de forma continua en segundo plano y analiza precios de Yahoo Finance y Alpaca.</span>
-                            </p>
-                        </div>
-                    </div>
+            <!-- TAB 3: BOT -->\n<!-- TAB: SUGGESTED RISK LEVEL -->
+            @if(!$isPaper)
+            <div x-show="activeTab === 'risk_level'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                @php
+                    $isConservativeActive = (
+                        abs((float)Auth::user()->live_bot_buy_threshold - (-3.0)) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_take_profit - 1.2) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_stop_loss - (-1.5)) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_order_size - 100.0) < 0.0001 &&
+                        abs((float)Auth::user()->live_daily_spend_limit - 200.0) < 0.0001
+                    );
 
-                    <!-- Bot Authorization Consent Controls & Instant Run -->
-                    <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-900 pt-3 md:border-t-0 md:pt-0">
-                        <!-- Instant Run Button -->
-                        <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline m-0">
-                            @csrf
-                            <input type="hidden" name="active_tab" value="bot">
-                            <button type="submit" 
-                                    @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar la inversión real primero" @endif
-                                    class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white transition duration-150 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z" />
-                                </svg>
-                                Ejecutar Bot Ahora
-                            </button>
-                        </form>
+                    $isRiskyActive = (
+                        abs((float)Auth::user()->live_bot_buy_threshold - (-0.5)) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_take_profit - 10.0) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_stop_loss - (-8.0)) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_order_size - 1000.0) < 0.0001 &&
+                        abs((float)Auth::user()->live_daily_spend_limit - 3000.0) < 0.0001
+                    );
 
-                        @if(!$isPaper)
-                            <!-- Live Consent Button -->
-                            <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="inline m-0"
-                                  @if(Auth::user()->alpaca_live_consent)
-                                      onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')"
-                                  @else
-                                      onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')"
-                                  @endif>
-                                @csrf
-                                <button type="submit" 
-                                        class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all duration-150 cursor-pointer shadow-md flex items-center gap-1.5 {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10' }}">
-                                    @if(Auth::user()->alpaca_live_consent)
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z" />
-                                        </svg>
-                                        Revocar Autorización Real
-                                    @else
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                                        </svg>
-                                        Autorizar Inversión Real
-                                    @endif
-                                </button>
-                            </form>
-                        @endif
-                    </div>
-                </div>
+                    $isCustomActive = !$isConservativeActive && !$isRiskyActive;
+                @endphp
 
-                <!-- Last Run of Bot / Strategy Card -->
-                <div class="glass-panel rounded-2xl p-5.5 bg-gradient-to-r from-[#0d1222]/95 via-[#1e1b4b]/15 to-[#0d1222]/95 border-indigo-500/15 shadow-xl relative overflow-hidden">
-                    <div class="absolute right-0 top-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                    
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-900 pb-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" />
-                                </svg>
-                            </div>
-                            <div>
-                                <div class="flex items-center flex-wrap gap-2">
-                                    <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Última Actividad del Bot de Trading</h3>
-                                    @if($lastExecution)
-                                        <span class="text-[9px] px-2 py-0.5 rounded-md font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20' }}">
-                                            Estado: {{ $lastExecution->status === 'success' ? 'Exitoso' : 'Error' }}
-                                        </span>
-                                        @if($lastExecution->is_dry_run)
-                                            <span class="text-[9px] px-2 py-0.5 rounded-md font-extrabold uppercase bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                                                Simulación (Dry Run)
-                                            </span>
-                                        @endif
-                                    @else
-                                        <span class="text-[9px] px-2 py-0.5 rounded-md font-bold uppercase bg-slate-900 text-slate-400 border border-slate-800">
-                                            Nunca Ejecutado
-                                        </span>
-                                    @endif
-                                </div>
-                                <p class="text-xs text-slate-450 mt-0.5">
-                                    Estrategia de inversión activa: <strong class="text-indigo-400">Momentum / Caída Diaria</strong> (Compra caídas de mercado y liquida posiciones automáticamente).
-                                    <span class="text-indigo-300 font-bold block sm:inline mt-1 sm:mt-0">⏱️ Frecuencia: El bot se ejecuta automáticamente cada 10 minutos (vía Cron).</span>
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <!-- Strategy Config Summary (Pills) -->
-                        <div class="flex flex-wrap gap-1.5 text-[10px] font-bold text-slate-350">
-                            <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Condición de Compra">
-                                Compra: <strong class="text-indigo-400">&le; {{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>
-                            </span>
-                            <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Objetivo de Ganancia">
-                                Take Profit: <strong class="text-emerald-400">+{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}%</strong>
-                            </span>
-                            <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Límite de Pérdida">
-                                Stop Loss: <strong class="text-rose-400">{{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}%</strong>
-                            </span>
-                            <span class="px-2.5 py-1 rounded-lg bg-slate-950/60 border border-slate-900/60" title="Tamaño por Operación">
-                                Orden: <strong class="text-slate-200">${{ number_format(($isPaper ? Auth::user()->bot_order_size : Auth::user()->live_bot_order_size) ?? 500, 2) }}</strong>
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Execution Result details -->
-                    <div class="pt-4 flex flex-col md:flex-row md:items-start justify-between gap-4 text-xs">
-                        <div class="space-y-2 w-full md:flex-1 max-w-2xl leading-relaxed text-left">
-                            <div class="font-bold text-slate-200">
-                                @if($lastExecution)
-                                    Ejecutado hace: <strong class="text-indigo-300">{{ $lastExecution->started_at->diffForHumans() }}</strong>
-                                    <span class="text-slate-500 font-medium ml-1">({{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d M Y, H:i:s') }})</span>
-                                @else
-                                    El bot de trading automático aún no se ha ejecutado. Puedes configurarlo y ejecutarlo manualmente abajo.
-                                @endif
-                            </div>
-                            
-                            <p class="text-slate-400 text-[11px]">
-                                @if($lastExecution)
-                                    @if($lastExecution->trades->isEmpty())
-                                        <span class="text-slate-350">
-                                            ℹ️ <strong>Detalle de Análisis:</strong> El bot inspeccionó tu lista de activos utilizando las reglas activas de tu perfil. <strong class="text-slate-200">No se ejecutó ninguna compra ni venta</strong> en esta ocasión debido a que ningún activo experimentó una caída diaria superior al <strong>{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong> o los límites controlados de presupuesto diario/semanal/mensual ya estaban al límite de su capacidad.
-                                        </span>
-                                    @else
-                                        <span class="text-emerald-400 font-bold">
-                                            🚀 <strong>Detalle de Análisis:</strong> Se cumplieron los criterios de tu perfil en modo {{ $isPaper ? 'Simulación' : 'Real' }} y el bot procedió a abrir/cerrar posiciones de manera automática.
-                                        </span>
-                                    @endif
-                                @else
-                                    El bot analizará los activos de tu lista de seguimiento y comprará si su cambio de precio diario baja del <strong>{{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%</strong>. Venderá si alcanzan el objetivo de beneficio de <strong>+{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}%</strong> o tocan el límite de pérdidas de <strong>{{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}%</strong>.
-                                @endif
-                            </p>
-                        </div>
-                        
-                        @if($lastExecution && !$lastExecution->trades->isEmpty())
-                            <!-- Mini Trades List -->
-                            <div class="w-full md:w-80 bg-slate-950/50 border border-slate-900 rounded-xl p-3 space-y-2 self-start shrink-0">
-                                <span class="text-[9px] uppercase font-bold text-slate-500 block tracking-wider">Operaciones realizadas:</span>
-                                <div class="space-y-1.5 max-h-24 overflow-y-auto pr-1">
-                                    @foreach($lastExecution->trades as $t)
-                                        <div class="flex items-center justify-between text-[11px] bg-slate-950/60 p-2 rounded-lg border border-slate-900/60">
-                                            <div class="flex items-center gap-1.5">
-                                                <span class="text-[9px] px-1 py-0.2 rounded font-extrabold uppercase {{ $t->side === 'buy' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
-                                                    {{ $t->side === 'buy' ? 'Compra' : 'Venta' }}
-                                                </span>
-                                                <strong class="text-white">{{ $t->symbol }}</strong>
-                                            </div>
-                                            <div class="text-right">
-                                                <span class="text-slate-200 font-medium">{{ $t->qty }} uds</span>
-                                                <span class="text-slate-500 text-[9px] block">${{ number_format($t->price, 2) }}/ud</span>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-
-                <!-- Automated Trading Bot Panel -->
-                <div class="glass-panel rounded-2xl p-6 shadow-xl space-y-6 bg-gradient-to-br from-indigo-950/20 via-slate-900 to-slate-900/50 border border-indigo-500/10">
-                    
-                    @if(!$isPaper)
-                        <div class="p-4 rounded-xl {{ Auth::user()->alpaca_live_consent ? 'border-emerald-500/20 bg-emerald-500/5 text-emerald-300' : 'border-amber-500/20 bg-amber-500/5 text-amber-300' }} border text-xs leading-relaxed flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-                            <div class="flex gap-3 items-start">
-                                <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 {{ Auth::user()->alpaca_live_consent ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400' }}">
-                                    @if(Auth::user()->alpaca_live_consent)
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1 3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
-                                        </svg>
-                                    @else
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
-                                        </svg>
-                                    @endif
-                                </div>
-                                <div>
-                                    @if(Auth::user()->alpaca_live_consent)
-                                        <strong class="text-white block mb-0.5 font-bold uppercase tracking-wide">Operación en Vivo Autorizada ✅</strong>
-                                        Has otorgado tu consentimiento expreso para que el bot opere automáticamente con dinero real. Puedes revocar este consentimiento en cualquier momento.
-                                    @else
-                                        <strong class="text-white block mb-0.5 font-bold uppercase tracking-wide">Consentimiento de Dinero Real Requerido ⚠️</strong>
-                                        El bot está configurado en modo Real (Live). Por tu seguridad, las operaciones automatizadas están deshabilitadas hasta que otorgues tu consentimiento expreso para invertir dinero real.
-                                    @endif
-                                </div>
-                            </div>
-                            <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="shrink-0 m-0">
-                                @csrf
-                                <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow-emerald-650/10' }}">
-                                    {{ Auth::user()->alpaca_live_consent ? 'Revocar Autorización' : 'Autorizar Inversión Real' }}
-                                </button>
-                            </form>
-                        </div>
-                    @endif
-
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="glass-panel rounded-2xl p-6 bg-slate-950/60 border border-slate-900/80 shadow-2xl space-y-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-900 pb-4">
                         <div class="space-y-1">
                             <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
-                                <span class="relative flex h-3 w-3">
-                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                                </span>
-                                Panel de Ejecución del Bot
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                                </svg>
+                                Nivel de Riesgo Sugerido (Operaciones Reales)
                             </h2>
                             <p class="text-xs text-slate-400">
-                                Estrategia: <strong class="text-indigo-400 font-bold">Momentum / Caída Diaria</strong> (Compra caída diaria &le; {{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%, TP: +{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}%, SL: {{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}%). Tamaño Orden: <strong class="text-slate-350 font-semibold">${{ number_format(($isPaper ? Auth::user()->bot_order_size : Auth::user()->live_bot_order_size) ?? 500, 2) }}</strong> | Límite Inversión: <strong class="text-slate-300 font-bold">${{ number_format(($isPaper ? Auth::user()->bot_max_investment : Auth::user()->live_bot_max_investment) ?? 500000, 2) }}</strong>.
-                                <span class="text-indigo-300 font-semibold ml-1 block sm:inline">⏱️ Cron: Ejecución automática programada cada 10 minutos con Yahoo Finance y Alpaca.</span>
+                                Selecciona un nivel de riesgo sugerido o mantén tu configuración personalizada. Los límites se aplicarán instantáneamente sobre las operaciones del bot en vivo.
                             </p>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
-                                @csrf
-                                <input type="hidden" name="active_tab" value="bot">
-                                <input type="hidden" name="dry_run" value="1">
-                                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition cursor-pointer">
-                                    Simular Ejecución (Dry Run)
-                                </button>
-                            </form>
-                            <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline">
-                                @csrf
-                                <input type="hidden" name="active_tab" value="bot">
-                                <button type="submit" 
-                                        @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar la inversión real primero" @endif
-                                        class="px-4 py-2 rounded-xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/20 hover:scale-[1.02] active:scale-[0.98] transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
-                                    Ejecutar Bot Ahora
-                                </button>
-                            </form>
-                        </div>
                     </div>
 
-                    <!-- Last Run Details inside Panel -->
-                    <div class="border-t border-slate-900 pt-5 space-y-4">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div class="flex items-center gap-2.5">
-                                <span class="text-xs font-bold text-slate-400">Estado del Bot:</span>
-                                @if($lastExecution)
-                                    <span class="text-xs px-2 py-0.5 rounded-md font-bold uppercase {{ $lastExecution->status === 'success' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
-                                        {{ $lastExecution->status === 'success' ? 'Exitoso' : 'Error' }}
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- CONSERVADOR CARD -->
+                        <div class="glass-panel rounded-2xl p-5 border flex flex-col justify-between transition-all duration-300 {{ $isConservativeActive ? 'bg-emerald-950/15 border-emerald-500/30 shadow-lg shadow-emerald-550/5 ring-1 ring-emerald-500/20' : 'bg-slate-950/40 border-slate-900/60 hover:bg-slate-950/60' }}">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.358a.75.75 0 0 0 .374 0c5.499-1.425 9.563-6.416 9.563-12.358 0-1.381-.22-2.71-.625-3.955a.75.75 0 0 0-.722-.515 11.21 11.21 0 0 1-7.877-3.08Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Conservador
                                     </span>
-                                    @if($lastExecution->is_dry_run)
-                                        <span class="text-xs px-2 py-0.5 rounded-md font-bold uppercase bg-amber-500/10 text-amber-400">
-                                            Simulación
-                                        </span>
+                                    @if($isConservativeActive)
+                                        <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">ACTIVO</span>
                                     @endif
-                                @else
-                                    <span class="text-xs text-slate-500">Nunca ejecutado</span>
-                                @endif
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                                    Modera los límites de tu perfil de usuario para que tanto las ganancias como las pérdidas potenciales sean mínimas, asegurando un comportamiento de inversión muy defensivo.
+                                </p>
+                                <div class="bg-black/40 rounded-xl p-3.5 border border-slate-900/60 space-y-2">
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Caída de Compra:</span>
+                                        <span class="text-slate-300 font-extrabold">-3.0%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Take Profit:</span>
+                                        <span class="text-slate-300 font-extrabold">+1.2%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Stop Loss:</span>
+                                        <span class="text-slate-300 font-extrabold">-1.5%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Tamaño de Orden:</span>
+                                        <span class="text-slate-300 font-extrabold">$100.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Límite Diario:</span>
+                                        <span class="text-slate-300 font-extrabold">$200.00</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-emerald-500/5 rounded-xl border border-emerald-500/10 text-[10px] text-slate-400 leading-relaxed font-medium">
+                                    <strong>Variación automática:</strong> El bot esperará caídas del 3.0% antes de comprar, y cerrará posiciones rápidamente.
+                                </div>
                             </div>
-                            <div class="text-xs text-slate-500 font-medium">
-                                @if($lastExecution)
-                                    Última ejecución: <strong>{{ $lastExecution->started_at->timezone('Europe/Madrid')->format('d M Y, H:i:s') }}</strong> (Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }})
-                                @endif
+                            <div class="pt-5">
+                                <form action="{{ route('profile.update-risk-profile') }}" method="POST" onsubmit="return confirm('¿Confirmas que deseas aplicar el perfil Conservador? Esto reescribirá instantáneamente tus parámetros de bot real.')">
+                                    @csrf
+                                    <input type="hidden" name="risk_profile" value="conservative">
+                                    <button type="submit" 
+                                            {{ $isConservativeActive ? 'disabled' : '' }}
+                                            class="w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition cursor-pointer disabled:opacity-40 disabled:cursor-default flex items-center justify-center gap-1.5 {{ $isConservativeActive ? 'bg-slate-800 text-slate-500' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-700/10' }}">
+                                        {{ $isConservativeActive ? 'Perfil Activo' : 'Activar Conservador' }}
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
-                        <!-- Last execution transactions summary inside Panel -->
-                        @if($lastExecution)
-                            <div class="bg-slate-950/40 border border-slate-900/60 rounded-xl p-4.5 space-y-2.5">
-                                <div class="text-xs font-bold text-slate-350">Operaciones en la última ejecución:</div>
-                                @php $execTrades = $lastExecution->trades; @endphp
-                                @if($execTrades->isEmpty())
-                                    <div class="text-xs text-slate-500">No se realizaron compras ni ventas (el mercado no cumplió con las condiciones de la estrategia).</div>
-                                @else
-                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                        @foreach($execTrades as $t)
-                                            <div class="flex items-center justify-between p-2.5 rounded-lg bg-slate-950/60 border border-slate-900">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="text-[10px] px-1.5 py-0.5 rounded font-extrabold uppercase {{ $t->side === 'buy' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
-                                                        {{ $t->side === 'buy' ? 'Compra' : 'Venta' }}
-                                                    </span>
-                                                    <span class="text-xs font-bold text-slate-200">{{ $t->symbol }}</span>
-                                                </div>
-                                                <div class="text-right text-xs">
-                                                    <span class="text-slate-300 font-semibold">{{ $t->qty }} uds</span>
-                                                    <span class="text-slate-500 block text-[10px]">${{ number_format($t->price, 2) }}/ud</span>
-                                                </div>
-                                            </div>
-                                        @endforeach
+                        <!-- CUSTOM CONFIG CARD -->
+                        <div class="glass-panel rounded-2xl p-5 border flex flex-col justify-between transition-all duration-300 {{ $isCustomActive ? 'bg-indigo-950/15 border-indigo-500/30 shadow-lg shadow-indigo-550/5 ring-1 ring-indigo-500/20' : 'bg-slate-950/40 border-slate-900/60 hover:bg-slate-950/60' }}">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25V9m10.5 0a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25h-10.5a2.25 2.25 0 0 1-2.25-2.25v-6.75a2.25 2.25 0 0 1 2.25-2.25M10.5 9V5.25a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V9" />
+                                        </svg>
+                                        Configuración Actual
+                                    </span>
+                                    @if($isCustomActive)
+                                        <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">ACTIVO</span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                                    Muestra tus parámetros actuales de la cuenta real. Si no coinciden con los preajustes conservador o arriesgado, se muestran como personalizados.
+                                </p>
+                                <div class="bg-black/40 rounded-xl p-3.5 border border-slate-900/60 space-y-2">
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Caída de Compra:</span>
+                                        <span class="text-indigo-400 font-extrabold">{{ Auth::user()->live_bot_buy_threshold }}%</span>
                                     </div>
-                                @endif
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Take Profit:</span>
+                                        <span class="text-indigo-400 font-extrabold">+{{ Auth::user()->live_bot_take_profit }}%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Stop Loss:</span>
+                                        <span class="text-indigo-400 font-extrabold">{{ Auth::user()->live_bot_stop_loss }}%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Tamaño de Orden:</span>
+                                        <span class="text-indigo-400 font-extrabold">${{ number_format(Auth::user()->live_bot_order_size, 2) }}</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Límite Diario:</span>
+                                        <span class="text-indigo-400 font-extrabold">${{ number_format(Auth::user()->live_daily_spend_limit, 2) }}</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-indigo-500/5 rounded-xl border border-indigo-500/10 text-[10px] text-slate-400 leading-relaxed font-medium">
+                                    Para ajustar estos parámetros manualmente, puedes dirigirte en cualquier momento a la pestaña de ajustes en tu perfil.
+                                </div>
                             </div>
-                        @endif
+                            <div class="pt-5">
+                                <a href="{{ route('profile.edit') }}" class="w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition flex items-center justify-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700/50">
+                                    Modificar en Perfil
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- ARRIESGADO CARD -->
+                        <div class="glass-panel rounded-2xl p-5 border flex flex-col justify-between transition-all duration-300 {{ $isRiskyActive ? 'bg-rose-950/15 border-rose-500/30 shadow-lg shadow-rose-550/5 ring-1 ring-rose-500/20' : 'bg-slate-950/40 border-slate-900/60 hover:bg-slate-950/60' }}">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.753-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Arriesgado
+                                    </span>
+                                    @if($isRiskyActive)
+                                        <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/30">ACTIVO</span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                                    Cambia los límites para arriesgar más las inversiones automáticamente. La volatilidad y el tamaño de las órdenes aumentarán considerablemente para buscar mayores rendimientos.
+                                </p>
+                                <div class="bg-black/40 rounded-xl p-3.5 border border-slate-900/60 space-y-2">
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Caída de Compra:</span>
+                                        <span class="text-slate-300 font-extrabold">-0.5%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Take Profit:</span>
+                                        <span class="text-slate-300 font-extrabold">+10.0%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Stop Loss:</span>
+                                        <span class="text-slate-300 font-extrabold">-8.0%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Tamaño de Orden:</span>
+                                        <span class="text-slate-300 font-extrabold">$1,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Límite Diario:</span>
+                                        <span class="text-slate-300 font-extrabold">$3,000.00</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-rose-500/5 rounded-xl border border-rose-500/10 text-[10px] text-slate-400 leading-relaxed font-medium">
+                                    <strong>Variación automática:</strong> El bot comprará con caídas leves del 0.5%, usará órdenes grandes y buscará subidas del 10%.
+                                </div>
+                            </div>
+                            <div class="pt-5">
+                                <form action="{{ route('profile.update-risk-profile') }}" method="POST" onsubmit="return confirm('ATENCIÓN: Estás a punto de aplicar el perfil Arriesgado. El tamaño de orden subirá a $1,000.00 y el límite diario a $3,000.00 con Stop Loss del -8.0%. Esto implica un alto riesgo de pérdidas. ¿Confirmas que deseas aplicar este perfil?')">
+                                    @csrf
+                                    <input type="hidden" name="risk_profile" value="risky">
+                                    <button type="submit" 
+                                            {{ $isRiskyActive ? 'disabled' : '' }}
+                                            class="w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition cursor-pointer disabled:opacity-40 disabled:cursor-default flex items-center justify-center gap-1.5 {{ $isRiskyActive ? 'bg-slate-800 text-slate-500' : 'bg-rose-650 hover:bg-rose-550 text-white shadow-md shadow-rose-700/10 border border-rose-500/30' }}">
+                                        {{ $isRiskyActive ? 'Perfil Activo' : 'Activar Arriesgado' }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
-                    @if(session('bot_output'))
-                        <div class="space-y-2 border-t border-slate-900 pt-5">
-                            <span class="text-xs font-bold text-slate-400 block">Resultado detallado (Consola):</span>
-                            <pre class="bg-black/60 border border-slate-900 rounded-xl p-4 text-[11px] font-mono text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">{{ session('bot_output') }}</pre>
+                    <div class="p-4 bg-amber-500/10 rounded-2xl border border-amber-500/20 text-xs text-amber-300 leading-relaxed flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 shrink-0 text-amber-400">
+                            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.753-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <strong class="block mb-0.5 font-bold">Advertencia de Riesgo y Operaciones Financieras:</strong>
+                            El trading automático en los mercados financieros conlleva un nivel elevado de riesgo. La aplicación de cualquier perfil de riesgo sugerido modifica inmediatamente el comportamiento del bot en vivo en tu bróker de Alpaca. Asegúrate de comprender los riesgos involucrados y de contar con los fondos suficientes.
                         </div>
-                    @elseif($lastExecution && $lastExecution->output)
-                        <details class="group border-t border-slate-900 pt-5">
-                            <summary class="text-xs font-bold text-slate-400 hover:text-white cursor-pointer select-none flex items-center gap-1.5">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 text-indigo-400 transition-transform group-open:rotate-90">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                                </svg>
-                                Ver log de consola de la última ejecución
-                            </summary>
-                            <pre class="bg-black/60 border border-slate-900 rounded-xl p-4 mt-3 text-[11px] font-mono text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">{{ $lastExecution->output }}</pre>
-                        </details>
-                    @endif
+                    </div>
                 </div>
             </div>
-
-            <!-- TAB 4: LIVE MARKETS -->
+            @endif\n<!-- TAB 4: LIVE MARKETS -->
             <div x-show="activeTab === 'markets'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="space-y-4">
                     <h2 class="text-lg font-extrabold text-white flex items-center gap-2">

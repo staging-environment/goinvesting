@@ -41,6 +41,25 @@ class TradingController extends Controller
             ->take(15)
             ->get();
             
+        $realTrades = \App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', false)
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+
+        $totalRealRealizedPL = (float)\App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', false)
+            ->where('side', 'sell')
+            ->sum('pnl');
+
+        $recentRealSells = \App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', false)
+            ->where('side', 'sell')
+            ->whereNotNull('pnl')
+            ->orderBy('created_at', 'desc')
+            ->take(5)
+            ->get();
+            
         $dailySpent = $user->getDailySpent($isPaper);
         $weeklySpent = $user->getWeeklySpent($isPaper);
         $monthlySpent = $user->getMonthlySpent($isPaper);
@@ -182,6 +201,9 @@ class TradingController extends Controller
             'positions', 
             'lastExecution', 
             'recentTrades',
+            'realTrades',
+            'totalRealRealizedPL',
+            'recentRealSells',
             'dailySpent',
             'weeklySpent',
             'monthlySpent',

@@ -146,6 +146,84 @@
         </a>
     </div>
 
+    <!-- Real Trading Operations Quick Console -->
+    <div class="glass-panel rounded-2xl p-5 border-emerald-500/10 bg-[#060e15]/40 shadow-xl relative overflow-hidden">
+        <div class="absolute right-0 top-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-900/60 pb-3.5 mb-4">
+            <div class="space-y-1">
+                <h3 class="text-sm font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    Consola de Control de Operaciones Reales (En Vivo)
+                </h3>
+                <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
+                    Resumen rápido del balance de ganancias y pérdidas acumuladas del bot automático con dinero real.
+                </p>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="text-right">
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider block">G/P Real Realizada Acumulada</span>
+                    <span class="text-base font-mono font-extrabold {{ $totalRealRealizedPL >= 0 ? 'text-emerald-400' : 'text-rose-400' }}">
+                        {{ $totalRealRealizedPL >= 0 ? '+' : '' }}${{ number_format($totalRealRealizedPL, 2) }}
+                    </span>
+                </div>
+                <div class="border-l border-slate-900 h-8 mx-1"></div>
+                @if(Auth::user()->alpaca_live_consent)
+                    <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/20 px-2.5 py-1.5 rounded-xl border border-emerald-500/25 animate-pulse uppercase tracking-wider">
+                        ● Bot Real Autorizado
+                    </span>
+                @else
+                    <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
+                        ○ Bot Real Sin Autorización
+                    </span>
+                @endif
+            </div>
+        </div>
+
+        @if($recentRealSells->isEmpty())
+            <div class="text-center py-4 text-xs text-slate-500 font-medium">
+                No se han registrado cierres de operaciones reales (ventas) para calcular el balance de G/P todavía.
+            </div>
+        @else
+            <div class="space-y-2">
+                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Últimos Cierres y Retornos de Inversión (G/P Realizada)</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+                    @foreach($recentRealSells as $rSell)
+                        @php
+                            $rPnl = (float)$rSell->pnl;
+                            $rIsPositive = $rPnl >= 0;
+                            $rPnlColor = $rIsPositive ? 'text-emerald-400 bg-emerald-950/20 border-emerald-500/10' : 'text-rose-400 bg-rose-950/20 border-rose-500/10';
+                            $rTradeTotal = $rSell->qty * $rSell->price;
+                            $rCostBasis = $rTradeTotal - $rPnl;
+                            $rReturnPercent = $rCostBasis > 0 ? ($rPnl / $rCostBasis) * 100 : 0;
+                        @endphp
+                        <div class="p-3 bg-slate-950/50 rounded-xl border border-slate-900 flex flex-col justify-between gap-1.5 relative group/card">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase bg-red-500/10 text-red-400 border border-red-500/15">
+                                    VENTA (CIERRE)
+                                </span>
+                                <span class="text-[9px] text-slate-500 font-bold">{{ $rSell->created_at->timezone('Europe/Madrid')->format('d/m H:i') }}</span>
+                            </div>
+                            <div>
+                                <span class="font-extrabold text-sm text-white block group-hover/card:text-indigo-400 transition">{{ $friendlyNames[$rSell->symbol] ?? $rSell->symbol }}</span>
+                                <span class="text-[10px] text-slate-400 block mt-0.5">{{ $rSell->qty }} uds a ${{ number_format($rSell->price, 2) }}</span>
+                            </div>
+                            <div class="border-t border-slate-900/60 pt-2 mt-0.5 flex items-center justify-between">
+                                <span class="text-[9px] text-slate-500 font-semibold">Balance G/P:</span>
+                                <span class="text-xs font-mono font-extrabold px-1.5 py-0.2 rounded border {{ $rPnlColor }}">
+                                    {{ $rIsPositive ? '+' : '' }}${{ number_format($rPnl, 2) }}
+                                    <span class="text-[9px] opacity-85">({{ $rIsPositive ? '+' : '' }}{{ number_format($rReturnPercent, 1) }}%)</span>
+                                </span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+
     @if(isset($error) && !isset($account))
         <!-- Error / Config State -->
         <div class="glass-panel rounded-2xl p-8 text-center space-y-4 max-w-xl mx-auto border-red-500/20 bg-red-500/5">
@@ -323,7 +401,12 @@
 
                     @if(!$isPaper)
                         <!-- Live Consent Button -->
-                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="inline m-0">
+                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="inline m-0"
+                              @if(Auth::user()->alpaca_live_consent)
+                                  onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')"
+                              @else
+                                  onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')"
+                              @endif>
                             @csrf
                             <button type="submit" 
                                     class="px-3.5 py-2 rounded-xl text-[11px] font-extrabold uppercase tracking-wider transition-all duration-150 cursor-pointer shadow-md flex items-center gap-1.5 {{ Auth::user()->alpaca_live_consent ? 'bg-red-950/40 text-red-400 border border-red-500/30 hover:bg-red-500/20' : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10' }}">

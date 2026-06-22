@@ -111,8 +111,8 @@
 
             <!-- Navigation Links -->
             <div x-data="{ activeSection: window.location.hash || '' }" 
-                 @hashchange.window="activeSection = window.location.hash"
-                 @section-change.window="activeSection = $event.detail"
+                 x-on:hashchange.window="activeSection = window.location.hash"
+                 x-on:section-change.window="activeSection = $event.detail"
                  class="hidden md:flex items-center gap-2.5 lg:gap-3.5 text-[11.5px] lg:text-[12px] font-semibold tracking-wide whitespace-nowrap h-16">
                 @auth
                     <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9.5px] font-black uppercase tracking-wider transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none shrink-0 {{ Route::is('portfolio') ? 'bg-indigo-650 text-white border border-indigo-400 shadow-md shadow-indigo-600/35' : 'bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20' }}">
@@ -134,15 +134,15 @@
                     </a>
                 @endauth
                 <a href="{{ Route::is('home') ? '#como-funcionamos' : route('home') . '#como-funcionamos' }}" 
-                   @click="activeSection = '#como-funcionamos'"
+                   x-on:click="activeSection = '#como-funcionamos'"
                    :class="activeSection === '#como-funcionamos' ? 'text-indigo-400 border-indigo-500' : 'text-slate-300 hover:text-white border-transparent'"
                    class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px]">Cómo Funcionamos</a>
                 <a href="{{ Route::is('home') ? '#quienes-somos' : route('home') . '#quienes-somos' }}" 
-                   @click="activeSection = '#quienes-somos'"
+                   x-on:click="activeSection = '#quienes-somos'"
                    :class="activeSection === '#quienes-somos' ? 'text-indigo-400 border-indigo-500' : 'text-slate-300 hover:text-white border-transparent'"
                    class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px]">Quiénes Somos</a>
                 <a href="{{ Route::is('home') ? '#contacto' : route('home') . '#contacto' }}" 
-                   @click="activeSection = '#contacto'"
+                   x-on:click="activeSection = '#contacto'"
                    :class="activeSection === '#contacto' ? 'text-indigo-400 border-indigo-500' : 'text-slate-300 hover:text-white border-transparent'"
                    class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px]">Contacto</a>
             </div>

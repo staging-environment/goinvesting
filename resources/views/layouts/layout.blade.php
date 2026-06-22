@@ -194,8 +194,10 @@
                  x-on:section-change.window="activeSection = $event.detail"
                  class="hidden md:flex items-center gap-2.5 lg:gap-3.5 text-[11.5px] lg:text-[12px] font-semibold tracking-wide whitespace-nowrap h-16">
                 
+                @guest
                 <a href="{{ route('home') }}" 
                    class="transition-all duration-150 border-b-2 pb-1 shrink-0 mt-[2px] {{ Route::is('home') && empty($query) ? 'text-indigo-400 border-indigo-500 font-bold' : 'text-slate-300 hover:text-white border-transparent' }}">Mercados</a>
+                @endguest
 
                 @auth
                     <a href="{{ route('portfolio') }}" class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[9.5px] font-black uppercase tracking-wider transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] select-none shrink-0 {{ Route::is('portfolio') ? 'bg-indigo-650 text-white border border-indigo-400 shadow-md shadow-indigo-600/35' : 'bg-gradient-to-r from-indigo-500/20 to-violet-500/20 text-indigo-300 border border-indigo-500/40 hover:from-indigo-500/30 hover:to-violet-500/30 hover:text-white hover:border-indigo-400 shadow-md shadow-indigo-950/20' }}">

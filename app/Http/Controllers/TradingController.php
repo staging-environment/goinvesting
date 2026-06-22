@@ -233,7 +233,7 @@ class TradingController extends Controller
         $side = $request->input('side');
         $type = $request->input('type');
         $limitPrice = $request->has('limit_price') ? (float)$request->input('limit_price') : null;
-        $activeTab = $request->input('active_tab', $side === 'sell' ? 'positions' : 'overview');
+        $activeTab = $request->input('active_tab', $side === 'sell' ? 'positions' : 'portfolio_value');
 
         $user = auth()->user();
         
@@ -473,7 +473,7 @@ class TradingController extends Controller
             ->where('user_id', $user->id)
             ->firstOrFail();
 
-        $activeTab = $trade->side === 'sell' ? 'positions' : 'overview';
+        $activeTab = $trade->side === 'sell' ? 'positions' : 'portfolio_value';
 
         if ($trade->status === 'canceled' || $trade->status === 'cancelled') {
             return redirect()->back()->with('success', 'La orden ya está cancelada.')->with('active_tab', $activeTab);

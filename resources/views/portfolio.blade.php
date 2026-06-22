@@ -356,18 +356,6 @@
                     </div>
                 </button>
 
-                <!-- Resumen General -->
-                <button @click="activeTab = 'overview'; sessionStorage.setItem('portfolio_active_tab', 'overview')" 
-                        :class="activeTab === 'overview' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
-                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                    </svg>
-                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
-                        <span class="text-[9px] font-bold tracking-wider opacity-85">RESUMEN</span>
-                        <span class="text-xs font-black tracking-wide">GENERAL</span>
-                    </div>
-                </button>
 
                 <!-- Mis Acciones -->
                 <button @click="activeTab = 'positions'; sessionStorage.setItem('portfolio_active_tab', 'positions')" 
@@ -489,66 +477,191 @@
                     @endif
                 </div>
 
-                <!-- 4 Cards Summary Block -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 bg-slate-900/10 p-1.5 rounded-2xl border border-slate-900/40">
+                <!-- 6 Cards Summary Block -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5">
                     <!-- Valor de Cartera -->
-                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
-                        <div>
+                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative bg-gradient-to-tr from-slate-900 to-indigo-950/30 group">
+                        <div class="flex items-center justify-between">
                             <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera</span>
-                            <span class="text-lg font-mono font-extrabold text-white">${{ number_format($portfolioValue, 2) }}</span>
+                            <!-- Tooltip -->
+                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                     style="display: none; width: 220px; max-width: 85vw;"
+                                     class="absolute bottom-full right-0 mb-2.5 z-50">
+                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                        Es la suma de tu dinero en efectivo más el valor actual de tus acciones.
+                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.307a11.95 11.95 0 0 0 5.814-5.519l2.74-1.22m0 0-5.94-2.28m5.94 2.28-2.28 5.941" />
-                            </svg>
-                        </div>
+                        <span class="text-2xl font-extrabold text-white block">${{ number_format($portfolioValue, 2) }}</span>
+                        <span class="text-[10px] text-slate-500 font-medium block">Efectivo + Acciones</span>
                     </div>
 
-                    <!-- Efectivo Disponible -->
-                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
-                        <div>
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo en Alpaca</span>
-                            <span class="text-lg font-mono font-extrabold text-emerald-400">${{ number_format($cash, 2) }}</span>
+                    <!-- Capital Invertido / Dinero Invertido -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Dinero Invertido</span>
+                            <!-- Tooltip -->
+                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                     style="display: none; width: 220px; max-width: 85vw;"
+                                     class="absolute bottom-full right-0 mb-2.5 z-50">
+                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                        Es el costo de adquisición de todas las acciones/unidades que tienes compradas.
+                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.879c1.46.177 2.122-.177 2.122-1.005 0-1.112-.879-1.217-2.122-1.286-1.19-.035-2.125-.136-2.125-1.378 0-1.144.902-1.353 2.125-1.387m.879-.879V6M9 14.182c0-.188.016-.368.046-.543M15 11.182c0 .188-.016.368-.046.543M12 18V6" />
-                            </svg>
-                        </div>
+                        <span class="text-2xl font-extrabold text-slate-200 block">${{ number_format($totalCostBasis, 2) }}</span>
+                        <span class="text-[10px] text-slate-500 font-medium block">Costo de adquisición</span>
                     </div>
 
-                    <!-- Poder de Compra -->
-                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between">
-                        <div>
+                    <!-- Ganancia/Pérdida Total -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative bg-gradient-to-tr {{ $isWinning ? 'from-slate-900 to-emerald-950/25 border-emerald-500/10' : 'from-slate-900 to-rose-950/25 border-rose-500/10' }} group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Ganancia / Pérdida</span>
+                            <!-- Tooltip -->
+                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                     style="display: none; width: 220px; max-width: 85vw;"
+                                     class="absolute bottom-full right-0 mb-2.5 z-50">
+                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                        Muestra tu ganancia o pérdida no realizada tanto en dólares como en porcentaje.
+                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-2xl font-extrabold {{ $isWinning ? 'text-emerald-400' : 'text-rose-400' }} block">
+                            {{ $isWinning ? '+' : '' }}${{ number_format($totalUnrealizedPL, 2) }}
+                        </span>
+                        <span class="text-[10px] {{ $isWinning ? 'text-emerald-500' : 'text-rose-500' }} font-bold block">
+                            {{ $isWinning ? '+' : '' }}{{ number_format($totalPLPercent, 2) }}%
+                        </span>
+                    </div>
+
+                    <!-- Cash & Capital (Efectivo) -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo (Cash)</span>
+                            <!-- Tooltip -->
+                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                     style="display: none; width: 220px; max-width: 85vw;"
+                                     class="absolute bottom-full right-0 mb-2.5 z-50">
+                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                        Es el saldo líquido en tu cuenta que no está invertido.
+                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-2xl font-extrabold text-slate-200 block">${{ number_format($cash, 2) }}</span>
+                        <span class="text-[10px] text-slate-500 font-medium block">Saldo libre líquido</span>
+                    </div>
+
+                    <!-- Buying Power -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
+                        <div class="flex items-center justify-between">
                             <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra</span>
-                            <span class="text-lg font-mono font-extrabold text-indigo-300">${{ number_format($buyingPower, 2) }}</span>
+                            <!-- Tooltip -->
+                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                     style="display: none; width: 220px; max-width: 85vw;"
+                                     class="absolute bottom-full right-0 mb-2.5 z-50">
+                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                        Límite máximo de capital que puedes emplear para comprar activos.
+                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-2.5 bg-indigo-500/10 text-indigo-300 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
-                            </svg>
-                        </div>
+                        <span class="text-2xl font-extrabold text-indigo-400 block">${{ number_format($buyingPower, 2) }}</span>
+                        <span class="text-[10px] text-slate-500 font-medium block">Apalancamiento incl.</span>
                     </div>
 
-                    <!-- Resumen del Bot (Último Run) -->
-                    <div class="glass-panel rounded-2xl p-4 bg-slate-950/60 border border-slate-900 flex items-center justify-between group">
-                        <div>
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estado del Bot (Último Run)</span>
-                            @if($lastExecution)
-                                <span class="text-xs font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'text-green-400' : 'text-red-400' }}">
-                                    {{ $lastExecution->status === 'success' ? 'Activo / OK' : 'Fallo' }}
-                                </span>
-                                <span class="text-[9px] text-slate-500 block">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
-                            @else
-                                <span class="text-xs text-slate-500 font-bold">Nunca Ejecutado</span>
-                                <span class="text-[9px] text-slate-650 block">No ejecutado aún</span>
-                            @endif
+                    <!-- Estado del Bot (Último Run) -->
+                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Estado del Bot</span>
+                            <!-- Tooltip -->
+                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
+                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                </svg>
+                                <div x-show="open"
+                                     x-transition:enter="transition ease-out duration-200"
+                                     x-transition:enter-start="opacity-0 translate-y-1"
+                                     x-transition:enter-end="opacity-100 translate-y-0"
+                                     x-transition:leave="transition ease-in duration-150"
+                                     x-transition:leave-start="opacity-100 translate-y-0"
+                                     x-transition:leave-end="opacity-0 translate-y-1"
+                                     style="display: none; width: 220px; max-width: 85vw;"
+                                     class="absolute bottom-full right-0 mb-2.5 z-50">
+                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
+                                        Muestra la última ejecución registrada del bot de trading automático.
+                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                            </svg>
-                        </div>
+                        @if($lastExecution)
+                            <span class="text-2xl font-extrabold uppercase {{ $lastExecution->status === 'success' ? 'text-green-400' : 'text-red-400' }} block">
+                                {{ $lastExecution->status === 'success' ? 'OK' : 'Fallo' }}
+                            </span>
+                            <span class="text-[10px] text-slate-500 font-medium block">Hace {{ $lastExecution->started_at->timezone('Europe/Madrid')->diffForHumans() }}</span>
+                        @else
+                            <span class="text-2xl font-extrabold text-slate-500 block">N/A</span>
+                            <span class="text-[10px] text-slate-500 font-medium block">Nunca ejecutado</span>
+                        @endif
                     </div>
                 </div>
 
@@ -622,303 +735,7 @@
                 </div>
             </div>
 
-            <!-- TAB 1: OVERVIEW -->
-            <div x-show="activeTab === 'overview'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
-                <!-- Win/Loss Beautiful Banner -->
-                <div class="mb-2">
-                    @if($hasPositions)
-                        @if($isWinning)
-                            <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-emerald-950/20 via-slate-900 to-indigo-950/20 border-emerald-500/20 shadow-lg relative overflow-hidden">
-                                <div class="absolute right-0 top-0 w-48 h-48 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                                <div class="flex items-start gap-4">
-                                    <div class="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-emerald-400 shrink-0 shadow-inner">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 14.102-14.102M3.75 18h16.5" />
-                                        </svg>
-                                    </div>
-                                    <div class="space-y-1">
-                                        <div class="flex items-center gap-2">
-                                            <span class="relative flex h-2 w-2">
-                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                                            </span>
-                                            <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">¡Tu portafolio está en verde! 🚀</h3>
-                                        </div>
-                                        <p class="text-xs text-slate-350 leading-relaxed font-medium">
-                                            Actualmente estás ganando un total acumulado de <strong class="text-emerald-400 font-bold">${{ number_format($totalUnrealizedPL, 2) }}</strong> en tus posiciones abiertas. El bot de trading automático está gestionando tu capital con éxito.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        @else
-                            <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-rose-950/20 via-slate-900 to-indigo-950/20 border-rose-500/20 shadow-lg relative overflow-hidden">
-                                <div class="absolute right-0 top-0 w-48 h-48 bg-rose-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                                <div class="flex items-start gap-4">
-                                    <div class="p-3 bg-rose-500/10 rounded-xl border border-rose-500/20 text-rose-400 shrink-0 shadow-inner">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 6 9 12.75l4.306-4.306A11.95 11.95 0 0 1 15 21.75M3.75 6h16.5" />
-                                        </svg>
-                                    </div>
-                                    <div class="space-y-1">
-                                        <div class="flex items-center gap-2">
-                                            <span class="relative flex h-2 w-2">
-                                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                                                <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
-                                            </span>
-                                            <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Tu portafolio registra un ajuste temporal 📉</h3>
-                                        </div>
-                                        <p class="text-xs text-slate-350 leading-relaxed font-medium">
-                                            Tus posiciones actuales reflejan una variación de <strong class="text-rose-400 font-bold">${{ number_format($totalUnrealizedPL, 2) }}</strong>. La estrategia opera a mediano plazo y tus límites de pérdidas están activos para resguardar tu inversión.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        @endif
-                    @else
-                        <div class="glass-panel rounded-2xl p-5 bg-gradient-to-r from-blue-950/20 via-slate-900 to-indigo-950/20 border-blue-500/20 shadow-lg relative overflow-hidden">
-                            <div class="absolute right-0 top-0 w-48 h-48 bg-blue-500/5 rounded-full blur-3xl pointer-events-none"></div>
-                            <div class="flex items-start gap-4">
-                                <div class="p-3 bg-blue-500/10 rounded-xl border border-blue-500/20 text-blue-400 shrink-0 shadow-inner">
-                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v5.25c0 .621-.504 1.125-1.125 1.125h-2.25A1.125 1.125 0 0 1 3 18.375v-5.25ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125v-9.75ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v14.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-                                    </svg>
-                                </div>
-                                <div class="space-y-1">
-                                    <div class="flex items-center gap-2">
-                                        <span class="relative flex h-2 w-2">
-                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                                        </span>
-                                        <h3 class="text-sm font-extrabold text-white tracking-tight uppercase">Sin posiciones activas en cartera 📊</h3>
-                                    </div>
-                                    <p class="text-xs text-slate-350 leading-relaxed font-medium">
-                                        Tu saldo líquido está disponible. Puedes configurar tu estrategia de trading automático en tu perfil y presionar "Ejecutar Bot" para iniciar operaciones.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
-                </div>
 
-                <!-- Account Summary Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-                    <!-- Net Asset Value -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative bg-gradient-to-tr from-slate-900 to-indigo-950/30 group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Valor de Cartera</span>
-                            <!-- Tooltip -->
-                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                                </svg>
-                                <div x-show="open"
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 translate-y-1"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 translate-y-0"
-                                     x-transition:leave-end="opacity-0 translate-y-1"
-                                     style="display: none; width: 220px; max-width: 85vw;"
-                                     class="absolute bottom-full right-0 mb-2.5 z-50">
-                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                        Es la suma de tu dinero en efectivo más el valor actual de tus acciones.
-                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <span class="text-2xl font-extrabold text-white block">${{ number_format($portfolioValue, 2) }}</span>
-                        <span class="text-[10px] text-slate-500 font-medium block">Efectivo + Acciones</span>
-                    </div>
-
-                    <!-- Capital Invertido -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Dinero Invertido</span>
-                            <!-- Tooltip -->
-                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                                </svg>
-                                <div x-show="open"
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 translate-y-1"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 translate-y-0"
-                                     x-transition:leave-end="opacity-0 translate-y-1"
-                                     style="display: none; width: 220px; max-width: 85vw;"
-                                     class="absolute bottom-full right-0 mb-2.5 z-50">
-                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                        Es el costo de adquisición de todas las acciones/unidades que tienes compradas.
-                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <span class="text-2xl font-extrabold text-slate-200 block">${{ number_format($totalCostBasis, 2) }}</span>
-                        <span class="text-[10px] text-slate-500 font-medium block">Costo de adquisición</span>
-                    </div>
-
-                    <!-- Ganancia/Pérdida Total -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative bg-gradient-to-tr {{ $isWinning ? 'from-slate-900 to-emerald-950/25 border-emerald-500/10' : 'from-slate-900 to-rose-950/25 border-rose-500/10' }} group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Ganancia / Pérdida</span>
-                            <!-- Tooltip -->
-                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500 hover:text-slate-350 cursor-pointer">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                                </svg>
-                                <div x-show="open"
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 translate-y-1"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 translate-y-0"
-                                     x-transition:leave-end="opacity-0 translate-y-1"
-                                     style="display: none; width: 220px; max-width: 85vw;"
-                                     class="absolute bottom-full right-0 mb-2.5 z-50">
-                                     <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                        Muestra tu ganancia o pérdida no realizada tanto en dólares como en porcentaje.
-                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <span class="text-2xl font-extrabold {{ $isWinning ? 'text-emerald-400' : 'text-rose-400' }} block">
-                            {{ $isWinning ? '+' : '' }}${{ number_format($totalUnrealizedPL, 2) }}
-                        </span>
-                        <span class="text-[10px] {{ $isWinning ? 'text-emerald-500' : 'text-rose-500' }} font-bold block">
-                            {{ $isWinning ? '+' : '' }}{{ number_format($totalPLPercent, 2) }}%
-                        </span>
-                    </div>
-
-                    <!-- Cash & Capital -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Efectivo (Cash)</span>
-                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                                </svg>
-                                <div x-show="open"
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 translate-y-1"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 translate-y-0"
-                                     x-transition:leave-end="opacity-0 translate-y-1"
-                                     style="display: none; width: 220px; max-width: 85vw;"
-                                     class="absolute bottom-full right-0 mb-2.5 z-50">
-                                    <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                        Es el saldo líquido en tu cuenta que no está invertido.
-                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <span class="text-2xl font-extrabold text-slate-200 block">${{ number_format($cash, 2) }}</span>
-                        <span class="text-[10px] text-slate-500 font-medium block">Saldo libre líquido</span>
-                    </div>
-
-                    <!-- Buying Power -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-xl space-y-2 relative group">
-                        <div class="flex items-center justify-between">
-                            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Poder de Compra</span>
-                            <div class="relative" x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" @click.away="open = false">
-                                <svg @click="open = !open" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-slate-500 hover:text-slate-350 cursor-pointer">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-                                </svg>
-                                <div x-show="open"
-                                     x-transition:enter="transition ease-out duration-200"
-                                     x-transition:enter-start="opacity-0 translate-y-1"
-                                     x-transition:enter-end="opacity-100 translate-y-0"
-                                     x-transition:leave="transition ease-in duration-150"
-                                     x-transition:leave-start="opacity-100 translate-y-0"
-                                     x-transition:leave-end="opacity-0 translate-y-1"
-                                     style="display: none; width: 220px; max-width: 85vw;"
-                                     class="absolute bottom-full right-0 mb-2.5 z-50">
-                                    <div class="relative bg-slate-950/95 backdrop-blur-md text-slate-350 text-[10px] p-2.5 rounded-xl border border-slate-800/80 shadow-2xl leading-normal font-medium">
-                                        Límite máximo de capital que puedes emplear para comprar activos.
-                                        <div class="absolute top-full right-1.5 -mt-[5px] w-2 h-2 bg-slate-950 border-r border-b border-slate-800/80 transform rotate-45"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <span class="text-2xl font-extrabold text-indigo-400 block">${{ number_format($buyingPower, 2) }}</span>
-                        <span class="text-[10px] text-slate-500 font-medium block">Apalancamiento incl.</span>
-                    </div>
-                </div>
-
-                <!-- Limits Progress Bars -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <!-- Daily Limit -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-400 uppercase">Gasto Diario Controlado</span>
-                            <span class="font-extrabold text-slate-200">
-                                ${{ number_format($dailySpent, 2) }} / 
-                                {{ $dailyLimit ? '$' . number_format($dailyLimit, 2) : 'Sin Límite' }}
-                            </span>
-                        </div>
-                        @php
-                            $dailyPercent = $dailyLimit > 0 ? min(($dailySpent / $dailyLimit) * 100, 100) : 0;
-                            $dailyBarColor = $dailyPercent >= 90 ? 'bg-red-500' : ($dailyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
-                        @endphp
-                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
-                            <div class="h-full {{ $dailyBarColor }} transition-all duration-500" style="width: {{ $dailyPercent }}%"></div>
-                        </div>
-                        <div class="text-[10px] text-slate-500 flex justify-between">
-                            <span>Límite diario establecido para evitar pérdidas excesivas en un solo día.</span>
-                            <span class="font-bold text-slate-400">{{ round($dailyPercent, 1) }}%</span>
-                        </div>
-                    </div>
-
-                    <!-- Weekly Limit -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-400 uppercase">Gasto Semanal Controlado</span>
-                            <span class="font-extrabold text-slate-200">
-                                ${{ number_format($weeklySpent, 2) }} / 
-                                {{ $weeklyLimit ? '$' . number_format($weeklyLimit, 2) : 'Sin Límite' }}
-                            </span>
-                        </div>
-                        @php
-                            $weeklyPercent = $weeklyLimit > 0 ? min(($weeklySpent / $weeklyLimit) * 100, 100) : 0;
-                            $weeklyBarColor = $weeklyPercent >= 90 ? 'bg-red-500' : ($weeklyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
-                        @endphp
-                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
-                            <div class="h-full {{ $weeklyBarColor }} transition-all duration-500" style="width: {{ $weeklyPercent }}%"></div>
-                        </div>
-                        <div class="text-[10px] text-slate-500 flex justify-between">
-                            <span>Límite semanal establecido para controlar el presupuesto de compra acumulado.</span>
-                            <span class="font-bold text-slate-400">{{ round($weeklyPercent, 1) }}%</span>
-                        </div>
-                    </div>
-
-                    <!-- Monthly Limit -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-400 uppercase">Gasto Mensual Controlado</span>
-                            <span class="font-extrabold text-slate-200">
-                                ${{ number_format($monthlySpent, 2) }} / 
-                                {{ $monthlyLimit ? '$' . number_format($monthlyLimit, 2) : 'Sin Límite' }}
-                            </span>
-                        </div>
-                        @php
-                            $monthlyPercent = $monthlyLimit > 0 ? min(($monthlySpent / $monthlyLimit) * 100, 100) : 0;
-                            $monthlyBarColor = $monthlyPercent >= 90 ? 'bg-red-500' : ($monthlyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
-                        @endphp
-                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
-                            <div class="h-full {{ $monthlyBarColor }} transition-all duration-500" style="width: {{ $monthlyPercent }}%"></div>
-                        </div>
-                        <div class="text-[10px] text-slate-500 flex justify-between">
-                            <span>Límite mensual establecido para controlar el presupuesto acumulado a largo plazo.</span>
-                            <span class="font-bold text-slate-400">{{ round($monthlyPercent, 1) }}%</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- TAB 2: POSITIONS -->
             <div x-show="activeTab === 'positions'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">

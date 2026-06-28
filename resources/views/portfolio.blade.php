@@ -125,6 +125,18 @@
         </div>
     @endif
 
+    @if(session('bot_output'))
+        <div class="glass-panel border-indigo-500/20 bg-indigo-500/5 rounded-2xl p-5 space-y-3">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-350 block uppercase tracking-wider">Resultado de la ejecución del Bot:</span>
+                <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-200 text-xs font-bold cursor-pointer">
+                    Cerrar
+                </button>
+            </div>
+            <pre class="bg-black/60 border border-slate-900/60 rounded-xl p-4 text-[10px] font-mono text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">{{ session('bot_output') }}</pre>
+        </div>
+    @endif
+
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -179,34 +191,58 @@
                 @endif
             </p>
         </div>
+
+        @if(isset($account))
+            <!-- Ejecutar Bot Ahora Button -->
+            <div class="flex items-center gap-3 shrink-0">
+                <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline m-0">
+                    @csrf
+                    <input type="hidden" name="active_tab" value="{{ session('active_tab', request()->get('tab', 'portfolio_value')) }}">
+                    <button type="submit" 
+                            @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar el bot real primero" @endif
+                            class="px-4 py-2.5 rounded-xl text-xs font-extrabold transition duration-150 cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed flex items-center gap-1.5 {{ $isPaper ? 'bg-indigo-650 hover:bg-indigo-550 text-white shadow-md shadow-indigo-650/20 hover:scale-[1.02] active:scale-[0.98]' : 'bg-emerald-650 hover:bg-emerald-550 text-white shadow-md shadow-emerald-650/20 hover:scale-[1.02] active:scale-[0.98]' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 0 1 0 1.971l-11.54 6.347a1.125 1.125 0 0 1-1.667-.985V5.653Z" />
+                        </svg>
+                        Ejecutar Bot Ahora
+                    </button>
+                </form>
+            </div>
+        @endif
     </div>
 
-    <!-- Compact Real Bot Status Bar -->
-    @if(isset($account) && !$isPaper)
+    <!-- Compact Bot Status Bar -->
+    @if(isset($account))
         <div class="glass-panel rounded-2xl p-4 bg-[#060e15]/20 border border-slate-900/60 shadow-lg flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div class="flex flex-wrap items-center gap-4">
-                <!-- Consent Status & Action Button -->
+                <!-- Consent Status or Paper Status -->
                 <div class="flex items-center gap-2">
-                    @if(Auth::user()->alpaca_live_consent)
-                        <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/20 px-2.5 py-1.5 rounded-xl border border-emerald-500/25 animate-pulse uppercase tracking-wider">
-                            ● Bot Real Autorizado
-                        </span>
-                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')">
-                            @csrf
-                            <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-rose-950/40 text-red-400 border border-rose-500/30 hover:bg-rose-500/20">
-                                Revocar
-                            </button>
-                        </form>
+                    @if(!$isPaper)
+                        @if(Auth::user()->alpaca_live_consent)
+                            <span class="text-[10px] font-extrabold text-emerald-400 bg-emerald-950/20 px-2.5 py-1.5 rounded-xl border border-emerald-500/25 animate-pulse uppercase tracking-wider">
+                                ● Bot Real Autorizado
+                            </span>
+                            <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot real? Dejará de operar inmediatamente con tu dinero real.')">
+                                @csrf
+                                <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-rose-950/40 text-red-400 border border-rose-500/30 hover:bg-rose-500/20">
+                                    Revocar
+                                </button>
+                            </form>
+                        @else
+                            <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
+                                ○ Bot Real Sin Autorización
+                            </span>
+                            <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')">
+                                @csrf
+                                <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10">
+                                    Autorizar
+                                </button>
+                            </form>
+                        @endif
                     @else
-                        <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
-                            ○ Bot Real Sin Autorización
+                        <span class="text-[10px] font-extrabold text-indigo-400 bg-indigo-950/20 px-2.5 py-1.5 rounded-xl border border-indigo-500/25 uppercase tracking-wider">
+                            ● Bot de Simulación Activo
                         </span>
-                        <form action="{{ route('portfolio.toggle-live-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('ATENCIÓN: Estás a punto de autorizar al bot automático a realizar operaciones con DINERO REAL en tu cuenta de Alpaca. ¿Estás seguro de que deseas proceder?')">
-                            @csrf
-                            <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10">
-                                Autorizar
-                            </button>
-                        </form>
                     @endif
                 </div>
 
@@ -227,12 +263,16 @@
                 @endif
             </div>
 
-            <!-- G/P Realizada -->
+            <!-- Realized profit/loss or Mode Label -->
             <div class="flex items-center gap-2 shrink-0">
-                <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">G/P Real Realizada:</span>
-                <span class="text-sm font-mono font-extrabold {{ $totalRealRealizedPL >= 0 ? 'text-emerald-400 bg-emerald-950/10' : 'text-rose-400 bg-rose-950/10' }} px-2 py-0.5 rounded border {{ $totalRealRealizedPL >= 0 ? 'border-emerald-500/10' : 'border-rose-500/10' }}">
-                    {{ $totalRealRealizedPL >= 0 ? '+' : '' }}${{ number_format($totalRealRealizedPL, 2) }}
-                </span>
+                @if(!$isPaper)
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">G/P Real Realizada:</span>
+                    <span class="text-sm font-mono font-extrabold {{ $totalRealRealizedPL >= 0 ? 'text-emerald-400 bg-emerald-950/10' : 'text-rose-400 bg-rose-950/10' }} px-2 py-0.5 rounded border {{ $totalRealRealizedPL >= 0 ? 'border-emerald-500/10' : 'border-rose-500/10' }}">
+                        {{ $totalRealRealizedPL >= 0 ? '+' : '' }}${{ number_format($totalRealRealizedPL, 2) }}
+                    </span>
+                @else
+                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Modo Simulación (Demo)</span>
+                @endif
             </div>
         </div>
     @endif

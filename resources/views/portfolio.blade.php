@@ -469,6 +469,21 @@
                         <span class="text-xs font-black tracking-wide">EN VIVO</span>
                     </div>
                 </button>
+                
+                @if(!$isPaper)
+                <!-- Ingresar Fondos -->
+                <button @click="activeTab = 'deposit_funds'; sessionStorage.setItem('portfolio_active_tab', 'deposit_funds')" 
+                        :class="activeTab === 'deposit_funds' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20 font-extrabold' : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/50 font-bold'"
+                        class="px-5 py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center gap-3 shrink-0 cursor-pointer focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.2" stroke="currentColor" class="w-6 h-6 shrink-0" style="width: 24px; height: 24px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.33l-7.5-5-7.5 5V21m-2.25 0h24" />
+                    </svg>
+                    <div class="flex flex-col items-start text-left leading-tight shrink-0">
+                        <span class="text-[9px] font-bold tracking-wider opacity-85">INGRESAR</span>
+                        <span class="text-xs font-black tracking-wide">FONDOS</span>
+                    </div>
+                </button>
+                @endif
             </div>
 
             <!-- TAB 0: PORTFOLIO VALUE (VALOR DE MI CARTERA) -->
@@ -1679,6 +1694,76 @@
                     @endif
                 </div>
             </div>
+            
+            @if(!$isPaper)
+            <!-- TAB 5: DEPOSIT FUNDS INSTRUCTIONS -->
+            <div x-show="activeTab === 'deposit_funds'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
+                <div class="glass-panel rounded-2xl p-6 bg-[#060e15]/20 border border-slate-900/60 shadow-lg space-y-6">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.33l-7.5-5-7.5 5V21m-2.25 0h24" />
+                            </svg>
+                            Instrucciones para Ingresar Fondos Reales en Alpaca
+                        </h2>
+                        <p class="text-xs text-slate-400 leading-relaxed mt-1">
+                            Sigue esta guía paso a paso para añadir dinero fiduciario (euros o dólares) a tu saldo real del bróker y permitir que el bot pueda operar.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Step 1 -->
+                        <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-900/60 relative">
+                            <span class="absolute top-3 right-3 text-3xl font-black text-slate-900/40">01</span>
+                            <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wide">Accede a Alpaca</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed mt-2">
+                                Inicia sesión en tu cuenta de bróker en el portal oficial de Alpaca Markets. Recuerda cambiar la vista de "Paper" a "Live" en tu panel para ver la cuenta real.
+                            </p>
+                        </div>
+
+                        <!-- Step 2 -->
+                        <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-900/60 relative">
+                            <span class="absolute top-3 right-3 text-3xl font-black text-slate-900/40">02</span>
+                            <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wide">Obtén datos de Transferencia</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed mt-2">
+                                Ve a la sección de <strong>"Banking / Transfers"</strong> y selecciona <strong>"Deposit"</strong>. Elige transferencia <strong>SEPA</strong> (para euros) o <strong>Wire Transfer</strong> (para dólares) y anota el número de IBAN/cuenta, el código de banco y el beneficiario.
+                            </p>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-900/60 relative">
+                            <span class="absolute top-3 right-3 text-3xl font-black text-slate-900/40">03</span>
+                            <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wide">Realiza la transferencia</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed mt-2">
+                                Envía los fondos desde tu banco nacional. <strong class="text-amber-400">IMPORTANTE:</strong> Asegúrate de incluir el <strong>código de referencia</strong> personal que te da Alpaca en el campo "Concepto" de la transferencia para que identifiquen tu depósito.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Warning Alert block -->
+                    <div class="p-4 bg-amber-500/10 rounded-xl border border-amber-500/20 text-xs text-amber-300 leading-relaxed flex gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 shrink-0 text-amber-400">
+                            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.753-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                        </svg>
+                        <div>
+                            <strong class="block mb-0.5 font-bold">Nota de procesamiento:</strong>
+                            Las transferencias bancarias internacionales (Wire) suelen tardar de 1 a 3 días hábiles en aparecer en tu saldo de Alpaca. Las transferencias SEPA europeas suelen acreditarse en 24-48 horas hábiles.
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-2 text-center md:text-left">
+                        <a href="https://app.alpaca.markets/" target="_blank" rel="noopener noreferrer" 
+                           class="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-xs font-black text-white bg-emerald-600 hover:bg-emerald-500 transition duration-150 shadow-lg shadow-emerald-600/10">
+                            <span>Efectuar transferencia en Alpaca</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            @endif
         </div>
     @endif
 

@@ -1713,30 +1713,42 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Step 1 -->
-                        <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-900/60 relative">
-                            <span class="absolute top-3 right-3 text-3xl font-black text-slate-900/40">01</span>
-                            <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wide">Accede a Alpaca</h3>
-                            <p class="text-[11px] text-slate-400 leading-relaxed mt-2">
-                                Inicia sesión en tu cuenta de bróker en el portal oficial de Alpaca Markets. Recuerda cambiar la vista de "Paper" a "Live" en tu panel para ver la cuenta real.
-                            </p>
+                        <div class="p-5 bg-slate-950/40 rounded-2xl border border-slate-900/60 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xs font-black text-indigo-400 shrink-0">1</span>
+                                    <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wider">Accede a Alpaca</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
+                                    Inicia sesión en tu cuenta de bróker en el portal oficial de Alpaca Markets. Recuerda cambiar la vista de "Paper" a "Live" en tu panel para ver la cuenta real.
+                                </p>
+                            </div>
                         </div>
 
                         <!-- Step 2 -->
-                        <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-900/60 relative">
-                            <span class="absolute top-3 right-3 text-3xl font-black text-slate-900/40">02</span>
-                            <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wide">Obtén datos de Transferencia</h3>
-                            <p class="text-[11px] text-slate-400 leading-relaxed mt-2">
-                                Ve a la sección de <strong>"Banking / Transfers"</strong> y selecciona <strong>"Deposit"</strong>. Elige transferencia <strong>SEPA</strong> (para euros) o <strong>Wire Transfer</strong> (para dólares) y anota el número de IBAN/cuenta, el código de banco y el beneficiario.
-                            </p>
+                        <div class="p-5 bg-slate-950/40 rounded-2xl border border-slate-900/60 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xs font-black text-indigo-400 shrink-0">2</span>
+                                    <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wider">Obtén datos de Banco</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
+                                    Ve a la sección de <strong>"Banking / Transfers"</strong> y selecciona <strong>"Deposit"</strong>. Elige transferencia <strong>SEPA</strong> (para euros) o <strong>Wire Transfer</strong> (para dólares) y anota el número de IBAN/cuenta, el código de banco y el beneficiario.
+                                </p>
+                            </div>
                         </div>
 
                         <!-- Step 3 -->
-                        <div class="p-4 bg-slate-950/40 rounded-xl border border-slate-900/60 relative">
-                            <span class="absolute top-3 right-3 text-3xl font-black text-slate-900/40">03</span>
-                            <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wide">Realiza la transferencia</h3>
-                            <p class="text-[11px] text-slate-400 leading-relaxed mt-2">
-                                Envía los fondos desde tu banco nacional. <strong class="text-amber-400">IMPORTANTE:</strong> Asegúrate de incluir el <strong>código de referencia</strong> personal que te da Alpaca en el campo "Concepto" de la transferencia para que identifiquen tu depósito.
-                            </p>
+                        <div class="p-5 bg-slate-950/40 rounded-2xl border border-slate-900/60 flex flex-col justify-between">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-full bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-xs font-black text-indigo-400 shrink-0">3</span>
+                                    <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wider">Realiza la transferencia</h3>
+                                </div>
+                                <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
+                                    Envía los fondos desde tu banco nacional. <strong class="text-amber-400">IMPORTANTE:</strong> Asegúrate de incluir el <strong>código de referencia</strong> personal que te da Alpaca en el campo "Concepto" de la transferencia para que identifiquen tu depósito.
+                                </p>
+                            </div>
                         </div>
                     </div>
 

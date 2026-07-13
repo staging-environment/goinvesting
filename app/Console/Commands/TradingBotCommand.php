@@ -366,8 +366,8 @@ class TradingBotCommand extends Command
                                     $this->logLine("   -> DCA Cancelado: Supera el límite máximo de inversión de \${$maxInvestment}", 'warn');
                                     $canBuyDCA = false;
                                 }
-                                if ($buyingPower < $dcaOrderSize) {
-                                    $this->logLine("   -> DCA Cancelado: Poder de compra (\${$buyingPower}) insuficiente", 'warn');
+                                if ($cash < $dcaOrderSize) {
+                                    $this->logLine("   -> DCA Cancelado: Efectivo disponible (\${$cash}) insuficiente", 'warn');
                                     $canBuyDCA = false;
                                 }
                                 if ($user->hasExceededDailyLimit($dcaOrderSize, $isPaper)) {
@@ -438,8 +438,8 @@ class TradingBotCommand extends Command
                                 continue;
                             }
 
-                            if ($buyingPower < $orderSize) {
-                                $this->logLine("-> Compra cancelada: Poder de compra (\${$buyingPower}) insuficiente para la orden de \${$orderSize}", 'warn');
+                            if ($cash < $orderSize) {
+                                $this->logLine("-> Compra cancelada: Efectivo disponible (\${$cash}) insuficiente para la orden de \${$orderSize}", 'warn');
                                 continue;
                             }
 

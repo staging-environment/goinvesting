@@ -1748,13 +1748,18 @@
                                 <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
                                     Envía los fondos desde tu banco nacional. <strong class="text-amber-400">IMPORTANTE:</strong> Asegúrate de incluir tu <strong>código de referencia / número de cuenta</strong> en el campo "Concepto" de la transferencia para que identifiquen tu depósito.
                                 </p>
-                                @if(Auth::user()->alpaca_live_account_id)
+                                @php
+                                    $refCode = (!empty($account) && isset($account['account_number'])) 
+                                        ? $account['account_number'] 
+                                        : (Auth::user()->alpaca_live_account_id ?? null);
+                                @endphp
+                                @if($refCode)
                                     <div class="mt-2.5 p-2 bg-slate-900/80 rounded-lg border border-slate-800 flex items-center justify-between gap-2" x-data="{ copied: false }">
                                         <div class="flex flex-col min-w-0">
                                             <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Tu Referencia / Cuenta Real:</span>
-                                            <span class="text-xs font-mono font-bold text-emerald-400 truncate select-all">{{ Auth::user()->alpaca_live_account_id }}</span>
+                                            <span class="text-xs font-mono font-bold text-emerald-400 truncate select-all">{{ $refCode }}</span>
                                         </div>
-                                        <button @click="navigator.clipboard.writeText('{{ Auth::user()->alpaca_live_account_id }}'); copied = true; setTimeout(() => copied = false, 2000)" 
+                                        <button @click="navigator.clipboard.writeText('{{ $refCode }}'); copied = true; setTimeout(() => copied = false, 2000)" 
                                                 class="p-1.5 rounded bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white transition shrink-0 cursor-pointer focus:outline-none" 
                                                 title="Copiar código">
                                             <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">

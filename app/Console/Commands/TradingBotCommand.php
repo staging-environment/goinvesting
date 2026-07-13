@@ -225,11 +225,9 @@ class TradingBotCommand extends Command
                 $this->logLine("Total invertido actualmente: \${$totalInvested} (Límite máximo de inversión: \${$maxInvestment})");
                 $dailyLimit = $isPaper ? $user->daily_spend_limit : $user->live_daily_spend_limit;
                 $weeklyLimit = $isPaper ? $user->weekly_spend_limit : $user->live_weekly_spend_limit;
-                $monthlyLimit = $isPaper ? $user->monthly_spend_limit : $user->live_monthly_spend_limit;
 
                 $this->logLine("Límite diario del usuario: " . ($dailyLimit ? "\${$dailyLimit}" : "Sin límite") . " | Gastado hoy: \${$user->getDailySpent($isPaper)}");
                 $this->logLine("Límite semanal del usuario: " . ($weeklyLimit ? "\${$weeklyLimit}" : "Sin límite") . " | Gastado esta semana: \${$user->getWeeklySpent($isPaper)}");
-                $this->logLine("Límite mensual del usuario: " . ($monthlyLimit ? "\${$monthlyLimit}" : "Sin límite") . " | Gastado este mes: \${$user->getMonthlySpent($isPaper)}");
 
                 // 4. Process Monitored Assets
                 foreach ($this->monitoredAssets as $yahooSymbol => $tradingSymbol) {
@@ -331,11 +329,6 @@ class TradingBotCommand extends Command
 
                             if ($user->hasExceededWeeklyLimit($orderSize, $isPaper)) {
                                 $this->logLine("-> Compra cancelada: Supera el límite semanal de gasto del usuario (\${$weeklyLimit}, gastado esta semana: \${$user->getWeeklySpent($isPaper)})", 'warn');
-                                continue;
-                            }
-
-                            if ($user->hasExceededMonthlyLimit($orderSize, $isPaper)) {
-                                $this->logLine("-> Compra cancelada: Supera el límite mensual de gasto del usuario (\${$monthlyLimit}, gastado este mes: \${$user->getMonthlySpent($isPaper)})", 'warn');
                                 continue;
                             }
 

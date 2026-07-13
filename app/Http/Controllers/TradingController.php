@@ -250,9 +250,7 @@ class TradingController extends Controller
             if ($user->hasExceededWeeklyLimit($estimatedCost)) {
                 return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})."])->with('active_tab', $activeTab);
             }
-            if ($user->hasExceededMonthlyLimit($estimatedCost)) {
-                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite mensual de gasto (\${$user->monthly_spend_limit}, gastado este mes: \${$user->getMonthlySpent()})."])->with('active_tab', $activeTab);
-            }
+
         }
 
         $pnlValue = null;

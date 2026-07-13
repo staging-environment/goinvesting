@@ -294,4 +294,29 @@ class AlpacaService implements TradingProviderInterface
             ];
         }
     }
+
+    /**
+     * Fetch details for a specific order.
+     */
+    public function getOrder(string $orderId): ?array
+    {
+        if (!$this->isConfigured()) return null;
+
+        $endpoint = $this->isBroker ? "/orders/{$orderId}" : "/v2/orders/{$orderId}";
+        try {
+            $response = Http::withHeaders($this->getHeaders())
+                ->timeout(10)
+                ->get("{$this->baseUrl}{$endpoint}");
+
+            if ($response->successful()) {
+                return $response->json();
+            } else {
+                Log::error("Alpaca Get Order Error: " . $response->body());
+            }
+        } catch (\Exception $e) {
+            Log::error("Alpaca Get Order Exception: " . $e->getMessage());
+        }
+        return null;
+    }
 }
+

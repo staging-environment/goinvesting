@@ -1187,13 +1187,75 @@
                 </div>
 
                 <!-- Recent Trades History -->
-                <div class="space-y-4 border-t border-slate-900/60 pt-8 mt-4">
+                <div id="recent-trades-section" class="space-y-4 border-t border-slate-900/60 pt-8 mt-4">
                     <h2 class="text-lg font-extrabold text-white flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-indigo-400">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                         </svg>
                         Historial de Operaciones Recientes
                     </h2>
+
+                    <!-- Filters Form -->
+                    <form action="{{ url()->current() }}#recent-trades-section" method="GET" class="glass-panel p-4 rounded-xl shadow-lg border border-slate-900/40 flex flex-wrap xl:flex-nowrap items-end gap-3">
+                        <!-- Keep active tab and other params except pagination and filters -->
+                        @foreach(request()->except(['page', 'filter_date_from', 'filter_date_to', 'filter_type', 'filter_symbol', 'filter_status']) as $key => $value)
+                            <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                        @endforeach
+
+                        <div class="space-y-1.5 flex-1 min-w-[120px] max-w-[180px]">
+                            <label for="filter_date_from" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Desde</label>
+                            <input type="date" id="filter_date_from" name="filter_date_from" value="{{ request('filter_date_from') }}" class="w-full border border-slate-800 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition" style="background-color: #090d1f !important; color: #cbd5e1 !important; color-scheme: dark !important;">
+                        </div>
+
+                        <div class="space-y-1.5 flex-1 min-w-[120px] max-w-[180px]">
+                            <label for="filter_date_to" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Hasta</label>
+                            <input type="date" id="filter_date_to" name="filter_date_to" value="{{ request('filter_date_to') }}" class="w-full border border-slate-800 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition" style="background-color: #090d1f !important; color: #cbd5e1 !important; color-scheme: dark !important;">
+                        </div>
+
+                        <div class="space-y-1.5 flex-1 min-w-[100px] max-w-[150px]">
+                            <label for="filter_type" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Tipo</label>
+                            <select id="filter_type" name="filter_type" class="w-full border border-slate-800 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition" style="background-color: #090d1f !important; color: #cbd5e1 !important;">
+                                <option value="" style="background-color: #090d1f !important; color: #cbd5e1 !important;">Todos</option>
+                                <option value="buy" {{ request('filter_type') === 'buy' ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">Compra</option>
+                                <option value="sell" {{ request('filter_type') === 'sell' ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">Venta</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5 flex-1 min-w-[100px] max-w-[150px]">
+                            <label for="filter_symbol" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Activo</label>
+                            <select id="filter_symbol" name="filter_symbol" class="w-full border border-slate-800 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition" style="background-color: #090d1f !important; color: #cbd5e1 !important;">
+                                <option value="" style="background-color: #090d1f !important; color: #cbd5e1 !important;">Todos</option>
+                                @foreach($tradedSymbols ?? [] as $sym)
+                                    @php
+                                        $friendly = $friendlyNames[$sym] ?? $sym;
+                                    @endphp
+                                    <option value="{{ $sym }}" {{ request('filter_symbol') === $sym ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">{{ $friendly }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="space-y-1.5 flex-1 min-w-[110px] max-w-[160px]">
+                            <label for="filter_status" class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estado</label>
+                            <select id="filter_status" name="filter_status" class="w-full border border-slate-800 rounded px-2.5 py-1.5 text-xs focus:outline-none focus:border-indigo-500 transition" style="background-color: #090d1f !important; color: #cbd5e1 !important;">
+                                <option value="" style="background-color: #090d1f !important; color: #cbd5e1 !important;">Todos</option>
+                                <option value="filled" {{ request('filter_status') === 'filled' ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">Completada</option>
+                                <option value="queued" {{ request('filter_status') === 'queued' ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">En Cola</option>
+                                <option value="canceled" {{ request('filter_status') === 'canceled' ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">Cancelada</option>
+                                <option value="rejected" {{ request('filter_status') === 'rejected' ? 'selected' : '' }} style="background-color: #090d1f !important; color: #cbd5e1 !important;">Rechazada</option>
+                            </select>
+                        </div>
+
+                        <div class="flex gap-2 flex-shrink-0 min-w-[140px] max-w-[180px]">
+                            <button type="submit" class="w-full px-3 py-1.5 bg-indigo-900/60 border border-indigo-500/30 text-indigo-400 hover:bg-indigo-500/20 rounded text-xs font-bold uppercase transition cursor-pointer">
+                                Filtrar
+                            </button>
+                            @if(request()->hasAny(['filter_date_from', 'filter_date_to', 'filter_type', 'filter_symbol', 'filter_status']))
+                                <a href="{{ request()->url() . (request()->has('active_tab') ? '?active_tab=' . request('active_tab') : '') }}#recent-trades-section" class="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:bg-slate-800 rounded text-xs font-bold uppercase transition flex items-center justify-center cursor-pointer">
+                                    Limpiar
+                                </a>
+                            @endif
+                        </div>
+                    </form>
 
                     <div class="glass-panel rounded-2xl overflow-hidden shadow-xl">
                         <div class="overflow-x-auto">
@@ -1331,6 +1393,11 @@
                                 </tbody>
                             </table>
                         </div>
+                        @if($recentTrades->hasPages())
+                            <div class="px-5 py-4 border-t border-slate-900 bg-[#070913]/30 text-xs">
+                                {!! $recentTrades->links() !!}
+                            </div>
+                        @endif
                     </div>
                 </div>
 

@@ -29,17 +29,48 @@ class TradingController extends Controller
         $user = auth()->user();
         $isPaper = (bool)($user->alpaca_is_paper ?? true);
         
+        $tradedSymbols = \App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', $isPaper)
+            ->distinct()
+            ->pluck('symbol')
+            ->toArray();
+        sort($tradedSymbols);
+
         $lastExecution = \App\Models\BotExecution::where('user_id', $user->id)
             ->where('is_paper', $isPaper)
             ->with('trades')
             ->orderBy('started_at', 'desc')
             ->first();
             
-        $recentTrades = \App\Models\Trade::where('user_id', $user->id)
-            ->where('is_dry_run', $isPaper)
-            ->orderBy('created_at', 'desc')
-            ->take(15)
-            ->get();
+        $recentTradesQuery = \App\Models\Trade::where('user_id', $user->id)
+            ->where('is_dry_run', $isPaper);
+
+        // Filters
+        if ($filterDateFrom = request('filter_date_from')) {
+            $recentTradesQuery->whereDate('created_at', '>=', $filterDateFrom);
+        }
+        if ($filterDateTo = request('filter_date_to')) {
+            $recentTradesQuery->whereDate('created_at', '<=', $filterDateTo);
+        }
+        if ($filterType = request('filter_type')) {
+            $recentTradesQuery->where('side', $filterType);
+        }
+        if ($filterSymbol = request('filter_symbol')) {
+            $recentTradesQuery->where('symbol', $filterSymbol);
+        }
+        if ($filterStatus = request('filter_status')) {
+            if ($filterStatus === 'queued') {
+                $recentTradesQuery->whereNotIn('status', ['filled', 'rejected', 'canceled', 'cancelled', 'expired']);
+            } else {
+                $recentTradesQuery->where('status', $filterStatus);
+            }
+        }
+
+        $recentTrades = $recentTradesQuery->orderBy('created_at', 'asc')
+            ->paginate(20)
+            ->fragment('recent-trades-section')
+            ->withQueryString();
+
             
         $realTrades = \App\Models\Trade::where('user_id', $user->id)
             ->where('is_dry_run', false)
@@ -111,6 +142,7 @@ class TradingController extends Controller
                 'monthlyLimit' => $monthlyLimit,
                 'statusPaper' => $statusPaper,
                 'statusLive' => $statusLive,
+                'tradedSymbols' => $tradedSymbols,
             ]);
         }
 
@@ -213,7 +245,8 @@ class TradingController extends Controller
             'weeklyLimit',
             'monthlyLimit',
             'statusPaper',
-            'statusLive'
+            'statusLive',
+            'tradedSymbols'
         ));
     }
 

@@ -9,4 +9,6 @@ Artisan::command('inspire', function () {
 
 use Illuminate\Support\Facades\Schedule;
 Schedule::command('app:trading-bot')->everyTenMinutes()->timezone('Europe/Madrid');
+Schedule::command('app:sync-orders')->everyFiveMinutes()->timezone('Europe/Madrid');
+
 

@@ -1751,7 +1751,7 @@
                                     <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wider">Obtén datos de Banco</h3>
                                 </div>
                                 <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
-                                    Ve a la sección de <strong>"Banking / Transfers"</strong> y selecciona <strong>"Deposit"</strong>. Elige transferencia <strong>SEPA</strong> (para euros) o <strong>Wire Transfer</strong> (para dólares) y anota el número de IBAN/cuenta, el código de banco y el beneficiario.
+                                    Ve a la sección <strong>"Funds & Wallet"</strong> (en el menú izquierdo) o haz clic en el botón amarillo <strong>"Add Funds"</strong> (arriba a la derecha). Selecciona <strong>"Deposit"</strong>, elige transferencia <strong>SEPA</strong> (para euros) o <strong>Wire Transfer</strong> (para dólares) y anota el número de IBAN/cuenta, el código de banco y el beneficiario.
                                 </p>
                             </div>
                         </div>

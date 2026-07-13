@@ -1263,7 +1263,7 @@
                 @endif
             </div>
 
-            <!-- TAB 3: BOT -->\n<!-- TAB: SUGGESTED RISK LEVEL -->
+            <!-- TAB 3: BOT -->
             @if(!$isPaper)
             <div x-show="activeTab === 'risk_level'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 @php
@@ -1283,7 +1283,15 @@
                         abs((float)Auth::user()->live_daily_spend_limit - 3000.0) < 0.0001
                     );
 
-                    $isCustomActive = !$isConservativeActive && !$isRiskyActive;
+                    $isExtremeActive = (
+                        abs((float)Auth::user()->live_bot_buy_threshold - (-0.2)) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_take_profit - 20.0) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_stop_loss - (-15.0)) < 0.0001 &&
+                        abs((float)Auth::user()->live_bot_order_size - 2000.0) < 0.0001 &&
+                        abs((float)Auth::user()->live_daily_spend_limit - 5000.0) < 0.0001
+                    );
+
+                    $isCustomActive = !$isConservativeActive && !$isRiskyActive && !$isExtremeActive;
                 @endphp
 
                 <div class="glass-panel rounded-2xl p-6 bg-slate-950/60 border border-slate-900/80 shadow-2xl space-y-6">
@@ -1301,7 +1309,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
                         <!-- CONSERVADOR CARD -->
                         <div class="glass-panel rounded-2xl p-5 border flex flex-col justify-between transition-all duration-300 {{ $isConservativeActive ? 'bg-emerald-950/15 border-emerald-500/30 shadow-lg shadow-emerald-550/5 ring-1 ring-emerald-500/20' : 'bg-slate-950/40 border-slate-900/60 hover:bg-slate-950/60' }}">
                             <div class="space-y-4">
@@ -1373,7 +1381,7 @@
                                     @endif
                                 </div>
                                 <p class="text-xs text-slate-300 leading-relaxed font-medium">
-                                    Muestra tus parámetros actuales de la cuenta real. Si no coinciden con los preajustes conservador o arriesgado, se muestran como personalizados.
+                                    Muestra tus parámetros actuales de la cuenta real. Si no coinciden con los preajustes conservador, arriesgado o extremo, se muestran como personalizados.
                                 </p>
                                 <div class="bg-black/40 rounded-xl p-3.5 border border-slate-900/60 space-y-2">
                                     <div class="flex justify-between text-xs font-mono">
@@ -1439,7 +1447,7 @@
                                         <span class="text-slate-300 font-extrabold">-8.0%</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
-                                        <span class="text-slate-500">Tamaño de Orden:</span>
+                                        <span class="text-slate-300 font-extrabold">Tamaño de Orden:</span>
                                         <span class="text-slate-300 font-extrabold">$1,000.00</span>
                                     </div>
                                     <div class="flex justify-between text-xs font-mono">
@@ -1459,6 +1467,62 @@
                                             {{ $isRiskyActive ? 'disabled' : '' }}
                                             class="w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition cursor-pointer disabled:opacity-40 disabled:cursor-default flex items-center justify-center gap-1.5 {{ $isRiskyActive ? 'bg-slate-800 text-slate-500' : 'bg-rose-650 hover:bg-rose-550 text-white shadow-md shadow-rose-700/10 border border-rose-500/30' }}">
                                         {{ $isRiskyActive ? 'Perfil Activo' : 'Activar Arriesgado' }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- EXTREMO CARD -->
+                        <div class="glass-panel rounded-2xl p-5 border flex flex-col justify-between transition-all duration-300 {{ $isExtremeActive ? 'bg-fuchsia-950/15 border-fuchsia-500/30 shadow-lg shadow-fuchsia-550/5 ring-1 ring-fuchsia-500/20' : 'bg-slate-950/40 border-slate-900/60 hover:bg-slate-950/60' }}">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-fuchsia-400 flex items-center gap-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6ZM12 18.75a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Extremo
+                                    </span>
+                                    @if($isExtremeActive)
+                                        <span class="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/30">ACTIVO</span>
+                                    @endif
+                                </div>
+                                <p class="text-xs text-slate-300 leading-relaxed font-medium">
+                                    Configuración de riesgo extremadamente alta. El bot operará con rangos de stop loss muy profundos y gran tamaño de órdenes para maximizar potenciales beneficios.
+                                </p>
+                                <div class="bg-black/40 rounded-xl p-3.5 border border-slate-900/60 space-y-2">
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Caída de Compra:</span>
+                                        <span class="text-slate-300 font-extrabold">-0.2%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Toma de Beneficios (Take Profit):</span>
+                                        <span class="text-slate-300 font-extrabold">+20.0%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Detener Pérdidas (Stop Loss):</span>
+                                        <span class="text-slate-300 font-extrabold">-15.0%</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Tamaño de Orden:</span>
+                                        <span class="text-slate-300 font-extrabold">$2,000.00</span>
+                                    </div>
+                                    <div class="flex justify-between text-xs font-mono">
+                                        <span class="text-slate-500">Límite Diario:</span>
+                                        <span class="text-slate-300 font-extrabold">$5,000.00</span>
+                                    </div>
+                                </div>
+                                <div class="p-3 bg-fuchsia-500/5 rounded-xl border border-fuchsia-500/10 text-[10px] text-slate-400 leading-relaxed font-medium">
+                                    <strong>Variación automática:</strong> El bot comprará casi de inmediato ante mínimas caídas, usará órdenes muy grandes y buscará subidas del 20%.
+                                </div>
+                            </div>
+                            <div class="pt-5">
+                                <form action="{{ route('profile.update-risk-profile') }}" method="POST" onsubmit="return confirm('PELIGRO CRÍTICO: Estás a punto de aplicar el perfil Extremo. El tamaño de orden subirá a $2,000.00 y el límite diario a $5,000.00 con un Stop Loss muy amplio del -15.0%. Esto puede ocasionar grandes pérdidas rápidamente. ¿Estás totalmente seguro de confirmar?')">
+                                    @csrf
+                                    <input type="hidden" name="risk_profile" value="extreme">
+                                    <button type="submit" 
+                                            {{ $isExtremeActive ? 'disabled' : '' }}
+                                            class="w-full py-2.5 rounded-xl text-xs font-extrabold uppercase tracking-wider transition cursor-pointer disabled:opacity-40 disabled:cursor-default flex items-center justify-center gap-1.5 {{ $isExtremeActive ? 'bg-slate-800 text-slate-500' : 'bg-fuchsia-600 hover:bg-fuchsia-500 text-white shadow-md shadow-fuchsia-700/10 border border-fuchsia-500/30' }}">
+                                        {{ $isExtremeActive ? 'Perfil Activo' : 'Activar Extremo' }}
                                     </button>
                                 </form>
                             </div>

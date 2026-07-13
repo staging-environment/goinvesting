@@ -205,7 +205,7 @@ class ProfileController extends Controller
     public function updateRiskProfile(Request $request): RedirectResponse
     {
         $request->validate([
-            'risk_profile' => 'required|in:conservative,risky'
+            'risk_profile' => 'required|in:conservative,risky,extreme'
         ]);
 
         $user = $request->user();
@@ -229,6 +229,15 @@ class ProfileController extends Controller
                 'live_daily_spend_limit' => 3000.0
             ]);
             return back()->with('success', 'Perfil de riesgo **Arriesgado** aplicado con éxito. Ten en cuenta los riesgos de alta volatilidad asociados.');
+        } elseif ($profile === 'extreme') {
+            $user->update([
+                'live_bot_buy_threshold' => -0.2,
+                'live_bot_take_profit' => 20.0,
+                'live_bot_stop_loss' => -15.0,
+                'live_bot_order_size' => 2000.0,
+                'live_daily_spend_limit' => 5000.0
+            ]);
+            return back()->with('success', 'Perfil de riesgo **Extremo** aplicado con éxito. ¡CUIDADO! Este perfil opera con márgenes muy amplios y alta exposición.');
         }
 
         return back();

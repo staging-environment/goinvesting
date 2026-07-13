@@ -1746,8 +1746,28 @@
                                     <h3 class="text-xs font-black text-indigo-300 uppercase tracking-wider">Realiza la transferencia</h3>
                                 </div>
                                 <p class="text-[11px] text-slate-400 leading-relaxed font-medium">
-                                    Envía los fondos desde tu banco nacional. <strong class="text-amber-400">IMPORTANTE:</strong> Asegúrate de incluir el <strong>código de referencia</strong> personal que te da Alpaca en el campo "Concepto" de la transferencia para que identifiquen tu depósito.
+                                    Envía los fondos desde tu banco nacional. <strong class="text-amber-400">IMPORTANTE:</strong> Asegúrate de incluir tu <strong>código de referencia / número de cuenta</strong> en el campo "Concepto" de la transferencia para que identifiquen tu depósito.
                                 </p>
+                                @if(Auth::user()->alpaca_live_account_id)
+                                    <div class="mt-2.5 p-2 bg-slate-900/80 rounded-lg border border-slate-800 flex items-center justify-between gap-2" x-data="{ copied: false }">
+                                        <div class="flex flex-col min-w-0">
+                                            <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider">Tu Referencia / Cuenta Real:</span>
+                                            <span class="text-xs font-mono font-bold text-emerald-400 truncate select-all">{{ Auth::user()->alpaca_live_account_id }}</span>
+                                        </div>
+                                        <button @click="navigator.clipboard.writeText('{{ Auth::user()->alpaca_live_account_id }}'); copied = true; setTimeout(() => copied = false, 2000)" 
+                                                class="p-1.5 rounded bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white transition shrink-0 cursor-pointer focus:outline-none" 
+                                                title="Copiar código">
+                                            <svg x-show="!copied" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H5.25m11.9-3.664A2.251 2.251 0 0 0 15 2.25h-3a2.251 2.251 0 0 0-2.15 1.586m5.8 0c.065.21.1.433.1.664v.75h-6V4.5c0-.231.035-.454.1-.664M16.5 7.5h.75a2.25 2.25 0 0 1 2.25 2.25v10.5a2.25 2.25 0 0 1-2.25 2.25h-1.5a2.25 2.25 0 0 1-2.25-2.25V9.75A2.25 2.25 0 0 1 16.5 7.5Z" />
+                                            </svg>
+                                            <span x-show="copied" class="text-[9px] font-bold text-emerald-400 animate-pulse">✓ Copiado</span>
+                                        </button>
+                                    </div>
+                                @else
+                                    <div class="mt-2.5 p-2 bg-slate-900/40 rounded-lg border border-slate-900/60 text-[10px] text-slate-500 italic">
+                                        No se ha detectado el ID de cuenta real en tu perfil para mostrarlo automáticamente.
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>

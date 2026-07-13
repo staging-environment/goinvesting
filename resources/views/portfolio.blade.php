@@ -327,9 +327,27 @@
                             </form>
                         @endif
                     @else
-                        <span class="text-[10px] font-extrabold text-indigo-400 bg-indigo-950/20 px-2.5 py-1.5 rounded-xl border border-indigo-500/25 uppercase tracking-wider">
-                            ● Bot de Simulación Activo
-                        </span>
+                        @if(Auth::user()->alpaca_paper_consent)
+                            <span class="text-[10px] font-extrabold text-indigo-400 bg-indigo-950/20 px-2.5 py-1.5 rounded-xl border border-indigo-500/25 animate-pulse uppercase tracking-wider">
+                                ● Bot Demo Autorizado
+                            </span>
+                            <form action="{{ route('portfolio.toggle-paper-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('¿Estás seguro de que deseas revocar la autorización del bot de simulación (Demo)? Dejará de operar inmediatamente.')">
+                                @csrf
+                                <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-rose-950/40 text-red-400 border border-rose-500/30 hover:bg-rose-500/20">
+                                    Revocar
+                                </button>
+                            </form>
+                        @else
+                            <span class="text-[10px] font-extrabold text-rose-400 bg-rose-950/20 px-2.5 py-1.5 rounded-xl border border-rose-500/25 uppercase tracking-wider">
+                                ○ Bot Demo Pausado
+                            </span>
+                            <form action="{{ route('portfolio.toggle-paper-consent') }}" method="POST" class="m-0 inline" onsubmit="return confirm('¿Deseas autorizar al bot de simulación (Demo) a reanudar sus operaciones en modo Paper?')">
+                                @csrf
+                                <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all duration-200 cursor-pointer shadow-md bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-650/10">
+                                    Autorizar
+                                </button>
+                            </form>
+                        @endif
                     @endif
                 </div>
 

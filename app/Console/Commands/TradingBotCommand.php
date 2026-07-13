@@ -146,6 +146,14 @@ class TradingBotCommand extends Command
                     continue;
                 }
 
+                // Block automated trading bot operations in Paper mode if express consent has not been granted
+                if ($isPaper && !$user->alpaca_paper_consent) {
+                    $warnMsg = "El bot de simulación está pausado. Has revocado el consentimiento para operar en modo Simulación (Paper).";
+                    $this->logLine($warnMsg, 'warn');
+                    Log::warning("Bot de Trading: " . $warnMsg);
+                    continue;
+                }
+
                 $keyId = $isPaper ? ($user->alpaca_key_id ?? '') : ($user->alpaca_live_key_id ?? '');
                 $secretKey = $isPaper ? ($user->alpaca_secret_key ?? '') : ($user->alpaca_live_secret_key ?? '');
                 $accountId = $isPaper ? $user->alpaca_account_id : $user->alpaca_live_account_id;

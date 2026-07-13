@@ -466,6 +466,24 @@ class TradingController extends Controller
     }
 
     /**
+     * Toggles the user's consent to operate the bot in Paper mode.
+     */
+    public function togglePaperConsent(Request $request)
+    {
+        $user = auth()->user();
+        
+        // Toggle the consent state
+        $user->alpaca_paper_consent = !$user->alpaca_paper_consent;
+        $user->save();
+
+        $message = $user->alpaca_paper_consent 
+            ? '¡Consentimiento concedido! El bot de simulación ahora tiene autorización para operar en modo Paper.' 
+            : 'Consentimiento revocado. Las operaciones del bot de simulación en modo Paper han sido desactivadas.';
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
      * Cancels a pending order at the broker and updates the local trade status.
      */
     public function cancelOrder($id)

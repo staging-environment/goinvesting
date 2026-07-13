@@ -126,14 +126,100 @@
     @endif
 
     @if(session('bot_output'))
-        <div class="glass-panel border-indigo-500/20 bg-indigo-500/5 rounded-2xl p-5 space-y-3">
-            <div class="flex items-center justify-between">
-                <span class="text-xs font-bold text-slate-350 block uppercase tracking-wider">Resultado de la ejecución del Bot:</span>
+        @php
+            $output = session('bot_output');
+            $logLines = explode("\n", $output);
+            $operations = [];
+            $warnings = [];
+            $hasBuysOrSells = false;
+
+            foreach ($logLines as $line) {
+                $line = trim($line);
+                if (empty($line)) continue;
+
+                // Detect successful real or simulation buy
+                if (str_contains($line, 'Compra ejecutada') || str_contains($line, 'Orden de compra enviada')) {
+                    $operations[] = [
+                        'type' => 'buy',
+                        'raw' => ltrim($line, '-> ')
+                    ];
+                    $hasBuysOrSells = true;
+                }
+                // Detect successful real or simulation sell
+                elseif (str_contains($line, 'Venta ejecutada') || str_contains($line, 'Orden de venta enviada')) {
+                    $operations[] = [
+                        'type' => 'sell',
+                        'raw' => ltrim($line, '-> ')
+                    ];
+                    $hasBuysOrSells = true;
+                }
+                // Detect cancellation reasons
+                elseif (str_contains($line, 'cancelada:') || str_contains($line, 'insuficiente')) {
+                    $warnings[] = ltrim($line, '-> ');
+                }
+            }
+        @endphp
+
+        <div x-data="{ showConsole: false }" class="glass-panel border-indigo-500/20 bg-indigo-500/5 rounded-2xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-indigo-500/10 pb-3">
+                <span class="text-xs font-black text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4 text-indigo-400">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25V9m10.5 0a2.25 2.25 0 0 1 2.25 2.25v6.75a2.25 2.25 0 0 1-2.25 2.25h-10.5a2.25 2.25 0 0 1-2.25-2.25v-6.75a2.25 2.25 0 0 1 2.25-2.25M10.5 9V5.25a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V9" />
+                    </svg>
+                    Resumen de Ejecución del Bot
+                </span>
                 <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-200 text-xs font-bold cursor-pointer">
                     Cerrar
                 </button>
             </div>
-            <pre class="bg-black/60 border border-slate-900/60 rounded-xl p-4 text-[10px] font-mono text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">{{ session('bot_output') }}</pre>
+
+            <!-- Friendly Message -->
+            @if($hasBuysOrSells)
+                <div class="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/20 text-xs space-y-2">
+                    <span class="font-extrabold text-emerald-400 block uppercase tracking-wide flex items-center gap-1.5">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        ¡Operación Realizada con Éxito!
+                    </span>
+                    <ul class="space-y-1.5 text-slate-300 list-disc list-inside font-medium">
+                        @foreach($operations as $op)
+                            <li>{{ $op['raw'] }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @else
+                <div class="p-4 bg-slate-950/80 rounded-xl border border-slate-900/60 text-xs space-y-2">
+                    <span class="font-extrabold text-slate-400 block uppercase tracking-wide">Sin operaciones en este ciclo</span>
+                    <div class="text-slate-300 leading-relaxed font-medium">
+                        @if(!empty($warnings))
+                            No se realizaron transacciones debido a las siguientes restricciones/alertas detectadas:
+                            <ul class="mt-2 space-y-1 text-rose-300 list-disc list-inside font-semibold">
+                                @foreach($warnings as $warn)
+                                    <li>{{ $warn }}</li>
+                                @endforeach
+                            </ul>
+                        @else
+                            El bot finalizó correctamente sin realizar transacciones comerciales porque ningún activo analizado cumplió las condiciones necesarias para comprar (caída de precio suficiente) o vender (margen de ganancia o parada de pérdidas alcanzados).
+                        @endif
+                    </div>
+                </div>
+            @endif
+
+            <!-- Toggle raw console output -->
+            <div class="pt-1">
+                <button type="button" @click="showConsole = !showConsole" class="text-xs text-indigo-400 hover:text-indigo-300 font-extrabold underline flex items-center gap-1.5 cursor-pointer">
+                    <span x-text="showConsole ? 'Ocultar consola detallada' : 'Ver consola detallada de la ejecución'">Ver consola detallada de la ejecución</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-3.5 h-3.5 transition-transform duration-200" :class="showConsole ? 'rotate-180' : ''">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+                    </svg>
+                </button>
+            </div>
+
+            <div x-show="showConsole" x-cloak class="mt-3" x-transition>
+                <pre class="bg-black/60 border border-slate-900/60 rounded-xl p-4 text-[10px] font-mono text-indigo-300 overflow-x-auto max-h-64 whitespace-pre-wrap leading-relaxed">{{ session('bot_output') }}</pre>
+            </div>
         </div>
     @endif
 

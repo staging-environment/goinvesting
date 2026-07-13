@@ -17,7 +17,9 @@ class Trade extends Model
         'side',
         'status',
         'is_dry_run',
-        'pnl'
+        'pnl',
+        'highest_price',
+        'dca_level'
     ];
 
     protected $casts = [
@@ -25,6 +27,8 @@ class Trade extends Model
         'price' => 'float',
         'is_dry_run' => 'boolean',
         'pnl' => 'float',
+        'highest_price' => 'float',
+        'dca_level' => 'integer',
     ];
 
     public function user(): BelongsTo

@@ -249,20 +249,53 @@ class TradingBotCommand extends Command
 
                     // Check if we hold a position
                     if (isset($positions[$tradingSymbol])) {
-                        // Sell logic (Take Profit / Stop Loss)
+                        // Sell logic (Trailing Take Profit / Stop Loss)
                         $pos = $positions[$tradingSymbol];
                         $avgEntry = $pos['avg_entry_price'];
                         $returnPercent = (($currentPrice - $avgEntry) / $avgEntry) * 100;
 
-                        $this->logLine("-> Tienes posición: {$pos['qty']} unidades. Rendimiento: " . number_format($returnPercent, 2) . "%");
+                        // Fetch latest active buy trade for updating highest_price and managing DCA
+                        $lastBuyTrade = \App\Models\Trade::where('user_id', $user->id)
+                            ->where('symbol', $tradingSymbol)
+                            ->where('side', 'buy')
+                            ->whereNotIn('status', ['rejected', 'canceled', 'failed'])
+                            ->where('is_dry_run', $isPaper)
+                            ->latest()
+                            ->first();
+
+                        if ($lastBuyTrade) {
+                            $highest = (float)($lastBuyTrade->highest_price ?? $lastBuyTrade->price);
+                            if ($currentPrice > $highest) {
+                                $lastBuyTrade->highest_price = $currentPrice;
+                                $lastBuyTrade->save();
+                                $this->logLine("-> Nuevo precio máximo alcanzado para {$tradingSymbol}: \${$currentPrice} (Anterior: \${$highest})");
+                                $highest = $currentPrice;
+                            }
+                        } else {
+                            $highest = $avgEntry;
+                        }
+
+                        $this->logLine("-> Tienes posición: {$pos['qty']} unidades. Rendimiento: " . number_format($returnPercent, 2) . "% (Máx alcanzado: \${$highest})");
 
                         $shouldSell = false;
                         $reason = "";
 
-                        if ($returnPercent >= $takeProfit) {
-                            $shouldSell = true;
-                            $reason = "Take Profit alcanzado (+{$takeProfit}%)";
-                        } elseif ($returnPercent <= $stopLoss) {
+                        $profitThresholdPrice = $avgEntry * (1 + $takeProfit / 100);
+                        
+                        // Check Trailing Take Profit
+                        if ($highest >= $profitThresholdPrice) {
+                            $trailingDeviation = 1.0; // 1% trailing deviation
+                            $triggerSellPrice = $highest * (1 - $trailingDeviation / 100);
+                            
+                            if ($currentPrice <= $triggerSellPrice) {
+                                $shouldSell = true;
+                                $reason = "Trailing Take Profit activado (Máximo: \${$highest}, Precio: \${$currentPrice} <= \${$triggerSellPrice})";
+                            } else {
+                                $this->logLine("-> [Trailing Profit Activo] Manteniendo posición alcista. Gatillo de venta en: \${$triggerSellPrice}");
+                            }
+                        } 
+                        // Standard Stop Loss
+                        elseif ($returnPercent <= $stopLoss) {
                             $shouldSell = true;
                             $reason = "Stop Loss alcanzado ({$stopLoss}%)";
                         }
@@ -307,6 +340,82 @@ class TradingBotCommand extends Command
                                     ]);
                                 } else {
                                     $this->logLine("-> [FALLÓ] Error al vender {$tradingSymbol}: " . $res['message'], 'error');
+                                }
+                            }
+                        } else {
+                            // DCA / Safety Buy Logic (Promediar pérdidas si el precio cae por debajo del umbral de seguridad)
+                            $dcaThreshold = -3.0; // -3% de caída desde el precio medio de entrada
+                            $maxDcaLevel = 3;
+                            $currentDcaLevel = $lastBuyTrade ? (int)$lastBuyTrade->dca_level : 0;
+
+                            if ($returnPercent <= $dcaThreshold && $currentDcaLevel < $maxDcaLevel) {
+                                $dcaOrderSize = $orderSize; // Tamaño de orden estándar para recompra
+                                
+                                $this->logLine("-> [DCA Alerta] {$tradingSymbol} ha caído un " . number_format($returnPercent, 2) . "% (Umbral DCA: {$dcaThreshold}%). Evaluando compra de seguridad Nivel " . ($currentDcaLevel + 1));
+                                
+                                $canBuyDCA = true;
+                                if ($totalInvested + $dcaOrderSize > $maxInvestment) {
+                                    $this->logLine("   -> DCA Cancelado: Supera el límite máximo de inversión de \${$maxInvestment}", 'warn');
+                                    $canBuyDCA = false;
+                                }
+                                if ($buyingPower < $dcaOrderSize) {
+                                    $this->logLine("   -> DCA Cancelado: Poder de compra (\${$buyingPower}) insuficiente", 'warn');
+                                    $canBuyDCA = false;
+                                }
+                                if ($user->hasExceededDailyLimit($dcaOrderSize, $isPaper)) {
+                                    $this->logLine("   -> DCA Cancelado: Supera el límite diario de gasto", 'warn');
+                                    $canBuyDCA = false;
+                                }
+                                if ($user->hasExceededWeeklyLimit($dcaOrderSize, $isPaper)) {
+                                    $this->logLine("   -> DCA Cancelado: Supera el límite semanal de gasto", 'warn');
+                                    $canBuyDCA = false;
+                                }
+
+                                if ($canBuyDCA) {
+                                    $qtyToBuy = round($dcaOrderSize / $currentPrice, 4);
+                                    if ($qtyToBuy > 0) {
+                                        $this->logLine("   -> [DCA Ejecutando] Iniciando compra de seguridad de {$qtyToBuy} unidades de {$tradingSymbol} (\${$dcaOrderSize})", 'warn');
+                                        
+                                        if ($dryRun) {
+                                            $this->logLine("   -> [Simulación] DCA Compra de seguridad enviada con éxito.");
+                                            $newTrade = \App\Models\Trade::create([
+                                                'user_id' => $user->id,
+                                                'bot_execution_id' => $execution->id,
+                                                'symbol' => $tradingSymbol,
+                                                'qty' => $qtyToBuy,
+                                                'price' => $currentPrice,
+                                                'side' => 'buy',
+                                                'status' => 'filled',
+                                                'is_dry_run' => $isPaper,
+                                                'dca_level' => $currentDcaLevel + 1
+                                            ]);
+                                        } else {
+                                            $res = $tradingService->placeOrder($tradingSymbol, $qtyToBuy, 'buy', 'market');
+                                            if ($res['success']) {
+                                                $this->logLine("   -> [DCA Completado] Compra de seguridad exitosa. Orden ID: " . $res['order']['id'], 'success');
+                                                $newTrade = \App\Models\Trade::create([
+                                                    'user_id' => $user->id,
+                                                    'bot_execution_id' => $execution->id,
+                                                    'broker_order_id' => $res['order']['id'] ?? null,
+                                                    'symbol' => $tradingSymbol,
+                                                    'qty' => $qtyToBuy,
+                                                    'price' => $currentPrice,
+                                                    'side' => 'buy',
+                                                    'status' => $res['order']['status'] ?? 'filled',
+                                                    'is_dry_run' => (bool)$isPaper,
+                                                    'dca_level' => $currentDcaLevel + 1
+                                                ]);
+                                            } else {
+                                                $this->logLine("   -> [DCA Falló] Error al ejecutar compra de seguridad: " . $res['message'], 'error');
+                                            }
+                                        }
+
+                                        // Propagate new DCA level to the current position tracking
+                                        if (isset($newTrade) && $lastBuyTrade) {
+                                            $lastBuyTrade->dca_level = $currentDcaLevel + 1;
+                                            $lastBuyTrade->save();
+                                        }
+                                    }
                                 }
                             }
                         }

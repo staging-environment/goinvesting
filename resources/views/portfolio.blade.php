@@ -1335,7 +1335,9 @@
                                         @foreach($recentTrades as $trade)
                                             @php
                                                 $isBuy = $trade->side === 'buy';
-                                                              <tr class="hover:bg-slate-950/20 transition">
+                                                $tradeTotal = $trade->qty * $trade->price;
+                                            @endphp
+                                            <tr class="hover:bg-slate-950/20 transition">
                                                 <td class="py-3.5 px-3 text-xs text-slate-400 font-medium">
                                                     @if($isBuy)
                                                         <div class="font-semibold text-slate-300">

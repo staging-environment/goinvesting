@@ -1285,45 +1285,45 @@
                             <table class="w-full text-left border-collapse min-w-[700px]">
                                 <thead>
                                     <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
-                                        <th class="py-4 px-5">
+                                        <th class="py-4 px-3">
                                             <a href="{{ $getSortLink('created_at') }}" class="hover:text-indigo-400 flex items-center gap-0.5 whitespace-nowrap">
                                                 Fecha {!! $getSortIcon('created_at') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5">
+                                        <th class="py-4 px-3">
                                             <a href="{{ $getSortLink('side') }}" class="hover:text-indigo-400 flex items-center gap-0.5 whitespace-nowrap">
                                                 Tipo {!! $getSortIcon('side') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5">Origen</th>
-                                        <th class="py-4 px-5">
+                                        <th class="py-4 px-3">Origen</th>
+                                        <th class="py-4 px-3">
                                             <a href="{{ $getSortLink('symbol') }}" class="hover:text-indigo-400 flex items-center gap-0.5 whitespace-nowrap">
                                                 Activo {!! $getSortIcon('symbol') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5 text-right">
+                                        <th class="py-4 px-3 text-right">
                                             <a href="{{ $getSortLink('qty') }}" class="hover:text-indigo-400 flex items-center justify-end gap-0.5 whitespace-nowrap">
                                                 Cantidad {!! $getSortIcon('qty') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5 text-right">
+                                        <th class="py-4 px-3 text-right">
                                             <a href="{{ $getSortLink('price') }}" class="hover:text-indigo-400 flex items-center justify-end gap-0.5 whitespace-nowrap">
-                                                Precio Ejecución {!! $getSortIcon('price') !!}
+                                                Precio {!! $getSortIcon('price') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5 text-right">Total</th>
-                                        <th class="py-4 px-5 text-right">Resultado (G/P)</th>
-                                        <th class="py-4 px-5 text-center">
+                                        <th class="py-4 px-3 text-right">Total</th>
+                                        <th class="py-4 px-3 text-right">G/P</th>
+                                        <th class="py-4 px-3 text-center">
                                             <a href="{{ $getSortLink('status') }}" class="hover:text-indigo-400 flex items-center justify-center gap-0.5 whitespace-nowrap">
                                                 Estado {!! $getSortIcon('status') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5 text-right">
+                                        <th class="py-4 px-3 text-right">
                                             <a href="{{ $getSortLink('is_dry_run') }}" class="hover:text-indigo-400 flex items-center justify-end gap-0.5 whitespace-nowrap">
                                                 Modo {!! $getSortIcon('is_dry_run') !!}
                                             </a>
                                         </th>
-                                        <th class="py-4 px-5 text-center">Acciones</th>
+                                        <th class="py-4 px-3 text-center">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-900/50">
@@ -1335,10 +1335,8 @@
                                         @foreach($recentTrades as $trade)
                                             @php
                                                 $isBuy = $trade->side === 'buy';
-                                                $tradeTotal = $trade->qty * $trade->price;
-                                            @endphp
-                                            <tr class="hover:bg-slate-950/20 transition">
-                                                <td class="py-3.5 px-5 text-xs text-slate-400 font-medium">
+                                                              <tr class="hover:bg-slate-950/20 transition">
+                                                <td class="py-3.5 px-3 text-xs text-slate-400 font-medium">
                                                     @if($isBuy)
                                                         <div class="font-semibold text-slate-300">
                                                             {{ $trade->created_at->timezone('Europe/Madrid')->format('d/m/Y, H:i') }}
@@ -1367,15 +1365,15 @@
                                                         </div>
                                                     @endif
                                                 </td>
-                                                <td class="py-3.5 px-5">
+                                                <td class="py-3.5 px-3">
                                                     <span class="text-[10px] px-2 py-0.5 rounded font-extrabold uppercase {{ $isBuy ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400' }}">
                                                         {{ $isBuy ? 'Compra' : 'Venta' }}
                                                     </span>
                                                 </td>
-                                                <td class="py-3.5 px-5 text-xs text-slate-400 font-bold">
+                                                <td class="py-3.5 px-3 text-xs text-slate-400 font-bold">
                                                     {{ $trade->bot_execution_id ? 'Bot Automático' : 'Manual' }}
                                                 </td>
-                                                <td class="py-3.5 px-5">
+                                                <td class="py-3.5 px-3">
                                                     <div class="flex flex-col">
                                                         @php
                                                             $friendlyName = $friendlyNames[$trade->symbol] ?? $trade->symbol;
@@ -1384,16 +1382,16 @@
                                                         <span class="text-[9px] text-slate-500 font-medium">{{ $trade->symbol }}</span>
                                                     </div>
                                                 </td>
-                                                <td class="py-3.5 px-5 text-right text-xs text-slate-300 font-semibold">
+                                                <td class="py-3.5 px-3 text-right text-xs text-slate-300 font-semibold">
                                                     {{ $trade->qty }}
                                                 </td>
-                                                <td class="py-3.5 px-5 text-right text-xs text-slate-400">
+                                                <td class="py-3.5 px-3 text-right text-xs text-slate-400">
                                                     ${{ number_format($trade->price, 2) }}
                                                 </td>
-                                                <td class="py-3.5 px-5 text-right text-xs text-slate-200 font-bold">
+                                                <td class="py-3.5 px-3 text-right text-xs text-slate-200 font-bold">
                                                     ${{ number_format($tradeTotal, 2) }}
                                                 </td>
-                                                <td class="py-3.5 px-5 text-right text-xs font-bold">
+                                                <td class="py-3.5 px-3 text-right text-xs font-bold">
                                                     @if(!$isBuy && isset($trade->pnl))
                                                         @php
                                                             $pnl = (float)$trade->pnl;
@@ -1410,7 +1408,7 @@
                                                         <span class="text-slate-500 font-medium">-</span>
                                                     @endif
                                                 </td>
-                                                <td class="py-3.5 px-5 text-center">
+                                                <td class="py-3.5 px-3 text-center">
                                                     @php
                                                         $status = strtolower($trade->status ?? 'filled');
                                                         $isCompleted = $status === 'filled';
@@ -1421,18 +1419,18 @@
                                                         {{ $statusText }}
                                                     </span>
                                                 </td>
-                                                <td class="py-3.5 px-5 text-right">
+                                                <td class="py-3.5 px-3 text-right">
                                                     <span class="text-[10px] px-1.5 py-0.5 rounded font-medium uppercase {{ $trade->is_dry_run ? 'bg-amber-500/10 text-amber-400' : 'bg-green-500/10 text-green-400' }}">
                                                         {{ $trade->is_dry_run ? 'Simulado' : 'Real' }}
                                                     </span>
                                                 </td>
-                                                <td class="py-3.5 px-5 text-center">
+                                                <td class="py-3.5 px-3 text-center">
                                                     @if(!in_array($status, ['filled', 'rejected', 'canceled', 'cancelled', 'expired']))
                                                         <form action="{{ route('trade.cancel', $trade->id) }}" method="POST" class="inline m-0" onsubmit="return confirm('¿Estás seguro de que deseas cancelar esta orden pendiente en el bróker?')">
                                                             @csrf
                                                             <button type="submit" class="px-2.5 py-1 bg-red-950/40 border border-red-500/30 text-red-400 hover:bg-red-500/20 rounded text-[10px] font-extrabold uppercase transition cursor-pointer">
                                                                 Cancelar
-                                                            </button>
+                                                             </button>
                                                         </form>
                                                     @else
                                                         <span class="text-[10px] text-slate-600">-</span>

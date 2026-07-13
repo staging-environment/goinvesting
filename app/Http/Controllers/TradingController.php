@@ -331,13 +331,15 @@ class TradingController extends Controller
     {
         $dryRun = $request->has('dry_run');
         $user = auth()->user();
+        $mode = $request->input('mode', $user->alpaca_is_paper ? 'paper' : 'live');
         
         $output = '';
         try {
             // Run Artisan command programmatically
             \Illuminate\Support\Facades\Artisan::call('app:trading-bot', [
                 '--dry-run' => $dryRun,
-                '--user-id' => $user->id
+                '--user-id' => $user->id,
+                '--mode' => $mode
             ]);
             $output = \Illuminate\Support\Facades\Artisan::output();
         } catch (\Exception $e) {

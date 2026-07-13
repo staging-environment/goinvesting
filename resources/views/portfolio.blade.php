@@ -284,6 +284,7 @@
                 <form action="{{ route('portfolio.run-bot') }}" method="POST" class="inline m-0">
                     @csrf
                     <input type="hidden" name="active_tab" value="{{ session('active_tab', request()->get('tab', 'portfolio_value')) }}">
+                    <input type="hidden" name="mode" value="{{ $isPaper ? 'paper' : 'live' }}">
                     <button type="submit" 
                             @if(!$isPaper && !Auth::user()->alpaca_live_consent) disabled title="Debes autorizar el bot real primero" @endif
                             class="px-4 py-2.5 rounded-xl text-xs font-extrabold transition duration-150 cursor-pointer disabled:opacity-45 disabled:cursor-not-allowed flex items-center gap-1.5 {{ $isPaper ? 'bg-indigo-650 hover:bg-indigo-550 text-white shadow-md shadow-indigo-650/20 hover:scale-[1.02] active:scale-[0.98]' : 'bg-emerald-650 hover:bg-emerald-550 text-white shadow-md shadow-emerald-650/20 hover:scale-[1.02] active:scale-[0.98]' }}">

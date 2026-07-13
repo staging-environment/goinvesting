@@ -14,7 +14,7 @@ class TradingBotCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'app:trading-bot {--dry-run : Only simulate actions, do not place orders} {--user-id= : Run for a specific user ID}';
+    protected $signature = 'app:trading-bot {--dry-run : Only simulate actions, do not place orders} {--user-id= : Run for a specific user ID} {--mode= : Run only for a specific mode (paper or live)}';
 
     /**
      * The console command description.
@@ -114,15 +114,20 @@ class TradingBotCommand extends Command
         foreach ($users as $user) {
             // Determine which modes we should run for this user
             $modesToRun = [];
+            $modeOption = $this->option('mode');
             
             // Check if Paper credentials are configured
             if ($user->alpaca_key_id && $user->alpaca_secret_key) {
-                $modesToRun[] = true; // Paper mode
+                if (!$modeOption || $modeOption === 'paper') {
+                    $modesToRun[] = true; // Paper mode
+                }
             }
             
             // Check if Live credentials are configured
             if ($user->alpaca_live_key_id && $user->alpaca_live_secret_key) {
-                $modesToRun[] = false; // Live mode
+                if (!$modeOption || $modeOption === 'live') {
+                    $modesToRun[] = false; // Live mode
+                }
             }
             
             // Fallback to active UI mode if no modes were explicitly added

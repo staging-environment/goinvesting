@@ -1017,6 +1017,22 @@
                                                                     COMPRADO
                                                                 </span>
                                                             @endif
+                                                            @if(isset($pos['highest_price']))
+                                                                @php
+                                                                    $takeProfitPercent = ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0;
+                                                                    $profitThreshold = $pos['avg_entry_price'] * (1 + $takeProfitPercent / 100);
+                                                                @endphp
+                                                                @if($pos['highest_price'] >= $profitThreshold)
+                                                                    <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-fuchsia-500/10 text-fuchsia-400 border border-fuchsia-500/25 animate-pulse">
+                                                                        TRAILING ACTIVO
+                                                                    </span>
+                                                                @endif
+                                                            @endif
+                                                            @if(isset($pos['dca_level']) && $pos['dca_level'] > 0)
+                                                                <span class="inline-flex items-center text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/25">
+                                                                    DCA: {{ $pos['dca_level'] }}/3
+                                                                </span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </td>

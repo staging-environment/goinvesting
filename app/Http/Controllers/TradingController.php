@@ -191,7 +191,9 @@ class TradingController extends Controller
                     'unrealized_plpc' => $quote 
                         ? ((((float)$quote['price'] * (float)$pos['qty']) - (float)$pos['cost_basis']) / (float)$pos['cost_basis']) * 100 
                         : (($pos['cost_basis'] > 0) ? (($pos['market_value'] - $pos['cost_basis']) / $pos['cost_basis']) * 100 : 0.0),
-                    'purchase_date' => $purchaseDate
+                    'purchase_date' => $purchaseDate,
+                    'highest_price' => $lastBuyTrade ? (float)($lastBuyTrade->highest_price ?? $lastBuyTrade->price) : (float)$pos['avg_entry_price'],
+                    'dca_level' => $lastBuyTrade ? (int)$lastBuyTrade->dca_level : 0,
                 ];
             }
         }

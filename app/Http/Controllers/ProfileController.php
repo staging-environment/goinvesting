@@ -162,7 +162,6 @@ class ProfileController extends Controller
             'bot_max_investment' => 'required|numeric|min:1',
             'daily_spend_limit' => 'nullable|numeric|min:0',
             'weekly_spend_limit' => 'nullable|numeric|min:0',
-            'monthly_spend_limit' => 'nullable|numeric|min:0',
 
             'live_bot_buy_threshold' => 'required|numeric',
             'live_bot_take_profit' => 'required|numeric|min:0',
@@ -171,7 +170,6 @@ class ProfileController extends Controller
             'live_bot_max_investment' => 'required|numeric|min:1',
             'live_daily_spend_limit' => 'nullable|numeric|min:0',
             'live_weekly_spend_limit' => 'nullable|numeric|min:0',
-            'live_monthly_spend_limit' => 'nullable|numeric|min:0',
         ]);
 
         $user = $request->user();
@@ -184,7 +182,6 @@ class ProfileController extends Controller
             'bot_max_investment' => $request->input('bot_max_investment'),
             'daily_spend_limit' => $request->input('daily_spend_limit'),
             'weekly_spend_limit' => $request->input('weekly_spend_limit'),
-            'monthly_spend_limit' => $request->input('monthly_spend_limit'),
 
             'live_bot_buy_threshold' => $request->input('live_bot_buy_threshold'),
             'live_bot_take_profit' => $request->input('live_bot_take_profit'),
@@ -193,7 +190,6 @@ class ProfileController extends Controller
             'live_bot_max_investment' => $request->input('live_bot_max_investment'),
             'live_daily_spend_limit' => $request->input('live_daily_spend_limit'),
             'live_weekly_spend_limit' => $request->input('live_weekly_spend_limit'),
-            'live_monthly_spend_limit' => $request->input('live_monthly_spend_limit'),
         ]);
 
         return Redirect::route('profile.edit')->with('status', 'bot-strategy-updated');

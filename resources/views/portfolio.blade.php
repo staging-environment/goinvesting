@@ -651,7 +651,7 @@
                 </div>
 
                 <!-- Limits Progress Bars inside Portfolio Value Tab -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Daily Limit -->
                     <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
                         <div class="flex items-center justify-between text-xs">
@@ -693,28 +693,6 @@
                         <div class="text-[10px] text-slate-500 flex justify-between">
                             <span>Límite semanal establecido para controlar el presupuesto de compra acumulado.</span>
                             <span class="font-bold text-slate-400">{{ round($weeklyPercent, 1) }}%</span>
-                        </div>
-                    </div>
-
-                    <!-- Monthly Limit -->
-                    <div class="glass-panel rounded-2xl p-5 shadow-lg space-y-3">
-                        <div class="flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-400 uppercase">Gasto Mensual Controlado</span>
-                            <span class="font-extrabold text-slate-200">
-                                ${{ number_format($monthlySpent, 2) }} / 
-                                {{ $monthlyLimit ? '$' . number_format($monthlyLimit, 2) : 'Sin Límite' }}
-                            </span>
-                        </div>
-                        @php
-                            $monthlyPercent = $monthlyLimit > 0 ? min(($monthlySpent / $monthlyLimit) * 100, 100) : 0;
-                            $monthlyBarColor = $monthlyPercent >= 90 ? 'bg-red-500' : ($monthlyPercent >= 70 ? 'bg-amber-500' : 'bg-indigo-500');
-                        @endphp
-                        <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-900">
-                            <div class="h-full {{ $monthlyBarColor }} transition-all duration-500" style="width: {{ $monthlyPercent }}%"></div>
-                        </div>
-                        <div class="text-[10px] text-slate-500 flex justify-between">
-                            <span>Límite mensual establecido para controlar el presupuesto acumulado a largo plazo.</span>
-                            <span class="font-bold text-slate-400">{{ round($monthlyPercent, 1) }}%</span>
                         </div>
                     </div>
                 </div>
@@ -1540,7 +1518,8 @@
                     </div>
                 </div>
             </div>
-            @endif\n<!-- TAB 4: LIVE MARKETS -->
+            @endif
+            <!-- TAB 4: LIVE MARKETS -->
             <div x-show="activeTab === 'markets'" class="space-y-6" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0" style="display: none;">
                 <div class="space-y-4">
                     <h2 class="text-lg font-extrabold text-white flex items-center gap-2">

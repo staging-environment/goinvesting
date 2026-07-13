@@ -71,13 +71,6 @@
                         <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra acumulado en una semana. Deja en blanco para sin límite.</span>
                         <x-input-error class="mt-2" :messages="$errors->get('weekly_spend_limit')" />
                     </div>
-
-                    <div>
-                        <x-input-label for="monthly_spend_limit" :value="__('Límite de Gasto Mensual ($)')" />
-                        <x-text-input id="monthly_spend_limit" name="monthly_spend_limit" type="number" step="0.01" min="0" class="mt-1 block w-full" :value="old('monthly_spend_limit', $user->monthly_spend_limit)" />
-                        <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra acumulado en un mes. Deja en blanco para sin límite.</span>
-                        <x-input-error class="mt-2" :messages="$errors->get('monthly_spend_limit')" />
-                    </div>
                 </div>
             </div>
 
@@ -138,13 +131,6 @@
                         <x-text-input id="live_weekly_spend_limit" name="live_weekly_spend_limit" type="number" step="0.01" min="0" class="mt-1 block w-full border-emerald-500/20 focus:border-emerald-500 focus:ring-emerald-500" :value="old('live_weekly_spend_limit', $user->live_weekly_spend_limit)" />
                         <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra acumulado en una semana. Deja en blanco para sin límite.</span>
                         <x-input-error class="mt-2" :messages="$errors->get('live_weekly_spend_limit')" />
-                    </div>
-
-                    <div>
-                        <x-input-label for="live_monthly_spend_limit" :value="__('Límite de Gasto Mensual ($)')" />
-                        <x-text-input id="live_monthly_spend_limit" name="live_monthly_spend_limit" type="number" step="0.01" min="0" class="mt-1 block w-full border-emerald-500/20 focus:border-emerald-500 focus:ring-emerald-500" :value="old('live_monthly_spend_limit', $user->live_monthly_spend_limit)" />
-                        <span class="text-[10px] text-slate-500 mt-1 block">Presupuesto máximo de compra acumulado en un mes. Deja en blanco para sin límite.</span>
-                        <x-input-error class="mt-2" :messages="$errors->get('live_monthly_spend_limit')" />
                     </div>
                 </div>
             </div>

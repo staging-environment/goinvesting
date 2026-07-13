@@ -169,7 +169,7 @@ class TradingController extends Controller
                 $lastBuyTrade = \App\Models\Trade::where('user_id', $user->id)
                     ->where('symbol', $symbol)
                     ->where('side', 'buy')
-                    ->where('status', 'filled')
+                    ->whereNotIn('status', ['rejected', 'canceled', 'failed'])
                     ->where('is_dry_run', (bool)$user->alpaca_is_paper)
                     ->latest()
                     ->first();

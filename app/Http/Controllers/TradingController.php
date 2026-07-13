@@ -66,7 +66,23 @@ class TradingController extends Controller
             }
         }
 
-        $recentTrades = $recentTradesQuery->orderBy('created_at', 'asc')
+        $sortBy = request('sort_by', 'created_at');
+        $sortOrder = request('sort_order', 'desc');
+
+        $allowedSortColumns = [
+            'created_at' => 'created_at',
+            'side' => 'side',
+            'symbol' => 'symbol',
+            'qty' => 'qty',
+            'price' => 'price',
+            'status' => 'status',
+            'is_dry_run' => 'is_dry_run',
+        ];
+
+        $dbSortColumn = $allowedSortColumns[$sortBy] ?? 'created_at';
+        $dbSortOrder = in_array(strtolower($sortOrder), ['asc', 'desc']) ? strtolower($sortOrder) : 'desc';
+
+        $recentTrades = $recentTradesQuery->orderBy($dbSortColumn, $dbSortOrder)
             ->paginate(20)
             ->fragment('recent-trades-section')
             ->withQueryString();

@@ -1259,19 +1259,70 @@
 
                     <div class="glass-panel rounded-2xl overflow-hidden shadow-xl">
                         <div class="overflow-x-auto">
+                            @php
+                                $currentSortBy = request('sort_by', 'created_at');
+                                $currentSortOrder = request('sort_order', 'desc');
+
+                                $getSortLink = function($col) use ($currentSortBy, $currentSortOrder) {
+                                    $nextOrder = ($currentSortBy === $col && $currentSortOrder === 'desc') ? 'asc' : 'desc';
+                                    $params = array_merge(request()->query(), [
+                                        'sort_by' => $col,
+                                        'sort_order' => $nextOrder
+                                    ]);
+                                    return request()->url() . '?' . http_build_query($params) . '#recent-trades-section';
+                                };
+
+                                $getSortIcon = function($col) use ($currentSortBy, $currentSortOrder) {
+                                    if ($currentSortBy !== $col) {
+                                        return '<svg class="w-2.5 h-2.5 text-slate-600 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" /></svg>';
+                                    }
+                                    if ($currentSortOrder === 'asc') {
+                                        return '<svg class="w-2.5 h-2.5 text-indigo-400 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4.5 15.75l7.5-7.5 7.5 7.5" /></svg>';
+                                    }
+                                    return '<svg class="w-2.5 h-2.5 text-indigo-400 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>';
+                                };
+                            @endphp
                             <table class="w-full text-left border-collapse min-w-[700px]">
                                 <thead>
                                     <tr class="border-b border-slate-900 text-xs font-bold uppercase tracking-wider text-slate-500 bg-[#070913]/30">
-                                        <th class="py-4 px-5">Fecha</th>
-                                        <th class="py-4 px-5">Tipo</th>
+                                        <th class="py-4 px-5">
+                                            <a href="{{ $getSortLink('created_at') }}" class="hover:text-indigo-400 flex items-center gap-0.5 whitespace-nowrap">
+                                                Fecha {!! $getSortIcon('created_at') !!}
+                                            </a>
+                                        </th>
+                                        <th class="py-4 px-5">
+                                            <a href="{{ $getSortLink('side') }}" class="hover:text-indigo-400 flex items-center gap-0.5 whitespace-nowrap">
+                                                Tipo {!! $getSortIcon('side') !!}
+                                            </a>
+                                        </th>
                                         <th class="py-4 px-5">Origen</th>
-                                        <th class="py-4 px-5">Activo</th>
-                                        <th class="py-4 px-5 text-right">Cantidad</th>
-                                        <th class="py-4 px-5 text-right">Precio Ejecución</th>
+                                        <th class="py-4 px-5">
+                                            <a href="{{ $getSortLink('symbol') }}" class="hover:text-indigo-400 flex items-center gap-0.5 whitespace-nowrap">
+                                                Activo {!! $getSortIcon('symbol') !!}
+                                            </a>
+                                        </th>
+                                        <th class="py-4 px-5 text-right">
+                                            <a href="{{ $getSortLink('qty') }}" class="hover:text-indigo-400 flex items-center justify-end gap-0.5 whitespace-nowrap">
+                                                Cantidad {!! $getSortIcon('qty') !!}
+                                            </a>
+                                        </th>
+                                        <th class="py-4 px-5 text-right">
+                                            <a href="{{ $getSortLink('price') }}" class="hover:text-indigo-400 flex items-center justify-end gap-0.5 whitespace-nowrap">
+                                                Precio Ejecución {!! $getSortIcon('price') !!}
+                                            </a>
+                                        </th>
                                         <th class="py-4 px-5 text-right">Total</th>
                                         <th class="py-4 px-5 text-right">Resultado (G/P)</th>
-                                        <th class="py-4 px-5 text-center">Estado</th>
-                                        <th class="py-4 px-5 text-right">Modo</th>
+                                        <th class="py-4 px-5 text-center">
+                                            <a href="{{ $getSortLink('status') }}" class="hover:text-indigo-400 flex items-center justify-center gap-0.5 whitespace-nowrap">
+                                                Estado {!! $getSortIcon('status') !!}
+                                            </a>
+                                        </th>
+                                        <th class="py-4 px-5 text-right">
+                                            <a href="{{ $getSortLink('is_dry_run') }}" class="hover:text-indigo-400 flex items-center justify-end gap-0.5 whitespace-nowrap">
+                                                Modo {!! $getSortIcon('is_dry_run') !!}
+                                            </a>
+                                        </th>
                                         <th class="py-4 px-5 text-center">Acciones</th>
                                     </tr>
                                 </thead>

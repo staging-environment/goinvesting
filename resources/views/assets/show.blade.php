@@ -284,9 +284,9 @@
                              amount: '', 
                              qty: 1, 
                              limitPrice: '',
-                             currentPrice: {{ $assetData['price'] ?? 0 }}, 
-                             dailyLimit: {{ auth()->user()->daily_spend_limit ?? 5000.0 }},
-                             spentToday: {{ auth()->user()->getDailySpent() ?? 0.0 }},
+                             currentPrice: {{ $assetData['price'] ?? 0 }},
+                             dailyLimit: {{ auth()->user()->alpaca_is_paper ? (auth()->user()->daily_spend_limit ?? 5000.0) : (auth()->user()->live_daily_spend_limit ?? 5000.0) }},
+                             spentToday: {{ auth()->user()->getDailySpent((bool)auth()->user()->alpaca_is_paper) }},
                              
                              get estimatedCost() {
                                  if (this.investMode === 'amount') {
@@ -404,7 +404,7 @@
 
                             <!-- Limit Exceeded Warning -->
                             <div x-show="estimatedCost > (dailyLimit - spentToday)" class="p-3.5 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-[11px] leading-normal font-bold">
-                                ⚠️ La compra manual excede tu límite diario de gasto disponible (${(dailyLimit - spentToday).toFixed(2)} de un total de ${dailyLimit.toFixed(2)}).
+                                ⚠️ Esta compra excede tu límite diario disponible. Te quedan <span x-text="'$' + Math.max(0, dailyLimit - spentToday).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span> de un límite total de <span x-text="'$' + dailyLimit.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})"></span>.
                             </div>
                         </div>
 

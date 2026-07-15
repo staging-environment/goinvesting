@@ -15,6 +15,9 @@
 
     <title>@yield('title', 'GoInvesting | Plataforma Financiera en Tiempo Real')</title>
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    
     <!-- Meta SEO -->
     <meta name="description" content="@yield('meta_description', 'Sigue los mercados financieros globales con cotizaciones en tiempo real, gráficos interactivos de acciones, divisas, criptomonedas y materias primas.')">
 

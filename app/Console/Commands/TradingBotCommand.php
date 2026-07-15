@@ -359,24 +359,36 @@ class TradingBotCommand extends Command
                             if ($returnPercent <= $dcaThreshold && $currentDcaLevel < $maxDcaLevel) {
                                 $dcaOrderSize = $orderSize; // Tamaño de orden estándar para recompra
                                 
-                                $this->logLine("-> [DCA Alerta] {$tradingSymbol} ha caído un " . number_format($returnPercent, 2) . "% (Umbral DCA: {$dcaThreshold}%). Evaluando compra de seguridad Nivel " . ($currentDcaLevel + 1));
-                                
                                 $canBuyDCA = true;
-                                if ($totalInvested + $dcaOrderSize > $maxInvestment) {
-                                    $this->logLine("   -> DCA Cancelado: Supera el límite máximo de inversión de \${$maxInvestment}", 'warn');
-                                    $canBuyDCA = false;
+
+                                // Regla de control DCA: Validar que el precio actual sea al menos un 3% inferior al precio de la última compra registrada
+                                if ($lastBuyTrade && $lastBuyTrade->price) {
+                                    $priceDifferencePercent = (($currentPrice - (float)$lastBuyTrade->price) / (float)$lastBuyTrade->price) * 100;
+                                    if ($priceDifferencePercent > -3.0) {
+                                        $this->logLine("   -> DCA Omitido: El precio actual (\${$currentPrice}) no ha caído al menos un 3% con respecto a la última compra de \${$lastBuyTrade->price} (Caída real: " . number_format($priceDifferencePercent, 2) . "%).");
+                                        $canBuyDCA = false;
+                                    }
                                 }
-                                if ($cash < $dcaOrderSize) {
-                                    $this->logLine("   -> DCA Cancelado: Efectivo disponible (\${$cash}) insuficiente", 'warn');
-                                    $canBuyDCA = false;
-                                }
-                                if ($user->hasExceededDailyLimit($dcaOrderSize, $isPaper)) {
-                                    $this->logLine("   -> DCA Cancelado: Supera el límite diario de gasto", 'warn');
-                                    $canBuyDCA = false;
-                                }
-                                if ($user->hasExceededWeeklyLimit($dcaOrderSize, $isPaper)) {
-                                    $this->logLine("   -> DCA Cancelado: Supera el límite semanal de gasto", 'warn');
-                                    $canBuyDCA = false;
+
+                                if ($canBuyDCA) {
+                                    $this->logLine("-> [DCA Alerta] {$tradingSymbol} ha caído un " . number_format($returnPercent, 2) . "% (Umbral DCA: {$dcaThreshold}%). Evaluando compra de seguridad Nivel " . ($currentDcaLevel + 1));
+                                    
+                                    if ($totalInvested + $dcaOrderSize > $maxInvestment) {
+                                        $this->logLine("   -> DCA Cancelado: Supera el límite máximo de inversión de \${$maxInvestment}", 'warn');
+                                        $canBuyDCA = false;
+                                    }
+                                    if ($cash < $dcaOrderSize) {
+                                        $this->logLine("   -> DCA Cancelado: Efectivo disponible (\${$cash}) insuficiente", 'warn');
+                                        $canBuyDCA = false;
+                                    }
+                                    if ($user->hasExceededDailyLimit($dcaOrderSize, $isPaper)) {
+                                        $this->logLine("   -> DCA Cancelado: Supera el límite diario de gasto", 'warn');
+                                        $canBuyDCA = false;
+                                    }
+                                    if ($user->hasExceededWeeklyLimit($dcaOrderSize, $isPaper)) {
+                                        $this->logLine("   -> DCA Cancelado: Supera el límite semanal de gasto", 'warn');
+                                        $canBuyDCA = false;
+                                    }
                                 }
 
                                 if ($canBuyDCA) {
@@ -431,6 +443,30 @@ class TradingBotCommand extends Command
                         // Buy logic (Negative Daily Change and under budget limits)
                         if ($dailyChangePercent <= $buyThreshold) {
                             $this->logLine("-> ALERTA DE COMPRA para {$tradingSymbol}: Cambio diario de " . number_format($dailyChangePercent, 2) . "% por debajo del umbral de {$buyThreshold}%");
+
+                            // Filtro de Tendencia SMA 200
+                            $trendSmaOk = true;
+                            try {
+                                $chartData = $this->yahooService->getChartData($yahooSymbol, '1y', '1d');
+                                if ($chartData && isset($chartData['candles'])) {
+                                    $closes = array_column($chartData['candles'], 'close');
+                                    if (count($closes) >= 200) {
+                                        $sma200 = array_sum(array_slice($closes, -200)) / 200;
+                                        if ($currentPrice < $sma200) {
+                                            $this->logLine("-> Compra cancelada: {$tradingSymbol} está en tendencia bajista. Precio: \${$currentPrice} por debajo de SMA 200: \${" . number_format($sma200, 2) . "}", 'warn');
+                                            $trendSmaOk = false;
+                                        } else {
+                                            $this->logLine("-> Filtro de tendencia OK: {$tradingSymbol} está en tendencia alcista. Precio: \${$currentPrice} por encima de SMA 200: \${" . number_format($sma200, 2) . "}");
+                                        }
+                                    }
+                                }
+                            } catch (\Exception $e) {
+                                Log::error("Bot de Trading: Error al calcular SMA 200 para {$tradingSymbol}: " . $e->getMessage());
+                            }
+
+                            if (!$trendSmaOk) {
+                                continue;
+                            }
 
                             // Check budget limits
                             if ($totalInvested + $orderSize > $maxInvestment) {

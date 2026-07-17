@@ -82,14 +82,23 @@
         } else {
             $logLines = explode("\n", $lastExecution->output);
             $reason = 'No operó: los activos evaluados no cumplieron los criterios de compra (caída de precio) ni de venta (Take Profit / Stop Loss).';
+            
+            $currentOrderSize = ($isPaper ? Auth::user()->bot_order_size : Auth::user()->live_bot_order_size) ?? 500.0;
+            $dailyMargin = $dailyLimit ? ($dailyLimit - $dailySpent) : null;
+            $weeklyMargin = $weeklyLimit ? ($weeklyLimit - $weeklySpent) : null;
+
             foreach ($logLines as $line) {
                 if (str_contains(strtolower($line), 'cancelad') && str_contains(strtolower($line), 'gasto')) {
                     if (str_contains(strtolower($line), 'diario')) {
-                        $reason = 'No operó: La siguiente compra superaría el límite de gasto diario (el margen restante es menor que el tamaño de la orden).';
+                        $formattedMargin = $dailyMargin !== null ? '$' . number_format($dailyMargin, 2) : 'N/A';
+                        $formattedOrderSize = '$' . number_format($currentOrderSize, 2);
+                        $reason = "No operó: La siguiente compra superaría el límite de gasto diario (Margen restante: {$formattedMargin} < Orden: {$formattedOrderSize}). Para solucionar, reduce el tamaño de orden o aumenta el límite diario en la configuración.";
                     } elseif (str_contains(strtolower($line), 'semanal')) {
-                        $reason = 'No operó: La siguiente compra superaría el límite de gasto semanal (el margen restante es menor que el tamaño de la orden).';
+                        $formattedMargin = $weeklyMargin !== null ? '$' . number_format($weeklyMargin, 2) : 'N/A';
+                        $formattedOrderSize = '$' . number_format($currentOrderSize, 2);
+                        $reason = "No operó: La siguiente compra superaría el límite de gasto semanal (Margen restante: {$formattedMargin} < Orden: {$formattedOrderSize}). Para solucionar, reduce el tamaño de orden o aumenta el límite semanal en la configuración.";
                     } else {
-                        $reason = 'No operó: La siguiente compra superaría el límite de gasto diario o semanal establecido.';
+                        $reason = 'No operó: La siguiente compra superaría el límite de gasto diario o semanal establecido. Ajusta el tamaño de la orden o aumenta los límites en tu perfil.';
                     }
                     break;
                 } elseif (str_contains($line, 'insuficiente')) {

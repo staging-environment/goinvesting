@@ -288,20 +288,28 @@ class TradingController extends Controller
 
         $user = auth()->user();
         
-        // Respect spending limits for manual buys as well
         if ($side === 'buy') {
             // Get approximate cost
             $marketQuotes = $this->yahooService->getSparkQuotes([$symbol]);
             $currentPrice = isset($marketQuotes[$symbol]) ? (float)$marketQuotes[$symbol]['price'] : ($limitPrice ?? 0.0);
             $estimatedCost = $qty * $currentPrice;
             
-            if ($user->hasExceededDailyLimit($estimatedCost)) {
-                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite diario de gasto (\${$user->daily_spend_limit}, gastado hoy: \${$user->getDailySpent()})."])->with('active_tab', $activeTab);
-            }
-            if ($user->hasExceededWeeklyLimit($estimatedCost)) {
-                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (\${$user->weekly_spend_limit}, gastado esta semana: \${$user->getWeeklySpent()})."])->with('active_tab', $activeTab);
-            }
+            $isPaper = (bool)$user->alpaca_is_paper;
+            $dailyLimit = $isPaper ? $user->daily_spend_limit : $user->live_daily_spend_limit;
+            $weeklyLimit = $isPaper ? $user->weekly_spend_limit : $user->live_weekly_spend_limit;
 
+            if ($user->hasExceededDailyLimit($estimatedCost, $isPaper)) {
+                $dailySpent = $user->getDailySpent($isPaper);
+                $formattedLimit = $dailyLimit !== null ? '$' . number_format($dailyLimit, 2) : 'N/A';
+                $formattedSpent = '$' . number_format($dailySpent, 2);
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite diario de gasto (Límite: {$formattedLimit}, gastado hoy: {$formattedSpent})."])->with('active_tab', $activeTab);
+            }
+            if ($user->hasExceededWeeklyLimit($estimatedCost, $isPaper)) {
+                $weeklySpent = $user->getWeeklySpent($isPaper);
+                $formattedLimit = $weeklyLimit !== null ? '$' . number_format($weeklyLimit, 2) : 'N/A';
+                $formattedSpent = '$' . number_format($weeklySpent, 2);
+                return redirect()->back()->withErrors(['error' => "La compra manual excede tu límite semanal de gasto (Límite: {$formattedLimit}, gastado esta semana: {$formattedSpent})."])->with('active_tab', $activeTab);
+            }
         }
 
         $pnlValue = null;

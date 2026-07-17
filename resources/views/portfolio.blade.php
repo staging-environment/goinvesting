@@ -83,8 +83,14 @@
             $logLines = explode("\n", $lastExecution->output);
             $reason = 'No operó: los activos evaluados no cumplieron los criterios de compra (caída de precio) ni de venta (Take Profit / Stop Loss).';
             foreach ($logLines as $line) {
-                if (str_contains($line, 'cancelada') && str_contains($line, 'gasto')) {
-                    $reason = 'No operó: Se superó el límite de gasto diario o semanal establecido.';
+                if (str_contains(strtolower($line), 'cancelad') && str_contains(strtolower($line), 'gasto')) {
+                    if (str_contains(strtolower($line), 'diario')) {
+                        $reason = 'No operó: La siguiente compra superaría el límite de gasto diario (el margen restante es menor que el tamaño de la orden).';
+                    } elseif (str_contains(strtolower($line), 'semanal')) {
+                        $reason = 'No operó: La siguiente compra superaría el límite de gasto semanal (el margen restante es menor que el tamaño de la orden).';
+                    } else {
+                        $reason = 'No operó: La siguiente compra superaría el límite de gasto diario o semanal establecido.';
+                    }
                     break;
                 } elseif (str_contains($line, 'insuficiente')) {
                     $reason = 'No operó: Poder de compra o efectivo insuficiente en el broker.';

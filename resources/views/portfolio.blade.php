@@ -207,7 +207,7 @@
                                 @endforeach
                             </ul>
                         @else
-                            El bot finalizó correctamente sin realizar transacciones comerciales porque ningún activo analizado cumplió las condiciones necesarias para comprar (caída de precio suficiente) o vender (margen de ganancia o parada de pérdidas alcanzados).
+                            El bot finalizó correctamente sin realizar transacciones comerciales porque ningún activo analizado cumplió las condiciones configuradas para comprar (caída de precio inferior a {{ ($isPaper ? Auth::user()->bot_buy_threshold : Auth::user()->live_bot_buy_threshold) ?? -1.5 }}%) o vender (objetivos de Take Profit de +{{ ($isPaper ? Auth::user()->bot_take_profit : Auth::user()->live_bot_take_profit) ?? 2.0 }}% o Stop Loss de {{ ($isPaper ? Auth::user()->bot_stop_loss : Auth::user()->live_bot_stop_loss) ?? -3.0 }}% no alcanzados).
                         @endif
                     </div>
                 </div>

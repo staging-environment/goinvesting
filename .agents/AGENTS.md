@@ -1,12 +1,17 @@
-# Production Environment Credentials
+# Entorno de Desarrollo y Producción
 
-The credentials and connection information for the production environment of the **goinvesting** project are:
+Este archivo contiene información sobre los entornos de desarrollo local y de producción para el proyecto **goinvesting**.
 
-- **Hostname / IP Address**: `75.119.136.151` (`goinvesting.es`)
-- **SSH User**: `developer` (or `root`)
-- **SSH Key**: Configured in local host profile `pinomontano` or `andara` (uses standard key `~/.ssh/id_rsa`).
-- **Project Directory**: `/home/developer/Projects/goinvesting`
-- **Docker Environment**: DDEV. Run commands inside the DDEV containers as the `developer` user:
-  ```bash
-  ssh developer@75.119.136.151 "cd /home/developer/Projects/goinvesting && ddev exec php artisan <command>"
-  ```
+## 💻 Entorno de Desarrollo Local
+- **Plataforma**: Windows con subsistema de Linux para Windows (**WSL**).
+- **Ruta del Proyecto**: `/home/bonilla/Projects/goinvesting` (accedido vía `\\wsl.localhost\Ubuntu\home\bonilla\Projects\goinvesting`).
+- **Comandos**: Ejecutar comandos de Git y consola anteponiendo `wsl` si se ejecutan desde el host (ej. `wsl git status`).
+
+## 🚀 Entorno de Producción
+- **Servidor (IP)**: `75.119.136.151` (`goinvesting.es`)
+- **Usuario SSH**: `developer`
+- **Ruta del Proyecto**: `/home/developer/Projects/goinvesting`
+- **Entorno de Contenedores**: **DDEV**
+- **Comandos Útiles**:
+  - Actualizar código: `ssh developer@75.119.136.151 "cd /home/developer/Projects/goinvesting && git pull origin main"`
+  - Ejecutar Artisan en producción: `ssh developer@75.119.136.151 "cd /home/developer/Projects/goinvesting && ddev exec php artisan <comando>"`

@@ -5,7 +5,9 @@ php_version: "8.3"
 webserver_type: nginx-fpm
 xdebug_enabled: false
 additional_hostnames: []
-additional_fqdns: []
+additional_fqdns:
+  - goinvesting.es
+  - www.goinvesting.es
 database:
     type: mariadb
     version: "10.11"
@@ -294,3 +296,5 @@ disable_settings_management: true
 
 host_webserver_port: "8083"
 bind_all_interfaces: false
+router_http_port: 33002
+router_https_port: 33003
